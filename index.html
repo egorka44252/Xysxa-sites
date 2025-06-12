@@ -187,6 +187,99 @@
             0% { background-position: 0% 50%; }
             100% { background-position: 100% 50%; }
         }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            max-width: 180px;
+            height: 6px;
+            background: linear-gradient(90deg, #b20000 0%, #ffcb05 100%);
+            border-radius: 6px;
+            outline: none;
+            margin: 0 8px;
+            transition: background 0.3s;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        input[type="range"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #ffcb0544;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #b20000;
+            box-shadow: 0 2px 8px rgba(178,0,0,0.18);
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+            margin-top: -6px;
+        }
+        input[type="range"]:focus::-webkit-slider-thumb {
+            border: 2px solid #ffcb05;
+            background: #fffbe6;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #b20000;
+            box-shadow: 0 2px 8px rgba(178,0,0,0.18);
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+        }
+        input[type="range"]:focus::-moz-range-thumb {
+            border: 2px solid #ffcb05;
+            background: #fffbe6;
+        }
+        input[type="range"]::-ms-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #b20000;
+            box-shadow: 0 2px 8px rgba(178,0,0,0.18);
+            cursor: pointer;
+            transition: border 0.2s, background 0.2s;
+        }
+        input[type="range"]:focus::-ms-thumb {
+            border: 2px solid #ffcb05;
+            background: #fffbe6;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 6px;
+            background: transparent;
+        }
+        input[type="range"]::-ms-fill-lower {
+            background: #b20000;
+            border-radius: 6px;
+        }
+        input[type="range"]::-ms-fill-upper {
+            background: #ffcb05;
+            border-radius: 6px;
+        }
+        input[type="range"]:focus::-ms-fill-lower {
+            background: #b20000;
+        }
+        input[type="range"]:focus::-ms-fill-upper {
+            background: #ffcb05;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        input[type="range"]::-moz-range-track {
+            height: 6px;
+            border-radius: 6px;
+            background: transparent;
+        }
+        input[type="range"]::-ms-tooltip {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -230,8 +323,12 @@
             <button class="music-btn" onclick="nextTrack()">⏭️</button>
             <input id="music-volume" type="range" min="0" max="1" step="0.01" value="1"
                 onchange="document.getElementById('myAudio').volume=this.value"
-                style="width:90px; accent-color:#b20000;">
+                style="width:90px; accent-color:#b20000; vertical-align:middle;">
+            <span id="volume-value" style="min-width:38px;display:inline-block;font-size:1em;color:#b20000;font-weight:bold;margin-left:6px;">100%</span>
             <audio id="myAudio"></audio>
+            <input id="music-progress" type="range" min="0" max="100" value="0" step="1"
+                style="width:180px; margin-left:18px; accent-color:#b20000; vertical-align:middle;">
+            <span id="progress-time" style="min-width:80px;display:inline-block;font-size:1em;color:#b20000;font-weight:bold;margin-left:6px;">00:00 / 00:00</span>
             <select id="track-list" onchange="selectTrack(this.value)" style="margin-left:18px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;">
                 <option value="0">пипсики_доритос_xD.mp3</option>
                 <option value="1">Бэквуд.mp3</option>
@@ -265,6 +362,10 @@
         const title = document.getElementById('track-title');
         const img = document.getElementById('track-img');
         const trackList = document.getElementById('track-list');
+        const progress = document.getElementById('music-progress');
+        const volume = document.getElementById('music-volume');
+        const volumeValue = document.getElementById('volume-value');
+        const progressTime = document.getElementById('progress-time');
 
         function loadTrack(index) {
             currentTrack = index;
@@ -292,15 +393,36 @@
             loadTrack(Number(idx));
             playMusic();
         }
+
+        // Обновление процентов громкости
+        volume.addEventListener('input', function() {
+            volumeValue.textContent = Math.round(volume.value * 100) + '%';
+            audio.volume = volume.value;
+        });
+        // Установить начальное значение
+        volumeValue.textContent = Math.round(volume.value * 100) + '%';
+
+        // Обновление времени и прогресса
         function formatTime(sec) {
             sec = Math.floor(sec);
             return (sec/60|0).toString().padStart(2,'0') + ':' + (sec%60).toString().padStart(2,'0');
         }
+
         audio.addEventListener('timeupdate', function() {
-            time.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
+            progress.value = audio.duration ? Math.floor(audio.currentTime / audio.duration * 100) : 0;
+            progressTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
         });
+
         audio.addEventListener('loadedmetadata', function() {
-            time.textContent = '00:00 / ' + formatTime(audio.duration || 0);
+            progress.value = 0;
+            progressTime.textContent = '00:00 / ' + formatTime(audio.duration || 0);
+        });
+
+        // Перемотка по прогресс-бару
+        progress.addEventListener('input', function() {
+            if (audio.duration) {
+                audio.currentTime = progress.value / 100 * audio.duration;
+            }
         });
         // Загружаем первый трек при загрузке страницы
         loadTrack(0);
