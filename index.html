@@ -289,6 +289,40 @@
             display: none;
         }
 
+        /* Замените ваш <select id="track-list"> на более красивый вариант и добавьте стили ниже */
+        .custom-track-list {
+            background: linear-gradient(90deg, #fff 60%, #ffcb05 100%);
+            color: #b20000;
+            border: 2px solid #b20000;
+            border-radius: 10px;
+            padding: 8px 18px;
+            font-size: 1.08em;
+            font-weight: bold;
+            box-shadow: 0 2px 12px #b2000022;
+            outline: none;
+            transition: border 0.2s, box-shadow 0.2s, background 0.3s;
+            cursor: pointer;
+            margin-left: 18px;
+        }
+        .custom-track-list:focus, .custom-track-list:hover {
+            border: 2px solid #ffcb05;
+            box-shadow: 0 4px 24px #ffcb0533;
+            background: linear-gradient(90deg, #fffbe6 60%, #ffcb05 100%);
+        }
+        .custom-track-list option {
+            color: #b20000;
+            background: #fffbe6;
+            font-weight: normal;
+        }
+        @media (max-width: 600px) {
+            .custom-track-list {
+                width: 100% !important;
+                margin: 8px 0 0 0 !important;
+                font-size: 1em !important;
+                padding: 8px 10px !important;
+            }
+        }
+
         @media (max-width: 600px) {
             body {
                 font-size: 1em;
@@ -366,12 +400,11 @@
     </style>
 </head>
 <body>
-    <div style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;">
-        <video autoplay loop muted playsinline style="min-width:100vw;min-height:100vh;object-fit:cover;">
-            <source src="video/bg.mp4" type="video/mp4">
-            Ваш браузер не поддерживает видео фон.
-        </video>
+    <!-- Замените блок с <video> на canvas для визуализера -->
+    <div id="visualizer-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;">
+      <canvas id="music-visualizer" style="width:100vw;height:100vh;display:block;"></canvas>
     </div>
+
     <header>
         <h1 class="rainbow-text">Добро пожаловать на мой сайт!</h1>
         <a href="https://www.youtube.com/@kotvsmetane44252" target="_blank" class="yt-btn-gradient">
@@ -458,7 +491,7 @@
             <input id="music-progress" type="range" min="0" max="100" value="0" step="1"
                 style="width:180px; margin-left:18px; accent-color:#b20000; vertical-align:middle;">
             <span id="progress-time" style="min-width:80px;display:inline-block;font-size:1em;color:#b20000;font-weight:bold;margin-left:6px;">00:00 / 00:00</span>
-            <select id="track-list" onchange="selectTrack(this.value)" style="margin-left:18px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;">
+            <select id="track-list" onchange="selectTrack(this.value)" class="custom-track-list">
                 <option value="0">пипсики_доритос_xD.mp3</option>
                 <option value="1">Бэквуд.mp3</option>
                 <option value="2">Дисклеймер.mp3</option>
@@ -556,6 +589,68 @@
         // Загружаем первый трек при загрузке страницы
         loadTrack(0);
     </script>
+    <script>
+// Визуализер музыки на фоне
+const canvas = document.getElementById('music-visualizer');
+const ctx = canvas.getContext('2d');
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+let audioCtx, analyser, source, dataArray, animationId;
+
+function startVisualizer() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 128;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        // Подключаем audio к визуализеру
+        const audio = document.getElementById('myAudio');
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+    }
+    animate();
+}
+
+function animate() {
+    animationId = requestAnimationFrame(animate);
+    analyser.getByteFrequencyData(dataArray);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const barWidth = canvas.width / dataArray.length;
+    for (let i = 0; i < dataArray.length; i++) {
+        const val = dataArray[i];
+        const x = i * barWidth;
+        const y = canvas.height - (val / 255) * canvas.height * 0.6;
+        const grad = ctx.createLinearGradient(x, y, x, canvas.height);
+        grad.addColorStop(0, '#ffcb05');
+        grad.addColorStop(0.5, '#b20000');
+        grad.addColorStop(1, '#222');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, y, barWidth * 0.8, canvas.height - y);
+        ctx.shadowColor = '#ffcb05';
+        ctx.shadowBlur = 16;
+    }
+}
+
+function stopVisualizer() {
+    cancelAnimationFrame(animationId);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Запуск визуализера при воспроизведении музыки
+const audio = document.getElementById('myAudio');
+audio.addEventListener('play', () => {
+    startVisualizer();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+});
+audio.addEventListener('pause', stopVisualizer);
+audio.addEventListener('ended', stopVisualizer);
+</script>
     <main>
         <h2>О сайте</h2>
         <p>этот сайт зделан за 1 день с помощю нейросети.</p>
