@@ -291,27 +291,27 @@
 
         /* Замените ваш <select id="track-list"> на более красивый вариант и добавьте стили ниже */
         .custom-track-list {
-            background: linear-gradient(90deg, #fff 60%, #ffcb05 100%);
-            color: #b20000;
-            border: 2px solid #b20000;
+            background: linear-gradient(90deg, #a259ff 0%, #ff6ec4 100%);
+            color: #fff;
+            border: 2px solid #a259ff;
             border-radius: 10px;
             padding: 8px 18px;
             font-size: 1.08em;
             font-weight: bold;
-            box-shadow: 0 2px 12px #b2000022;
+            box-shadow: 0 2px 12px #a259ff33;
             outline: none;
             transition: border 0.2s, box-shadow 0.2s, background 0.3s;
             cursor: pointer;
             margin-left: 18px;
         }
         .custom-track-list:focus, .custom-track-list:hover {
-            border: 2px solid #ffcb05;
-            box-shadow: 0 4px 24px #ffcb0533;
-            background: linear-gradient(90deg, #fffbe6 60%, #ffcb05 100%);
+            border: 2px solid #ff6ec4;
+            box-shadow: 0 4px 24px #ff6ec433;
+            background: linear-gradient(90deg, #f3c8ff 0%, #ff6ec4 100%);
         }
         .custom-track-list option {
-            color: #b20000;
-            background: #fffbe6;
+            color: #a259ff;
+            background: #fff0fa;
             font-weight: normal;
         }
         @media (max-width: 600px) {
@@ -400,9 +400,14 @@
     </style>
 </head>
 <body>
-    <!-- Замените блок с <video> на canvas для визуализера -->
-    <div id="visualizer-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;">
-      <canvas id="music-visualizer" style="width:100vw;height:100vh;display:block;"></canvas>
+    <!-- Замените canvas-визуализер на видео-фон из репозитория -->
+
+    <!-- Вместо блока с canvas вставьте: -->
+    <div id="video-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;">
+      <video id="bg-video" autoplay loop muted playsinline style="width:100vw;height:100vh;object-fit:cover;display:block;filter:brightness(0.7) blur(2px);">
+        <source src="video/bg.mp4" type="video/mp4">
+        Ваш браузер не поддерживает видео фон.
+      </video>
     </div>
 
     <header>
@@ -589,68 +594,6 @@
         // Загружаем первый трек при загрузке страницы
         loadTrack(0);
     </script>
-    <script>
-// Визуализер музыки на фоне
-const canvas = document.getElementById('music-visualizer');
-const ctx = canvas.getContext('2d');
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-let audioCtx, analyser, source, dataArray, animationId;
-
-function startVisualizer() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 128;
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        // Подключаем audio к визуализеру
-        const audio = document.getElementById('myAudio');
-        source = audioCtx.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-    }
-    animate();
-}
-
-function animate() {
-    animationId = requestAnimationFrame(animate);
-    analyser.getByteFrequencyData(dataArray);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const barWidth = canvas.width / dataArray.length;
-    for (let i = 0; i < dataArray.length; i++) {
-        const val = dataArray[i];
-        const x = i * barWidth;
-        const y = canvas.height - (val / 255) * canvas.height * 0.6;
-        const grad = ctx.createLinearGradient(x, y, x, canvas.height);
-        grad.addColorStop(0, '#ffcb05');
-        grad.addColorStop(0.5, '#b20000');
-        grad.addColorStop(1, '#222');
-        ctx.fillStyle = grad;
-        ctx.fillRect(x, y, barWidth * 0.8, canvas.height - y);
-        ctx.shadowColor = '#ffcb05';
-        ctx.shadowBlur = 16;
-    }
-}
-
-function stopVisualizer() {
-    cancelAnimationFrame(animationId);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// Запуск визуализера при воспроизведении музыки
-const audio = document.getElementById('myAudio');
-audio.addEventListener('play', () => {
-    startVisualizer();
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-});
-audio.addEventListener('pause', stopVisualizer);
-audio.addEventListener('ended', stopVisualizer);
-</script>
     <main>
         <h2>О сайте</h2>
         <p>этот сайт зделан за 1 день с помощю нейросети.</p>
