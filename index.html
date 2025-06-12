@@ -234,10 +234,11 @@
             <audio id="myAudio"></audio>
             <canvas id="music-visual" width="320" height="60" style="margin-left:18px; border-radius:8px; background:rgba(0,0,0,0.08);"></canvas>
             <script>
-                // Визуализация музыки
+                // Получаем элементы
+                const audio = document.getElementById('myAudio');
                 const canvas = document.getElementById('music-visual');
                 const ctx = canvas.getContext('2d');
-                let audioCtx, analyser, srcNode, dataArray, animationId;
+                let audioCtx = null, analyser = null, srcNode = null, dataArray = null, animationId = null;
 
                 function setupVisualizer() {
                     if (!audioCtx) {
@@ -252,6 +253,7 @@
                 }
 
                 function drawVisualizer() {
+                    if (!analyser) return;
                     analyser.getByteFrequencyData(dataArray);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     const barWidth = (canvas.width / dataArray.length) * 1.5;
@@ -268,6 +270,7 @@
                     if (audioCtx.state === 'suspended') audioCtx.resume();
                     drawVisualizer();
                 });
+
                 audio.addEventListener('pause', () => cancelAnimationFrame(animationId));
                 audio.addEventListener('ended', () => cancelAnimationFrame(animationId));
             </script>
