@@ -6,19 +6,33 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #888; /* серый фон */
             margin: 0;
             padding: 0;
+            /* Анимированный градиентный фон */
+            background: linear-gradient(-45deg, #888, #b20000, #fff, #222);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        header, .greeting, main h2, main h3, main p, main ul, main li, footer {
+            animation: textColorAnim 3s linear infinite alternate;
+        }
+        @keyframes textColorAnim {
+            0% { color: #b20000; }
+            50% { color: #222; }
+            100% { color: #b20000; }
         }
         header {
-            background: #888;
-            color: #b20000; /* кроваво-красный */
+            background: transparent;
             padding: 20px 0;
             text-align: center;
         }
         .greeting {
             font-size: 2em;
-            color: #b20000; /* кроваво-красный */
             text-align: center;
             margin-top: 40px;
             margin-bottom: 30px;
@@ -32,27 +46,322 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         main, main h2, main h3, main p, main ul, main li {
-            color: #b20000; /* кроваво-красный */
+            /* цвет теперь анимируется через keyframes */
         }
         footer {
             text-align: center;
             padding: 15px 0;
-            background: #222;
-            color: #b20000; /* кроваво-красный */
+            background: rgba(34, 34, 34, 0.5); /* полупрозрачный фон */
             position: fixed;
             width: 100%;
             bottom: 0;
+            color: #b20000;
+            font-weight: bold;
+            backdrop-filter: blur(2px); /* лёгкое размытие подложки (по желанию) */
+        }
+
+        /* Анимация появления блока плеера */
+        .music-player-animated {
+            animation: fadeInUp 1s cubic-bezier(.23,1.01,.32,1) both;
+        }
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Анимация кнопок плеера */
+        .music-btn {
+            background: #b20000;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.3em;
+            cursor: pointer;
+            transition: 
+                background 0.2s,
+                transform 0.18s,
+                box-shadow 0.18s,
+                filter 0.18s;
+            box-shadow: 0 2px 8px rgba(178,0,0,0.18);
+            outline: none;
+            position: relative;
+            overflow: hidden;
+            filter: drop-shadow(0 0 0 #b20000);
+        }
+        .music-btn:hover {
+            background: #ff3333;
+            transform: scale(1.15) rotate(-8deg);
+            box-shadow: 0 4px 16px rgba(178,0,0,0.25);
+            filter: drop-shadow(0 0 8px #ff3333);
+        }
+        .music-btn:active {
+            background: #900;
+            transform: scale(0.95);
+            filter: drop-shadow(0 0 0 #900);
+        }
+
+        /* Анимация появления заголовка и приветствия */
+        header, .greeting {
+            animation: fadeIn 1.2s cubic-bezier(.23,1.01,.32,1) both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-30px);}
+            to   { opacity: 1; transform: translateY(0);}
+        }
+
+        /* Анимация для основного блока main */
+        main {
+            animation: fadeInMain 1.2s cubic-bezier(.23,1.01,.32,1) 0.5s both;
+        }
+        @keyframes fadeInMain {
+            from { opacity: 0; transform: scale(0.97);}
+            to   { opacity: 1; transform: scale(1);}
+        }
+
+        .yt-btn-gradient {
+            display: inline-block;
+            margin-top: 18px;
+            background: linear-gradient(90deg, #ff512f 0%, #dd2476 100%);
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 1.15em;
+            box-shadow: 0 2px 12px rgba(221,36,118,0.18);
+            transition: background 0.3s, transform 0.18s, box-shadow 0.3s;
+            border: none;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .yt-btn-gradient:hover {
+            background: linear-gradient(90deg, #dd2476 0%, #ff512f 100%);
+            transform: scale(1.08) rotate(-2deg);
+            box-shadow: 0 4px 24px rgba(221,36,118,0.28);
+        }
+
+        .rainbow-text {
+            background: linear-gradient(90deg, #ff512f, #ffcb05, #4fdc4a, #00cfff, #dd2476, #ff512f 90%);
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow-move 3s linear infinite;
+            font-weight: bold;
+        }
+        @keyframes rainbow-move {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Добро пожаловать на мой сайт!</h1>
-    </header>
-    <div class="greeting">Привет!</div>
-    <div style="text-align:center; margin: 20px 0;">
-        <img src="https://i.gifer.com/6os.gif" alt="Описание картинки" width="300">
+    <div id="auth-modal" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:1000;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;">
+        <div style="max-width:350px;width:90vw;padding:24px;background:rgba(255,255,255,0.95);border-radius:10px;box-shadow:0 2px 16px rgba(0,0,0,0.25);">
+            <div id="auth-tabs" style="display:flex;justify-content:center;margin-bottom:18px;">
+                <button onclick="showTab('login')" id="loginTab" style="flex:1;padding:8px;border:none;background:#b20000;color:#fff;border-radius:6px 0 0 6px;cursor:pointer;">Вход</button>
+                <button onclick="showTab('register')" id="registerTab" style="flex:1;padding:8px;border:none;background:#eee;color:#b20000;border-radius:0 6px 6px 0;cursor:pointer;">Регистрация</button>
+            </div>
+            <form id="loginForm">
+                <input type="text" placeholder="Логин" required style="width:100%;margin-bottom:10px;padding:8px;border-radius:5px;border:1px solid #ccc;">
+                <input type="password" placeholder="Пароль" required style="width:100%;margin-bottom:10px;padding:8px;border-radius:5px;border:1px solid #ccc;">
+                <button type="submit" style="width:100%;padding:8px;background:#b20000;color:#fff;border:none;border-radius:5px;cursor:pointer;">Войти</button>
+            </form>
+            <form id="registerForm" style="display:none;">
+                <input type="text" placeholder="Логин" required style="width:100%;margin-bottom:10px;padding:8px;border-radius:5px;border:1px solid #ccc;">
+                <input type="password" placeholder="Пароль" required style="width:100%;margin-bottom:10px;padding:8px;border-radius:5px;border:1px solid #ccc;">
+                <input type="password" placeholder="Повторите пароль" required style="width:100%;margin-bottom:10px;padding:8px;border-radius:5px;border:1px solid #ccc;">
+                <button type="submit" style="width:100%;padding:8px;background:#b20000;color:#fff;border:none;border-radius:5px;cursor:pointer;">Зарегистрироваться</button>
+            </form>
+        </div>
     </div>
+    <script>
+        // Сохраняем пользователей в localStorage
+        function saveUser(login, password) {
+            let users = JSON.parse(localStorage.getItem('users') || '{}');
+            users[login] = password;
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+        function checkUser(login, password) {
+            let users = JSON.parse(localStorage.getItem('users') || '{}');
+            return users[login] === password;
+        }
+        function userExists(login) {
+            let users = JSON.parse(localStorage.getItem('users') || '{}');
+            return !!users[login];
+        }
+
+        function showTab(tab) {
+            document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+            document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+            document.getElementById('loginTab').style.background = tab === 'login' ? '#b20000' : '#eee';
+            document.getElementById('loginTab').style.color = tab === 'login' ? '#fff' : '#b20000';
+            document.getElementById('registerTab').style.background = tab === 'register' ? '#b20000' : '#eee';
+            document.getElementById('registerTab').style.color = tab === 'register' ? '#fff' : '#b20000';
+        }
+
+        // Проверяем, был ли пользователь уже авторизован ранее
+        if (localStorage.getItem('loggedInUser')) {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        document.getElementById('loginForm').onsubmit = function(e){
+            e.preventDefault();
+            var login = this.querySelector('input[type="text"]').value;
+            var password = this.querySelector('input[type="password"]').value;
+            if(checkUser(login, password)) {
+                localStorage.setItem('loggedInUser', login); // Запоминаем пользователя
+                document.getElementById('auth-modal').style.display = 'none';
+            } else {
+                alert('Неверный логин или пароль!');
+            }
+        };
+
+        document.getElementById('registerForm').onsubmit = function(e){
+            e.preventDefault();
+            var inputs = this.querySelectorAll('input[type="text"], input[type="password"]');
+            var login = inputs[0].value;
+            var password = inputs[1].value;
+            var password2 = inputs[2].value;
+            if(password !== password2) {
+                alert('Пароли не совпадают!');
+                return;
+            }
+            if(userExists(login)) {
+                alert('Пользователь уже существует!');
+                return;
+            }
+            saveUser(login, password);
+            alert('Регистрация успешна! Теперь войдите.');
+            showTab('login');
+        };
+
+        // При загрузке страницы показываем форму входа по умолчанию
+        showTab('login');
+    </script>
+
+    <div style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;">
+        <video autoplay loop muted playsinline style="min-width:100vw;min-height:100vh;object-fit:cover;">
+            <source src="https://docs.google.com/uc?export=download&id=1wQ-PgS07sXyqnM0FP4k6XMSjpmc8I0XV" type="video/mp4">
+            Ваш браузер не поддерживает видео фон.
+        </video>
+    </div>
+    <header>
+        <h1 class="rainbow-text">Добро пожаловать на мой сайт!</h1>
+        <a href="https://www.youtube.com/@kotvsmetane44252" target="_blank" class="yt-btn-gradient">
+            Мой YouTube канал
+        </a>
+    </header>
+    <div class="greeting rainbow-text" style="font-size:2em;">Привет!</div>
+
+    <div style="display: flex; justify-content: center; margin: 30px 0;">
+        <div class="music-player-animated" style="
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+            padding: 22px 32px;
+            backdrop-filter: blur(2px);
+            ">
+            <img id="track-img" src="file:///C:/Users/Xysxa/Downloads/photo_2025-04-18_15-11-39.jpg" alt="Музыка" width="48" height="48" style="border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.10);background:#fff;">
+            <div style="min-width:160px;">
+                <div id="track-title" style="font-weight:bold; color:#b20000; font-size:1.1em; margin-bottom:4px;">чиыпсики_доритос_xD.mp3</div>
+                <div id="track-time" style="font-size:0.95em; color:#444;">00:00 / 00:00</div>
+            </div>
+            <button class="music-btn" onclick="prevTrack()">⏮️</button>
+            <button class="music-btn" onclick="playMusic()">▶️</button>
+            <button class="music-btn" onclick="pauseMusic()">⏸️</button>
+            <button class="music-btn" onclick="stopMusic()">⏹️</button>
+            <button class="music-btn" onclick="nextTrack()">⏭️</button>
+            <input id="music-volume" type="range" min="0" max="1" step="0.01" value="1"
+                onchange="document.getElementById('myAudio').volume=this.value"
+                style="width:90px; accent-color:#b20000;">
+            <audio id="myAudio"></audio>
+            <select id="track-list" onchange="selectTrack(this.value)" style="margin-left:18px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;">
+                <option value="0">пипсики_доритос_xD.mp3</option>
+                <option value="1">Бэквуд.mp3</option>
+                <option value="2">Дисклеймер.mp3</option>
+            </select>
+        </div>
+    </div>
+    <script>
+        // Список треков из репозитория сайта (например, если сайт размещён на GitHub Pages или другом хостинге)
+        // Поместите mp3-файлы в папку рядом с этим HTML-файлом или в подпапку, например: /music/
+        const tracks = [
+            {
+                title: "пипсики_доритос_xD.mp3",
+                src: "music/пипсики_доритос_xD.mp3",
+                img: "music/cover1.jpg"
+            },
+            {
+                title: "Бэквуд.mp3",
+                src: "music/Бэквуд.mp3",
+                img: "music/cover2.jpg"
+            },
+            {
+                title: "Дисклеймер.mp3",
+                src: "music/Дисклеймер.mp3",
+                img: "music/cover3.jpg"
+            }
+        ];
+        let currentTrack = 0;
+        const audio = document.getElementById('myAudio');
+        const time = document.getElementById('track-time');
+        const title = document.getElementById('track-title');
+        const img = document.getElementById('track-img');
+        const trackList = document.getElementById('track-list');
+
+        function loadTrack(index) {
+            currentTrack = index;
+            audio.src = tracks[index].src;
+            title.textContent = tracks[index].title;
+            img.src = tracks[index].img;
+            trackList.value = index;
+            audio.currentTime = 0;
+            time.textContent = '00:00 / 00:00';
+        }
+        function playMusic() { audio.play(); }
+        function pauseMusic() { audio.pause(); }
+        function stopMusic() { audio.pause(); audio.currentTime = 0; }
+        function prevTrack() {
+            let idx = (currentTrack - 1 + tracks.length) % tracks.length;
+            loadTrack(idx);
+            playMusic();
+        }
+        function nextTrack() {
+            let idx = (currentTrack + 1) % tracks.length;
+            loadTrack(idx);
+            playMusic();
+        }
+        function selectTrack(idx) {
+            loadTrack(Number(idx));
+            playMusic();
+        }
+        function formatTime(sec) {
+            sec = Math.floor(sec);
+            return (sec/60|0).toString().padStart(2,'0') + ':' + (sec%60).toString().padStart(2,'0');
+        }
+        audio.addEventListener('timeupdate', function() {
+            time.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
+        });
+        audio.addEventListener('loadedmetadata', function() {
+            time.textContent = '00:00 / ' + formatTime(audio.duration || 0);
+        });
+        // Загружаем первый трек при загрузке страницы
+        loadTrack(0);
+    </script>
     <main>
         <h2>О сайте</h2>
         <p>Тут ебали всех тёлок мира.</p>
@@ -63,7 +372,7 @@
         </ul>
     </main>
     <footer>
-        &copy; 2024 Мой сайт
+        &copy; 1488 Мой сайт
     </footer>
 </body>
 </html>
