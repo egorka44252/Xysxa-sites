@@ -280,6 +280,35 @@
         input[type="range"]::-ms-tooltip {
             display: none;
         }
+
+        /* Стили для мини-игры "Поймай кнопку!" */
+        #game-container {
+            margin: 40px auto 0;
+            max-width: 340px;
+            text-align: center;
+        }
+        #game-area {
+            position: relative;
+            width: 300px;
+            height: 120px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.7);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        #catch-btn {
+            position: absolute;
+            left: 120px;
+            top: 40px;
+            padding: 12px 22px;
+            border-radius: 8px;
+            background: #b20000;
+            color: #fff;
+            border: none;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: .2s;
+        }
     </style>
 </head>
 <body>
@@ -435,6 +464,41 @@
             <li>Email: иди ты нахуй.com</li>
             <li>Телефон: тут номер ромчика</li>
         </ul>
+
+        <!-- Мини-игра "Поймай кнопку!" -->
+        <div id="game-container" style="margin:40px auto 0; max-width:340px; text-align:center;">
+            <h3 style="color:#b20000;">Мини-игра: Поймай кнопку!</h3>
+            <div id="game-area" style="position:relative; width:300px; height:120px; margin:0 auto; background:rgba(255,255,255,0.7); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+                <button id="catch-btn" style="position:absolute; left:120px; top:40px; padding:12px 22px; border-radius:8px; background:#b20000; color:#fff; border:none; font-size:1.1em; cursor:pointer; transition:.2s;">Поймай меня!</button>
+            </div>
+            <div id="game-score" style="margin-top:18px; font-weight:bold; color:#b20000;">Счёт: 0</div>
+        </div>
+        <script>
+            let score = 0;
+            const btn = document.getElementById('catch-btn');
+            const area = document.getElementById('game-area');
+            const scoreDiv = document.getElementById('game-score');
+
+            btn.addEventListener('mouseenter', moveBtn);
+            btn.addEventListener('click', function() {
+                score++;
+                scoreDiv.textContent = 'Счёт: ' + score;
+                moveBtn();
+            });
+
+            function moveBtn() {
+                const areaRect = area.getBoundingClientRect();
+                const btnRect = btn.getBoundingClientRect();
+                // Размеры области и кнопки
+                const maxLeft = area.clientWidth - btn.offsetWidth;
+                const maxTop = area.clientHeight - btn.offsetHeight;
+                // Случайные координаты
+                const left = Math.floor(Math.random() * maxLeft);
+                const top = Math.floor(Math.random() * maxTop);
+                btn.style.left = left + 'px';
+                btn.style.top = top + 'px';
+            }
+        </script>
     </main>
     <footer>
         &copy; 1488 Мой сайт
