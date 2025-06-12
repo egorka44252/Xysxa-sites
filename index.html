@@ -77,7 +77,8 @@
                 <button class="music-btn" onclick="prevTrack()" title="Предыдущий трек" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#b20000;color:#fff;border:none;border-radius:50%;cursor:pointer;transition:background 0.3s;">
                   ⏮
                 </button>
-                <button class="music-btn" onclick="playMusic()" title="Воспроизвести" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#4CAF50;color:#fff;border:none;border-radius:50%;cursor:pointer;transition:background 0.3s;">
+                <button id="playPauseBtn" class="music-btn" onclick="togglePlayPause()" title="Воспроизвести"
+                  style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#4CAF50;color:#fff;border:none;border-radius:50%;cursor:pointer;transition:background 0.3s;">
                   ▶
                 </button>
                 <button class="music-btn" onclick="nextTrack()" title="Следующий трек" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;background:#b20000;color:#fff;border:none;border-radius:50%;cursor:pointer;transition:background 0.3s;">
@@ -155,6 +156,28 @@
             loadTrack(Number(idx));
             playMusic();
         }
+
+        function togglePlayPause() {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+
+        // Меняем иконку кнопки в зависимости от состояния
+        audio.addEventListener('play', function() {
+            const btn = document.getElementById('playPauseBtn');
+            btn.innerHTML = '⏸';
+            btn.title = 'Пауза';
+            btn.style.background = '#ff9800';
+        });
+        audio.addEventListener('pause', function() {
+            const btn = document.getElementById('playPauseBtn');
+            btn.innerHTML = '▶';
+            btn.title = 'Воспроизвести';
+            btn.style.background = '#4CAF50';
+        });
 
         // Обновление процентов громкости
         volume.addEventListener('input', function() {
