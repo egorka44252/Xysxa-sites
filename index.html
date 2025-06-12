@@ -594,6 +594,22 @@
         // Загружаем первый трек при загрузке страницы
         loadTrack(0);
     </script>
+    <!-- Замените конфиг на свой из консоли Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA8ao46vxFKPy4cfK5nWIEw_MklgN8Djy4",
+  authDomain: "xysxa-sites.firebaseapp.com",
+  databaseURL: "https://xysxa-sites-default-rtdb.firebaseio.com",
+  projectId: "xysxa-sites",
+  storageBucket: "xysxa-sites.firebasestorage.app",
+  messagingSenderId: "704604123196",
+  appId: "1:704604123196:web:a5e7b1c5a51b8ed9fc1339"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
     <main>
         <h2>О сайте</h2>
         <p>этот сайт зделан за 1 день с помощю нейросети.</p>
@@ -603,6 +619,9 @@
             <li>Телефон: тут номер ромчика</li>
         </ul>
     </main>
+    <div id="online-users" style="text-align:center;margin:18px 0;font-weight:bold;color:#b20000;">
+      Онлайн пользователей: <span id="online-count">1</span>
+    </div>
     <footer>
         &copy; 1488 Мой сайт
     </footer>
@@ -654,6 +673,58 @@ function showEasterEgg() {
     }, 2800);
     setTimeout(() => egg.remove(), 3300);
 }
+
+// Простой онлайн-счётчик на localStorage + BroadcastChannel (работает только для вкладок на одном устройстве)
+// Для реального сайта нужен сервер, но этот вариант покажет онлайн на одной машине
+
+function updateOnlineCount() {
+    let users = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
+    const now = Date.now();
+    // Удаляем старые записи (старше 30 секунд)
+    users = users.filter(u => now - u < 30000);
+    // Добавляем текущего пользователя
+    users.push(now);
+    localStorage.setItem('onlineUsers', JSON.stringify(users));
+    document.getElementById('online-count').textContent = users.length;
+}
+setInterval(updateOnlineCount, 5000);
+updateOnlineCount();
+
+// Синхронизация между вкладками
+if ('BroadcastChannel' in window) {
+    const bc = new BroadcastChannel('online-users');
+    setInterval(() => bc.postMessage('ping'), 5000);
+    bc.onmessage = updateOnlineCount;
+}
+window.addEventListener('storage', function(e) {
+    if (e.key === 'onlineUsers') updateOnlineCount();
+});
+
+// Генерируем уникальный ID для пользователя
+const userId = 'user_' + Math.random().toString(36).substr(2, 9);
+const userRef = firebase.database().ref('online/' + userId);
+
+// Отмечаем пользователя онлайн
+userRef.set({ t: Date.now() });
+// Удаляем из базы при закрытии вкладки
+window.addEventListener('beforeunload', () => userRef.remove());
+
+// Обновляем время раз в 20 секунд (чтобы не считали оффлайн)
+setInterval(() => userRef.set({ t: Date.now() }), 20000);
+
+// Считаем онлайн (все, кто обновлялся за последние 40 секунд)
+function updateOnline() {
+  firebase.database().ref('online').once('value', snap => {
+    let count = 0;
+    const now = Date.now();
+    snap.forEach(child => {
+      if (now - child.val().t < 40000) count++;
+    });
+    document.getElementById('online-count').textContent = count;
+  });
+}
+setInterval(updateOnline, 5000);
+updateOnline();
 </script>
 </body>
 </html>
