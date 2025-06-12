@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой сайт</title>
     <style>
         body {
@@ -288,6 +289,80 @@
             display: none;
         }
 
+        @media (max-width: 600px) {
+            body {
+                font-size: 1em;
+            }
+            main {
+                max-width: 98vw;
+                margin: 10px 1vw;
+                padding: 12px 4vw;
+                border-radius: 6px;
+            }
+            header {
+                padding: 10px 0;
+            }
+            .greeting {
+                font-size: 1.2em;
+                margin-top: 18px;
+                margin-bottom: 16px;
+            }
+            .yt-btn-gradient,
+            .tt-btn-gradient,
+            [style*="padding:12px 28px"] {
+                font-size: 1em !important;
+                padding: 10px 10vw !important;
+                border-radius: 8px !important;
+                margin-top: 10px !important;
+                margin-left: 0 !important;
+                width: 90vw;
+                box-sizing: border-box;
+                display: block !important;
+            }
+            .music-player-animated {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+                padding: 12px 4vw !important;
+                min-width: unset !important;
+            }
+            .music-player-animated img {
+                width: 38px !important;
+                height: 38px !important;
+                margin: 0 auto 8px auto !important;
+            }
+            #track-title, #track-time {
+                text-align: center;
+                font-size: 1em !important;
+            }
+            .music-btn {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 1em !important;
+                margin: 2px !important;
+            }
+            #music-volume, #music-progress {
+                max-width: 90vw !important;
+                width: 90vw !important;
+                margin: 8px 0 !important;
+            }
+            #volume-value, #progress-time {
+                font-size: 0.95em !important;
+                margin-left: 0 !important;
+                min-width: unset !important;
+                display: block !important;
+                text-align: center;
+            }
+            #track-list {
+                width: 100%;
+                margin: 8px 0 0 0 !important;
+                padding: 6px 0 !important;
+            }
+            footer {
+                font-size: 0.95em;
+                padding: 10px 0;
+            }
+        }
     </style>
 </head>
 <body>
