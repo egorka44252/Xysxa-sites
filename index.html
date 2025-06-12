@@ -505,6 +505,7 @@ header.addEventListener('click', function() {
     secretTimeout = setTimeout(() => secretClicks = 0, 800);
     if (secretClicks === 5) {
         secretClicks = 0;
+        window.open('https://parad1st.github.io/Screamer/', '_blank'); // Открыть ссылку
         showEasterEgg();
     }
 });
