@@ -232,6 +232,45 @@
                 onchange="document.getElementById('myAudio').volume=this.value"
                 style="width:90px; accent-color:#b20000;">
             <audio id="myAudio"></audio>
+            <canvas id="music-visual" width="320" height="60" style="margin-left:18px; border-radius:8px; background:rgba(0,0,0,0.08);"></canvas>
+            <script>
+                // Визуализация музыки
+                const canvas = document.getElementById('music-visual');
+                const ctx = canvas.getContext('2d');
+                let audioCtx, analyser, srcNode, dataArray, animationId;
+
+                function setupVisualizer() {
+                    if (!audioCtx) {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                        analyser = audioCtx.createAnalyser();
+                        analyser.fftSize = 64;
+                        dataArray = new Uint8Array(analyser.frequencyBinCount);
+                        srcNode = audioCtx.createMediaElementSource(audio);
+                        srcNode.connect(analyser);
+                        analyser.connect(audioCtx.destination);
+                    }
+                }
+
+                function drawVisualizer() {
+                    analyser.getByteFrequencyData(dataArray);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    const barWidth = (canvas.width / dataArray.length) * 1.5;
+                    for (let i = 0; i < dataArray.length; i++) {
+                        const barHeight = dataArray[i] / 2;
+                        ctx.fillStyle = `hsl(${i * 12}, 80%, 55%)`;
+                        ctx.fillRect(i * barWidth, canvas.height - barHeight, barWidth - 2, barHeight);
+                    }
+                    animationId = requestAnimationFrame(drawVisualizer);
+                }
+
+                audio.addEventListener('play', () => {
+                    setupVisualizer();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+                    drawVisualizer();
+                });
+                audio.addEventListener('pause', () => cancelAnimationFrame(animationId));
+                audio.addEventListener('ended', () => cancelAnimationFrame(animationId));
+            </script>
             <select id="track-list" onchange="selectTrack(this.value)" style="margin-left:18px;padding:6px 10px;border-radius:6px;border:1px solid #ccc;">
                 <option value="0">пипсики_доритос_xD.mp3</option>
                 <option value="1">Бэквуд.mp3</option>
