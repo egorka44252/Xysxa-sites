@@ -317,6 +317,30 @@
       </a>
     </div>
 
+    <!-- Добавьте после <header> или в любое место сайта -->
+<div style="text-align:center; margin: 24px 0;">
+  <span id="visit-count" style="font-size:1.2em;color:#b20000;font-weight:bold;"></span>
+  <button onclick="downloadVisits()" style="margin-left:16px;padding:8px 18px;border-radius:8px;background:#b20000;color:#fff;border:none;cursor:pointer;">Скачать таблицу посещений</button>
+</div>
+<script>
+  // Увеличиваем счетчик при каждом заходе
+  let visits = Number(localStorage.getItem('visits') || 0) + 1;
+  localStorage.setItem('visits', visits);
+  document.getElementById('visit-count').textContent = 'Вы заходили на этот сайт: ' + visits + ' раз(а)';
+
+  // Функция для скачивания "таблицы" посещений
+  function downloadVisits() {
+    const text = 'Дата посещения: ' + new Date().toLocaleString() + '\n' +
+                 'Всего посещений с этого устройства: ' + visits;
+    const blob = new Blob([text], {type: 'text/plain'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'visits.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+</script>
+
     <div style="display: flex; justify-content: center; margin: 30px 0;">
         <div class="music-player-animated" style="
             display: flex;
