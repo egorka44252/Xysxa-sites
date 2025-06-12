@@ -85,10 +85,10 @@
             height: 40px;
             font-size: 1.3em;
             cursor: pointer;
-            transition: 
+            transition:
                 background 0.2s,
-                transform 0.18s,
-                box-shadow 0.18s,
+                transform 0.25s cubic-bezier(.23,1.01,.32,1),
+                box-shadow 0.25s cubic-bezier(.23,1.01,.32,1),
                 filter 0.18s;
             box-shadow: 0 2px 8px rgba(178,0,0,0.18);
             outline: none;
@@ -97,10 +97,17 @@
             filter: drop-shadow(0 0 0 #b20000);
         }
         .music-btn:hover {
-            background: #ff3333;
-            transform: scale(1.15) rotate(-8deg);
-            box-shadow: 0 4px 16px rgba(178,0,0,0.25);
-            filter: drop-shadow(0 0 8px #ff3333);
+            background: linear-gradient(135deg, #ff3333 0%, #ffcb05 100%);
+            transform: scale(1.22) rotate(8deg);
+            box-shadow: 0 8px 32px 0 rgba(255,203,5,0.25), 0 2px 8px rgba(178,0,0,0.18);
+            filter: drop-shadow(0 0 16px #ffcb05);
+            animation: btn-wobble 0.4s;
+        }
+        @keyframes btn-wobble {
+            0% { transform: scale(1) rotate(0deg);}
+            30% { transform: scale(1.18) rotate(-6deg);}
+            60% { transform: scale(1.22) rotate(8deg);}
+            100% { transform: scale(1.22) rotate(8deg);}
         }
         .music-btn:active {
             background: #900;
@@ -281,34 +288,6 @@
             display: none;
         }
 
-        /* Стили для мини-игры "Поймай кнопку!" */
-        #game-container {
-            margin: 40px auto 0;
-            max-width: 340px;
-            text-align: center;
-        }
-        #game-area {
-            position: relative;
-            width: 300px;
-            height: 120px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.7);
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        #catch-btn {
-            position: absolute;
-            left: 120px;
-            top: 40px;
-            padding: 12px 22px;
-            border-radius: 8px;
-            background: #b20000;
-            color: #fff;
-            border: none;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: .2s;
-        }
     </style>
 </head>
 <body>
@@ -345,11 +324,39 @@
                 <div id="track-title" style="font-weight:bold; color:#b20000; font-size:1.1em; margin-bottom:4px;">чиыпсики_доритос_xD.mp3</div>
                 <div id="track-time" style="font-size:0.95em; color:#444;">00:00 / 00:00</div>
             </div>
-            <button class="music-btn" onclick="prevTrack()">⏮️</button>
-            <button class="music-btn" onclick="playMusic()">▶️</button>
-            <button class="music-btn" onclick="pauseMusic()">⏸️</button>
-            <button class="music-btn" onclick="stopMusic()">⏹️</button>
-            <button class="music-btn" onclick="nextTrack()">⏭️</button>
+            <button class="music-btn" onclick="prevTrack()" title="Предыдущий трек">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <!-- Двойная стрелка влево -->
+                <polygon points="13,5 7,11 13,17" fill="white"/>
+                <polygon points="17,5 11,11 17,17" fill="white"/>
+              </svg>
+            </button>
+            <button class="music-btn" onclick="playMusic()" title="Воспроизвести">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <!-- Треугольник вправо -->
+                <polygon points="7,4 18,11 7,18" fill="white"/>
+              </svg>
+            </button>
+            <button class="music-btn" onclick="pauseMusic()" title="Пауза">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <!-- Две полоски -->
+                <rect x="6" y="4" width="3" height="14" rx="1" fill="white"/>
+                <rect x="13" y="4" width="3" height="14" rx="1" fill="white"/>
+              </svg>
+            </button>
+            <button class="music-btn" onclick="stopMusic()" title="Стоп">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <!-- Квадрат -->
+                <rect x="6" y="6" width="10" height="10" rx="2" fill="white"/>
+              </svg>
+            </button>
+            <button class="music-btn" onclick="nextTrack()" title="Следующий трек">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <!-- Двойная стрелка вправо -->
+                <polygon points="9,5 15,11 9,17" fill="white"/>
+                <polygon points="5,5 11,11 5,17" fill="white"/>
+              </svg>
+            </button>
             <input id="music-volume" type="range" min="0" max="1" step="0.01" value="1"
                 onchange="document.getElementById('myAudio').volume=this.value"
                 style="width:90px; accent-color:#b20000; vertical-align:middle;">
@@ -464,44 +471,57 @@
             <li>Email: иди ты нахуй.com</li>
             <li>Телефон: тут номер ромчика</li>
         </ul>
-
-        <!-- Мини-игра "Поймай кнопку!" -->
-        <div id="game-container" style="margin:40px auto 0; max-width:340px; text-align:center;">
-            <h3 style="color:#b20000;">Мини-игра: Поймай кнопку!</h3>
-            <div id="game-area" style="position:relative; width:300px; height:120px; margin:0 auto; background:rgba(255,255,255,0.7); border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-                <button id="catch-btn" style="position:absolute; left:120px; top:40px; padding:12px 22px; border-radius:8px; background:#b20000; color:#fff; border:none; font-size:1.1em; cursor:pointer; transition:.2s;">Поймай меня!</button>
-            </div>
-            <div id="game-score" style="margin-top:18px; font-weight:bold; color:#b20000;">Счёт: 0</div>
-        </div>
-        <script>
-            let score = 0;
-            const btn = document.getElementById('catch-btn');
-            const area = document.getElementById('game-area');
-            const scoreDiv = document.getElementById('game-score');
-
-            btn.addEventListener('mouseenter', moveBtn);
-            btn.addEventListener('click', function() {
-                score++;
-                scoreDiv.textContent = 'Счёт: ' + score;
-                moveBtn();
-            });
-
-            function moveBtn() {
-                const areaRect = area.getBoundingClientRect();
-                const btnRect = btn.getBoundingClientRect();
-                // Размеры области и кнопки
-                const maxLeft = area.clientWidth - btn.offsetWidth;
-                const maxTop = area.clientHeight - btn.offsetHeight;
-                // Случайные координаты
-                const left = Math.floor(Math.random() * maxLeft);
-                const top = Math.floor(Math.random() * maxTop);
-                btn.style.left = left + 'px';
-                btn.style.top = top + 'px';
-            }
-        </script>
     </main>
     <footer>
         &copy; 1488 Мой сайт
     </footer>
+    <script>
+// Пасхалка: если быстро 5 раз кликнуть по заголовку — появится секретное сообщение
+let secretClicks = 0;
+let secretTimeout = null;
+const header = document.querySelector('h1.rainbow-text');
+
+header.addEventListener('click', function() {
+    secretClicks++;
+    clearTimeout(secretTimeout);
+    secretTimeout = setTimeout(() => secretClicks = 0, 800);
+    if (secretClicks === 5) {
+        secretClicks = 0;
+        showEasterEgg();
+    }
+});
+
+function showEasterEgg() {
+    const egg = document.createElement('div');
+    egg.textContent = 'Ебать я тебя задоксил!';
+    egg.style.position = 'fixed';
+    egg.style.top = '30%';
+    egg.style.left = '50%';
+    egg.style.transform = 'translate(-50%, -50%) scale(0.7)';
+    egg.style.background = 'rgba(255,255,255,0.97)';
+    egg.style.padding = '32px 48px';
+    egg.style.borderRadius = '18px';
+    egg.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    egg.style.fontSize = '2em';
+    egg.style.color = '#b20000';
+    egg.style.zIndex = '9999';
+    egg.style.textAlign = 'center';
+    egg.style.fontWeight = 'bold';
+    egg.style.opacity = '0';
+    egg.style.transition = 'transform 0.5s cubic-bezier(.23,1.01,.32,1), opacity 0.5s cubic-bezier(.23,1.01,.32,1)';
+    document.body.appendChild(egg);
+    // Анимация появления
+    setTimeout(() => {
+        egg.style.opacity = '1';
+        egg.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 10);
+    // Анимация исчезновения
+    setTimeout(() => {
+        egg.style.opacity = '0';
+        egg.style.transform = 'translate(-50%, -50%) scale(0.7)';
+    }, 2800);
+    setTimeout(() => egg.remove(), 3300);
+}
+</script>
 </body>
 </html>
