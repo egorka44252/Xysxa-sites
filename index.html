@@ -95,7 +95,6 @@
                     <option value="2">Дисклеймер.mp3</option>
                 </select>
             </div>
-            <canvas id="music-visualizer" width="320" height="60" style="width:100%;max-width:340px;height:60px;display:block;margin:18px auto 0 auto;background:rgba(30,18,54,0.22);border-radius:12px;"></canvas>
         </div>
     </div>
     <script>
@@ -120,9 +119,6 @@
         ];
         let currentTrack = 0;
         const audio = document.getElementById('myAudio');
-        const canvas = document.getElementById('music-visualizer');
-        const ctx = canvas.getContext('2d');
-        let audioCtx, analyser, src, dataArray, animationId;
         const time = document.getElementById('track-time');
         const title = document.getElementById('track-title');
         const img = document.getElementById('track-img');
@@ -155,40 +151,6 @@
         });
         // Загружаем первый трек при загрузке страницы
         loadTrack(0);
-
-        function startVisualizer() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                src = audioCtx.createMediaElementSource(audio);
-                src.connect(analyser);
-                analyser.connect(audioCtx.destination);
-                analyser.fftSize = 64;
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
-            }
-            draw();
-        }
-
-        function draw() {
-            animationId = requestAnimationFrame(draw);
-            analyser.getByteFrequencyData(dataArray);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const barWidth = (canvas.width / dataArray.length) * 1.6;
-            for (let i = 0; i < dataArray.length; i++) {
-                const val = dataArray[i];
-                const h = val / 2;
-                ctx.fillStyle = `linear-gradient(90deg,#a259ff,#ff6ec4,#fffbe6)`;
-                ctx.fillStyle = `rgb(${160+val/2},${89+val/4},${255-val/3})`;
-                ctx.fillRect(i * barWidth, canvas.height - h, barWidth - 2, h);
-            }
-        }
-
-        audio.addEventListener('play', () => {
-            startVisualizer();
-            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        });
-        audio.addEventListener('pause', () => cancelAnimationFrame(animationId));
-        audio.addEventListener('ended', () => cancelAnimationFrame(animationId));
     </script>
     <!-- Замените конфиг на свой из консоли Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
