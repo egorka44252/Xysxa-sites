@@ -18,14 +18,11 @@
     </style>
 </head>
 <body>
-    <!-- Замените canvas-визуализер на видео-фон из репозитория -->
-
-    <!-- Вместо блока с canvas вставьте: -->
-    <div id="video-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;">
-      <video id="bg-video" autoplay loop muted playsinline style="width:100vw;height:100vh;object-fit:cover;display:block;filter:brightness(0.7) blur(2px);">
-        <source src="video/bg.mp4" type="video/mp4">
-        Ваш браузер не поддерживает видео фон.
-      </video>
+    <!-- Замените блок с видео-фоном на чёрный хромированный градиент: -->
+    <div id="video-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;
+        background: radial-gradient(ellipse at 60% 40%, #444 0%, #111 60%, #000 100%);
+        background-blend-mode: lighten;
+        ">
     </div>
 
     <header>
@@ -86,6 +83,7 @@
                 </button>
                 <input id="music-progress" type="range" min="0" max="100" value="0" step="1"
                     style="width:180px; accent-color:#b20000; vertical-align:middle;">
+                <span id="progress-time" style="min-width:70px;display:inline-block;font-size:1em;color:#b20000;font-weight:bold;margin-left:6px;">00:00 / 00:00</span>
                 <input id="music-volume" type="range" min="0" max="1" step="0.01" value="1"
                     onchange="document.getElementById('myAudio').volume=this.value"
                     style="width:90px; accent-color:#b20000; vertical-align:middle;">
@@ -97,6 +95,7 @@
                     <option value="2">Дисклеймер.mp3</option>
                 </select>
             </div>
+            <canvas id="music-visualizer" width="320" height="60" style="width:100%;max-width:340px;height:60px;display:block;margin:18px auto 0 auto;background:rgba(30,18,54,0.22);border-radius:12px;"></canvas>
         </div>
     </div>
     <script>
@@ -121,6 +120,9 @@
         ];
         let currentTrack = 0;
         const audio = document.getElementById('myAudio');
+        const canvas = document.getElementById('music-visualizer');
+        const ctx = canvas.getContext('2d');
+        let audioCtx, analyser, src, dataArray, animationId;
         const time = document.getElementById('track-time');
         const title = document.getElementById('track-title');
         const img = document.getElementById('track-img');
@@ -130,64 +132,6 @@
         const volumeValue = document.getElementById('volume-value');
         const progressTime = document.getElementById('progress-time');
 
-        function loadTrack(index) {
-            currentTrack = index;
-            audio.src = tracks[index].src;
-            title.textContent = tracks[index].title;
-            img.src = tracks[index].img;
-            trackList.value = index;
-            audio.currentTime = 0;
-            time.textContent = '00:00 / 00:00';
-        }
-        function playMusic() { audio.play(); }
-        function pauseMusic() { audio.pause(); }
-        function stopMusic() { audio.pause(); audio.currentTime = 0; }
-        function prevTrack() {
-            let idx = (currentTrack - 1 + tracks.length) % tracks.length;
-            loadTrack(idx);
-            playMusic();
-        }
-        function nextTrack() {
-            let idx = (currentTrack + 1) % tracks.length;
-            loadTrack(idx);
-            playMusic();
-        }
-        function selectTrack(idx) {
-            loadTrack(Number(idx));
-            playMusic();
-        }
-
-        function togglePlayPause() {
-            if (audio.paused) {
-                audio.play();
-            } else {
-                audio.pause();
-            }
-        }
-
-        // Меняем иконку кнопки в зависимости от состояния
-        audio.addEventListener('play', function() {
-            const btn = document.getElementById('playPauseBtn');
-            btn.innerHTML = '⏸';
-            btn.title = 'Пауза';
-            btn.style.background = '#ff9800';
-        });
-        audio.addEventListener('pause', function() {
-            const btn = document.getElementById('playPauseBtn');
-            btn.innerHTML = '▶';
-            btn.title = 'Воспроизвести';
-            btn.style.background = '#4CAF50';
-        });
-
-        // Обновление процентов громкости
-        volume.addEventListener('input', function() {
-            volumeValue.textContent = Math.round(volume.value * 100) + '%';
-            audio.volume = volume.value;
-        });
-        // Установить начальное значение
-        volumeValue.textContent = Math.round(volume.value * 100) + '%';
-
-        // Обновление времени и прогресса
         function formatTime(sec) {
             sec = Math.floor(sec);
             return (sec/60|0).toString().padStart(2,'0') + ':' + (sec%60).toString().padStart(2,'0');
@@ -211,6 +155,40 @@
         });
         // Загружаем первый трек при загрузке страницы
         loadTrack(0);
+
+        function startVisualizer() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioCtx.createAnalyser();
+                src = audioCtx.createMediaElementSource(audio);
+                src.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                analyser.fftSize = 64;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            }
+            draw();
+        }
+
+        function draw() {
+            animationId = requestAnimationFrame(draw);
+            analyser.getByteFrequencyData(dataArray);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const barWidth = (canvas.width / dataArray.length) * 1.6;
+            for (let i = 0; i < dataArray.length; i++) {
+                const val = dataArray[i];
+                const h = val / 2;
+                ctx.fillStyle = `linear-gradient(90deg,#a259ff,#ff6ec4,#fffbe6)`;
+                ctx.fillStyle = `rgb(${160+val/2},${89+val/4},${255-val/3})`;
+                ctx.fillRect(i * barWidth, canvas.height - h, barWidth - 2, h);
+            }
+        }
+
+        audio.addEventListener('play', () => {
+            startVisualizer();
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        });
+        audio.addEventListener('pause', () => cancelAnimationFrame(animationId));
+        audio.addEventListener('ended', () => cancelAnimationFrame(animationId));
     </script>
     <!-- Замените конфиг на свой из консоли Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -229,12 +207,46 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 </script>
     <main>
-        <h2>О сайте</h2>
-        <p>этот сайт зделан за 1 день с помощю нейросети.</p>
-        <h3>Контакты</h3>
-        <ul>
-            <li>Email: иди ты нахуй.com</li>
-            <li>Телефон: тут номер ромчика</li>
+        <h2 class="rainbow-text" style="font-size:2.2em; text-align:center; margin-bottom: 0.5em; letter-spacing:0.04em;">
+            ✨ О сайте ✨
+        </h2>
+        <p style="
+            font-size: 1.25em;
+            color: #fffbe6;
+            background: linear-gradient(90deg, #a259ff 0%, #ff6ec4 100%);
+            padding: 22px 32px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px #a259ff33;
+            text-align: center;
+            margin-bottom: 2em;
+            line-height: 1.7;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            letter-spacing: 0.03em;
+            text-shadow: 0 2px 16px #a259ff44, 0 1px 2px #ff6ec433;
+            ">
+            Этот сайт создан всего за <b>1 день</b> с помощью нейросети и вдохновения!<br>
+            Здесь ты найдёшь музыку, полезные ссылки, а также можешь предложить свою идею для развития проекта.<br>
+            <span style="color:#ffcb05;font-weight:bold;">Спасибо, что ты с нами!</span>
+        </p>
+        <h3 style="color:#ffcb05; font-size:1.3em; margin-bottom:0.6em; text-align:center; letter-spacing:0.03em;">
+            📬 Контакты
+        </h3>
+        <ul style="
+            list-style: none;
+            padding: 0;
+            text-align: center;
+            font-size: 1.13em;
+            color: #fff;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            ">
+            <li style="margin-bottom: 0.5em;">
+                <span style="color:#a259ff;font-weight:bold;">Email:</span>
+                <span style="color:#fffbe6;">idi.ty.nahuy.com</span>
+            </li>
+            <li>
+                <span style="color:#a259ff;font-weight:bold;">Телефон:</span>
+                <span style="color:#fffbe6;">тут номер ромчика</span>
+            </li>
         </ul>
     </main>
     <div id="online-users" style="text-align:center;margin:18px 0;font-weight:bold;color:#b20000;">
