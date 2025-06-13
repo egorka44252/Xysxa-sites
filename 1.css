@@ -121,7 +121,9 @@ a:active, button:active, .yt-btn-gradient:active, .tt-btn-gradient:active {
 
 /* --- Современный музыкальный плеер с анимациями --- */
 .music-player-animated {
-    background: rgba(30, 18, 54, 0.95);
+    background: linear-gradient(120deg, #a259ffcc 0%, #ff6ec4cc 100%, #fffbe6cc 120%);
+    /* cc = ~80% прозрачности, можно уменьшить до 99 для большей прозрачности */
+    background-blend-mode: lighten;
     border-radius: 28px;
     box-shadow: 0 8px 32px #a259ff44, 0 2px 8px #ff6ec444;
     padding: 32px 40px;
@@ -353,6 +355,126 @@ a:active, button:active, .yt-btn-gradient:active, .tt-btn-gradient:active {
     color: #a259ff;
     background: #fff0fa;
     font-weight: normal;
+}
+
+/* --- Красивые стилизованные ползунки для прогресс-бара и громкости --- */
+input[type="range"]#music-progress,
+input[type="range"]#music-volume {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, #a259ff 0%, #ff6ec4 100%);
+    border-radius: 6px;
+    outline: none;
+    box-shadow: 0 1px 4px #a259ff22;
+    transition: background 0.3s;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+/* Прогресс-бар: бегунок */
+input[type="range"]#music-progress::-webkit-slider-thumb,
+input[type="range"]#music-volume::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fffbe6;
+    border: 2px solid #a259ff;
+    box-shadow: 0 2px 8px #ff6ec433;
+    cursor: pointer;
+    transition: border 0.2s, background 0.2s;
+    margin-top: -5px; /* выравнивание по центру дорожки */
+    box-sizing: border-box;
+    display: block;
+}
+
+input[type="range"]#music-progress:focus::-webkit-slider-thumb,
+input[type="range"]#music-volume:focus::-webkit-slider-thumb {
+    border: 2px solid #ff6ec4;
+    background: #fff;
+}
+
+/* Firefox */
+input[type="range"]#music-progress::-moz-range-thumb,
+input[type="range"]#music-volume::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fffbe6;
+    border: 2px solid #a259ff;
+    box-shadow: 0 2px 8px #ff6ec433;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: block;
+}
+
+input[type="range"]#music-progress:focus::-moz-range-thumb,
+input[type="range"]#music-volume:focus::-moz-range-thumb {
+    border: 2px solid #ff6ec4;
+    background: #fff;
+}
+
+/* IE */
+input[type="range"]#music-progress::-ms-thumb,
+input[type="range"]#music-volume::-ms-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fffbe6;
+    border: 2px solid #a259ff;
+    box-shadow: 0 2px 8px #ff6ec433;
+    cursor: pointer;
+    box-sizing: border-box;
+    display: block;
+}
+
+input[type="range"]#music-progress:focus::-ms-thumb,
+input[type="range"]#music-volume:focus::-ms-thumb {
+    border: 2px solid #ff6ec4;
+    background: #fff;
+}
+
+/* Дорожка ползунка */
+input[type="range"]#music-progress::-webkit-slider-runnable-track,
+input[type="range"]#music-volume::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 6px;
+    background: transparent;
+}
+input[type="range"]#music-progress::-ms-fill-lower,
+input[type="range"]#music-volume::-ms-fill-lower {
+    background: #a259ff;
+    border-radius: 6px;
+}
+input[type="range"]#music-progress::-ms-fill-upper,
+input[type="range"]#music-volume::-ms-fill-upper {
+    background: #ff6ec4;
+    border-radius: 6px;
+}
+input[type="range"]#music-progress:focus::-ms-fill-lower,
+input[type="range"]#music-volume:focus::-ms-fill-lower {
+    background: #a259ff;
+}
+input[type="range"]#music-progress:focus::-ms-fill-upper,
+input[type="range"]#music-volume:focus::-ms-fill-upper {
+    background: #ff6ec4;
+}
+input[type="range"]#music-progress:focus,
+input[type="range"]#music-volume:focus {
+    outline: none;
+}
+input[type="range"]#music-progress::-moz-range-track,
+input[type="range"]#music-volume::-moz-range-track {
+    height: 8px;
+    border-radius: 6px;
+    background: transparent;
+}
+input[type="range"]#music-progress::-ms-tooltip,
+input[type="range"]#music-volume::-ms-tooltip {
+    display: none;
 }
 
 /* --- Адаптивность для мобильных устройств --- */
