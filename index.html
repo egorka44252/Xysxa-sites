@@ -101,65 +101,89 @@
         // Замените массив tracks на автоматическую загрузку с репозитория GitHub
 
 // Пример для GitHub репозитория с публичными mp3-файлами в папке music/
-const GITHUB_API_URL = "https://api.github.com/repos/<https://github.com/egorka44252/Xysxa-sites/blob/main/index.html>/contents/music";
+const GITHUB_API_URL = "https://api.github.com/repos/egorka44252/Xysxa-sites/contents/music";
 
 async function fetchTracks() {
     const response = await fetch(GITHUB_API_URL);
     const files = await response.json();
-    // Фильтруем только mp3-файлы
-    const mp3s = files.filter(f => f.name.endsWith('.mp3'));
+    // Список нужных треков
+    const needed = [
+        "Бэквуд.mp3",
+        "Дисклеймер.mp3",
+        "пипсики_доритос_xD.mp3"
+    ];
+    // Фильтруем только нужные mp3-файлы
+    const mp3s = files.filter(f => needed.includes(f.name));
     // Формируем массив треков
     return mp3s.map((f, i) => ({
         title: f.name,
         src: f.download_url,
-        img: `music/cover${(i % 3) + 1}.jpg` // или подберите свою логику для обложек
+        img: `music/cover${(i % 3) + 1}.jpg` // или замените на свою обложку
     }));
 }
 
 (async function() {
     const tracks = await fetchTracks();
-    // Заполняем select
+    const audio = document.getElementById('myAudio');
+    const title = document.getElementById('track-title');
+    const img = document.getElementById('track-img');
     const trackList = document.getElementById('track-list');
+    const progress = document.getElementById('music-progress');
+    const progressTime = document.getElementById('progress-time');
+    window.tracks = tracks;
+    // Заполняем select
     trackList.innerHTML = tracks.map((t, i) => `<option value="${i}">${t.title}</option>`).join('');
     // Загружаем первый трек
-    window.tracks = tracks; // чтобы работали остальные функции
+    window.currentTrack = 0;
+    function loadTrack(i) {
+        const t = window.tracks[i];
+        audio.src = t.src;
+        title.textContent = t.title;
+        img.src = t.img;
+        window.currentTrack = i;
+        audio.load();
+    }
+    window.loadTrack = loadTrack;
+    window.selectTrack = loadTrack;
     loadTrack(0);
-})();
 
-// Замените старый массив tracks на window.tracks
-function loadTrack(i) {
-    const t = window.tracks[i];
-    audio.src = t.src;
-    title.textContent = t.title;
-    img.src = t.img;
-    currentTrack = i;
-    audio.load();
-}
+    // Кнопки управления (если их нет в другом месте)
+    window.prevTrack = function() {
+        let i = window.currentTrack - 1;
+        if (i < 0) i = tracks.length - 1;
+        loadTrack(i);
+        audio.play();
+    };
+    window.nextTrack = function() {
+        let i = window.currentTrack + 1;
+        if (i >= tracks.length) i = 0;
+        loadTrack(i);
+        audio.play();
+    };
+    window.togglePlayPause = function() {
+        if (audio.paused) audio.play();
+        else audio.pause();
+    };
 
-        function formatTime(sec) {
-            sec = Math.floor(sec);
-            return (sec/60|0).toString().padStart(2,'0') + ':' + (sec%60).toString().padStart(2,'0');
+    // Обновление времени и прогресс-бара
+    audio.addEventListener('timeupdate', function() {
+        progress.value = audio.duration ? Math.floor(audio.currentTime / audio.duration * 100) : 0;
+        progressTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
+    });
+    audio.addEventListener('loadedmetadata', function() {
+        progress.value = 0;
+        progressTime.textContent = '00:00 / ' + formatTime(audio.duration || 0);
+    });
+    progress.addEventListener('input', function() {
+        if (audio.duration) {
+            audio.currentTime = progress.value / 100 * audio.duration;
         }
-
-        audio.addEventListener('timeupdate', function() {
-            progress.value = audio.duration ? Math.floor(audio.currentTime / audio.duration * 100) : 0;
-            progressTime.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration || 0);
-        });
-
-        audio.addEventListener('loadedmetadata', function() {
-            progress.value = 0;
-            progressTime.textContent = '00:00 / ' + formatTime(audio.duration || 0);
-        });
-
-        // Перемотка по прогресс-бару
-        progress.addEventListener('input', function() {
-            if (audio.duration) {
-                audio.currentTime = progress.value / 100 * audio.duration;
-            }
-        });
-        // Загружаем первый трек при загрузке страницы
-        loadTrack(0);
-    </script>
+    });
+    function formatTime(sec) {
+        sec = Math.floor(sec);
+        return (sec/60|0).toString().padStart(2,'0') + ':' + (sec%60).toString().padStart(2,'0');
+    }
+})();
     <!-- Замените конфиг на свой из консоли Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
