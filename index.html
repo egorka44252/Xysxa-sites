@@ -98,35 +98,43 @@
         </div>
     </div>
     <script>
-        // Список треков из репозитория сайта (например, если сайт размещён на GitHub Pages или другом хостинге)
-        // Поместите mp3-файлы в папку рядом с этим HTML-файлом или в подпапку, например: /music/
-        const tracks = [
-            {
-                title: "пипсики_доритос_xD.mp3",
-                src: "music/пипсики_доритос_xD.mp3",
-                img: "music/cover1.jpg"
-            },
-            {
-                title: "Бэквуд.mp3",
-                src: "music/Бэквуд.mp3",
-                img: "music/cover2.jpg"
-            },
-            {
-                title: "Дисклеймер.mp3",
-                src: "music/Дисклеймер.mp3",
-                img: "music/cover3.jpg"
-            }
-        ];
-        let currentTrack = 0;
-        const audio = document.getElementById('myAudio');
-        const time = document.getElementById('track-time');
-        const title = document.getElementById('track-title');
-        const img = document.getElementById('track-img');
-        const trackList = document.getElementById('track-list');
-        const progress = document.getElementById('music-progress');
-        const volume = document.getElementById('music-volume');
-        const volumeValue = document.getElementById('volume-value');
-        const progressTime = document.getElementById('progress-time');
+        // Замените массив tracks на автоматическую загрузку с репозитория GitHub
+
+// Пример для GitHub репозитория с публичными mp3-файлами в папке music/
+const GITHUB_API_URL = "https://api.github.com/repos/<ВАШ_GITHUB_ЮЗЕР>/<ВАШ_РЕПОЗИТОРИЙ>/contents/music";
+
+async function fetchTracks() {
+    const response = await fetch(GITHUB_API_URL);
+    const files = await response.json();
+    // Фильтруем только mp3-файлы
+    const mp3s = files.filter(f => f.name.endsWith('.mp3'));
+    // Формируем массив треков
+    return mp3s.map((f, i) => ({
+        title: f.name,
+        src: f.download_url,
+        img: `music/cover${(i % 3) + 1}.jpg` // или подберите свою логику для обложек
+    }));
+}
+
+(async function() {
+    const tracks = await fetchTracks();
+    // Заполняем select
+    const trackList = document.getElementById('track-list');
+    trackList.innerHTML = tracks.map((t, i) => `<option value="${i}">${t.title}</option>`).join('');
+    // Загружаем первый трек
+    window.tracks = tracks; // чтобы работали остальные функции
+    loadTrack(0);
+})();
+
+// Замените старый массив tracks на window.tracks
+function loadTrack(i) {
+    const t = window.tracks[i];
+    audio.src = t.src;
+    title.textContent = t.title;
+    img.src = t.img;
+    currentTrack = i;
+    audio.load();
+}
 
         function formatTime(sec) {
             sec = Math.floor(sec);
