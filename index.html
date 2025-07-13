@@ -290,65 +290,65 @@ function showEasterEgg() {
         egg.style.opacity = '1';
         egg.style.transform = 'translate(-50%, -50%) scale(1)';
     }, 10);
+    }, 10);ация исчезновения
     // Анимация исчезновения
-    setTimeout(() => {
-        egg.style.opacity = '0';
+    setTimeout(() => {ity = '0';
+        egg.style.opacity = '0';ranslate(-50%, -50%) scale(0.7)';
         egg.style.transform = 'translate(-50%, -50%) scale(0.7)';
-    }, 2800);
+    }, 2800);t(() => egg.remove(), 3300);
     setTimeout(() => egg.remove(), 3300);
 }
-
+// Простой онлайн-счётчик на localStorage + BroadcastChannel (работает только для вкладок на одном устройстве)
 // Простой онлайн-счётчик на localStorage + BroadcastChannel (работает только для вкладок на одном устройстве)
 // Для реального сайта нужен сервер, но этот вариант покажет онлайн на одной машине
-
 function updateOnlineCount() {
+function updateOnlineCount() {alStorage.getItem('onlineUsers') || '[]');
     let users = JSON.parse(localStorage.getItem('onlineUsers') || '[]');
-    const now = Date.now();
+    const now = Date.now();и (старше 30 секунд)
     // Удаляем старые записи (старше 30 секунд)
     users = users.filter(u => now - u < 30000);
     // Добавляем текущего пользователя
-    users.push(now);
-    localStorage.setItem('onlineUsers', JSON.stringify(users));
+    users.push(now);Item('onlineUsers', JSON.stringify(users));
+    localStorage.setItem('onlineUsers', JSON.stringify(users));.length;
     document.getElementById('online-count').textContent = users.length;
-}
+}etInterval(updateOnlineCount, 5000);
 setInterval(updateOnlineCount, 5000);
 updateOnlineCount();
-
 // Синхронизация между вкладками
-if ('BroadcastChannel' in window) {
+// Синхронизация между вкладками) {
+if ('BroadcastChannel' in window) {('online-users');
     const bc = new BroadcastChannel('online-users');
     setInterval(() => bc.postMessage('ping'), 5000);
     bc.onmessage = updateOnlineCount;
-}
-window.addEventListener('storage', function(e) {
+}indow.addEventListener('storage', function(e) {
+window.addEventListener('storage', function(e) {nt();
     if (e.key === 'onlineUsers') updateOnlineCount();
 });
-
 // Генерируем уникальный ID для пользователя
+// Генерируем уникальный ID для пользователяing(36).substr(2, 9);
 const userId = 'user_' + Math.random().toString(36).substr(2, 9);
 const userRef = firebase.database().ref('online/' + userId);
-
 // Отмечаем пользователя онлайн
-userRef.set({ t: Date.now() });
-// Удаляем из базы при закрытии вкладки
+// Отмечаем пользователя онлайн
+userRef.set({ t: Date.now() }); вкладки
+// Удаляем из базы при закрытии вкладки () => userRef.remove());
 window.addEventListener('beforeunload', () => userRef.remove());
-
+// Обновляем время раз в 20 секунд (чтобы не считали оффлайн)
 // Обновляем время раз в 20 секунд (чтобы не считали оффлайн)
 setInterval(() => userRef.set({ t: Date.now() }), 20000);
-
 // Считаем онлайн (все, кто обновлялся за последние 40 секунд)
-function updateOnline() {
+// Считаем онлайн (все, кто обновлялся за последние 40 секунд)
+function updateOnline() {('online').once('value', snap => {
   firebase.database().ref('online').once('value', snap => {
-    let count = 0;
+    let count = 0;te.now();
     const now = Date.now();
-    snap.forEach(child => {
+    snap.forEach(child => {.t < 40000) count++;
       if (now - child.val().t < 40000) count++;
-    });
+    });ument.getElementById('online-count').textContent = count;
     document.getElementById('online-count').textContent = count;
   });
-}
+}etInterval(updateOnline, 5000);
 setInterval(updateOnline, 5000);
 updateOnline();
 </script>
-</body>
-</html>
+</body></html>
