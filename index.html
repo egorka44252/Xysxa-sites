@@ -18,11 +18,15 @@
     </style>
 </head>
 <body>
+    <!-- Видео-фон с GitHub -->
+    <video id="bg-video" autoplay loop muted playsinline
+        style="position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:-2;">
+      <source src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/video/bg.mp4" type="video/mp4">
+    </video>
     <!-- Замените блок с видео-фоном на чёрный хромированный градиент: -->
     <div id="video-bg" style="position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;
         background: radial-gradient(ellipse at 60% 40%, #444 0%, #111 60%, #000 100%);
-        background-blend-mode: lighten;
-        ">
+        background-blend-mode: lighten;">
     </div>
 
     <header>
