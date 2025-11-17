@@ -10,22 +10,9 @@ const tracks = [
 ];
 
 // === ЭЛЕМЕНТЫ DOM ===
-let audioPlayer;
-let playBtn;
-let prevBtn;
-let nextBtn;
-let progressBar;
-let volumeSlider;
-let muteBtn;
-let playlistSelect;
-let trackName;
-let trackTime;
-let currentTimeEl;
-let totalTimeEl;
-let coverImg;
-let volumeValue;
-let playIcon;
-let pauseIcon;
+let audioPlayer, playBtn, prevBtn, nextBtn, progressBar, volumeSlider, muteBtn;
+let playlistSelect, trackName, trackTime, currentTimeEl, totalTimeEl, coverImg;
+let volumeValue, playIcon, pauseIcon, volumeIcon, muteIcon, musicPlayer;
 
 // === СОСТОЯНИЕ ===
 let currentTrackIndex = 0;
@@ -35,11 +22,13 @@ let previousVolume = 1;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Инициализация плеера...');
   initializeElements();
   initializeBackgroundVideo();
   loadPlaylist();
   loadTrack(0);
   attachEventListeners();
+  console.log('Плеер готов к работе');
 });
 
 // Инициализация элементов
@@ -60,23 +49,42 @@ function initializeElements() {
   volumeValue = document.getElementById('volume-value');
   playIcon = document.getElementById('play-icon');
   pauseIcon = document.getElementById('pause-icon');
+  volumeIcon = document.getElementById('volume-icon');
+  muteIcon = document.getElementById('mute-icon');
+  musicPlayer = document.querySelector('.music-player');
+  
+  // Проверка наличия всех элементов
+  if (!audioPlayer) console.error('Аудио плеер не найден!');
+  if (!playBtn) console.error('Кнопка Play не найдена!');
 }
 
 // === ФОНОВОЕ ВИДЕО ===
 function initializeBackgroundVideo() {
   const video = document.getElementById('bg-video');
   if (video) {
-    video.src = RAW_BASE + '/video/bg.mp4';
-    video.load();
-    video.play().catch(() => {
-      console.log('Автовоспроизведение видео заблокировано');
+    video.addEventListener('loadeddata', () => {
+      console.log('Видео загружено');
     });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Ошибка загрузки видео:', e);
+    });
+    
+    // Попытка воспроизведения видео
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log('Видео воспроизводится');
+      }).catch(error => {
+        console.log('Автовоспроизведение видео заблокировано:', error);
+      });
+    }
   }
 }
 
 // === ЗАГРУЗКА ПЛЕЙЛИСТА ===
 function loadPlaylist() {
-  playlistSelect.innerHTML = '<option value="">Выберите трек...</option>';
+  playlistSelect.innerHTML = '';
   
   tracks.forEach((track, index) => {
     const option = document.createElement('option');
@@ -84,16 +92,26 @@ function loadPlaylist() {
     option.textContent = track.title;
     playlistSelect.appendChild(option);
   });
+  
+  console.log(`Загружено треков: ${tracks.length}`);
 }
 
 // === ЗАГРУЗКА ТРЕКА ===
 function loadTrack(index) {
+  if (index < 0 || index >= tracks.length) {
+    console.error('Неверный индекс трека:', index);
+    return;
+  }
+  
   currentTrackIndex = index;
   const track = tracks[index];
   
+  console.log(`Загрузка трека: ${track.title}`);
+  
   // Обновление информации
   trackName.textContent = track.title;
-  audioPlayer.src = RAW_BASE + '/music/' + encodeURIComponent(track.file);
+  const trackUrl = RAW_BASE + '/music/' + encodeURIComponent(track.file);
+  audioPlayer.src = trackUrl;
   coverImg.src = COVER_URL;
   
   // Обновление выбора в плейлисте
@@ -105,10 +123,17 @@ function loadTrack(index) {
   // Сброс прогресса
   progressBar.value = 0;
   updateProgressBackground();
+  
+  console.log(`Трек загружен: ${trackUrl}`);
 }
 
 // === ВОСПРОИЗВЕДЕНИЕ / ПАУЗА ===
 function togglePlay() {
+  if (!audioPlayer.src) {
+    console.warn('Источник аудио не установлен');
+    return;
+  }
+  
   if (isPlaying) {
     pauseTrack();
   } else {
@@ -117,20 +142,28 @@ function togglePlay() {
 }
 
 function playTrack() {
-  audioPlayer.play().then(() => {
-    isPlaying = true;
-    updatePlayButton();
-    document.querySelector('.music-player').classList.add('playing');
-  }).catch(error => {
-    console.error('Ошибка воспроизведения:', error);
-  });
+  const playPromise = audioPlayer.play();
+  
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      isPlaying = true;
+      updatePlayButton();
+      musicPlayer.classList.add('playing');
+      console.log('Воспроизведение начато');
+    }).catch(error => {
+      console.error('Ошибка воспроизведения:', error);
+      isPlaying = false;
+      updatePlayButton();
+    });
+  }
 }
 
 function pauseTrack() {
   audioPlayer.pause();
   isPlaying = false;
   updatePlayButton();
-  document.querySelector('.music-player').classList.remove('playing');
+  musicPlayer.classList.remove('playing');
+  console.log('Воспроизведение приостановлено');
 }
 
 function updatePlayButton() {
@@ -148,7 +181,7 @@ function previousTrack() {
   const newIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
   loadTrack(newIndex);
   if (isPlaying) {
-    playTrack();
+    setTimeout(() => playTrack(), 100);
   }
 }
 
@@ -156,13 +189,13 @@ function nextTrack() {
   const newIndex = (currentTrackIndex + 1) % tracks.length;
   loadTrack(newIndex);
   if (isPlaying) {
-    playTrack();
+    setTimeout(() => playTrack(), 100);
   }
 }
 
 // === ФОРМАТИРОВАНИЕ ВРЕМЕНИ ===
 function formatTime(seconds) {
-  if (isNaN(seconds) || seconds === Infinity) {
+  if (isNaN(seconds) || seconds === Infinity || seconds < 0) {
     return '00:00';
   }
   
@@ -176,12 +209,15 @@ function updateTime() {
   const current = audioPlayer.currentTime;
   const duration = audioPlayer.duration;
   
-  currentTimeEl.textContent = formatTime(current);
-  totalTimeEl.textContent = formatTime(duration);
-  trackTime.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+  if (!isNaN(current) && isFinite(current)) {
+    currentTimeEl.textContent = formatTime(current);
+  }
   
-  // Обновление прогресс-бара
-  if (duration > 0) {
+  if (!isNaN(duration) && isFinite(duration)) {
+    totalTimeEl.textContent = formatTime(duration);
+    trackTime.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+    
+    // Обновление прогресс-бара
     const percentage = (current / duration) * 100;
     progressBar.value = percentage;
     updateProgressBackground();
@@ -190,22 +226,28 @@ function updateTime() {
 
 // === ПРОГРЕСС БАР ===
 function updateProgressBackground() {
-  const value = progressBar.value;
+  const value = progressBar.value || 0;
   progressBar.style.background = `linear-gradient(90deg, #ff6ec4 ${value}%, rgba(255,255,255,0.2) ${value}%)`;
 }
 
 function seekTrack() {
-  const seekTime = (progressBar.value / 100) * audioPlayer.duration;
-  audioPlayer.currentTime = seekTime;
+  const duration = audioPlayer.duration;
+  if (!isNaN(duration) && isFinite(duration) && duration > 0) {
+    const seekTime = (progressBar.value / 100) * duration;
+    audioPlayer.currentTime = seekTime;
+    console.log(`Перемотка на: ${formatTime(seekTime)}`);
+  }
 }
 
 // === ГРОМКОСТЬ ===
 function updateVolume() {
   const volume = volumeSlider.value / 100;
   audioPlayer.volume = volume;
-  volumeValue.textContent = `${volumeSlider.value}%`;
+  volumeValue.textContent = `${Math.round(volumeSlider.value)}%`;
   
-  // Обновление иконки при изменении громкости
+  // Обновление иконки
+  updateVolumeIcon(volume);
+  
   if (volume === 0) {
     isMuted = true;
   } else {
@@ -213,19 +255,35 @@ function updateVolume() {
   }
 }
 
-function toggleMute() {
-  if (isMuted) {
-    audioPlayer.volume = previousVolume;
-    volumeSlider.value = previousVolume * 100;
-    isMuted = false;
+function updateVolumeIcon(volume) {
+  if (volume === 0 || isMuted) {
+    volumeIcon.style.display = 'none';
+    muteIcon.style.display = 'block';
   } else {
+    volumeIcon.style.display = 'block';
+    muteIcon.style.display = 'none';
+  }
+}
+
+function toggleMute() {
+  if (isMuted || audioPlayer.volume === 0) {
+    // Включить звук
+    const newVolume = previousVolume > 0 ? previousVolume : 1;
+    audioPlayer.volume = newVolume;
+    volumeSlider.value = newVolume * 100;
+    isMuted = false;
+    console.log('Звук включен');
+  } else {
+    // Выключить звук
     previousVolume = audioPlayer.volume;
     audioPlayer.volume = 0;
     volumeSlider.value = 0;
     isMuted = true;
+    console.log('Звук выключен');
   }
   
-  volumeValue.textContent = `${volumeSlider.value}%`;
+  volumeValue.textContent = `${Math.round(volumeSlider.value)}%`;
+  updateVolumeIcon(audioPlayer.volume);
 }
 
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
@@ -236,7 +294,10 @@ function attachEventListeners() {
   nextBtn.addEventListener('click', nextTrack);
   
   // Прогресс бар
-  progressBar.addEventListener('input', seekTrack);
+  progressBar.addEventListener('input', () => {
+    seekTrack();
+    updateProgressBackground();
+  });
   
   // Громкость
   volumeSlider.addEventListener('input', updateVolume);
@@ -245,39 +306,57 @@ function attachEventListeners() {
   // Плейлист
   playlistSelect.addEventListener('change', (e) => {
     const index = parseInt(e.target.value);
-    if (!isNaN(index)) {
+    if (!isNaN(index) && index >= 0) {
       loadTrack(index);
-      playTrack();
+      setTimeout(() => playTrack(), 100);
     }
   });
   
   // События аудио
   audioPlayer.addEventListener('loadedmetadata', () => {
-    totalTimeEl.textContent = formatTime(audioPlayer.duration);
-    trackTime.textContent = `00:00 / ${formatTime(audioPlayer.duration)}`;
+    const duration = audioPlayer.duration;
+    if (!isNaN(duration) && isFinite(duration)) {
+      totalTimeEl.textContent = formatTime(duration);
+      currentTimeEl.textContent = '00:00';
+      trackTime.textContent = `00:00 / ${formatTime(duration)}`;
+      console.log(`Длительность трека: ${formatTime(duration)}`);
+    }
   });
   
   audioPlayer.addEventListener('timeupdate', updateTime);
   
   audioPlayer.addEventListener('ended', () => {
+    console.log('Трек завершен, переход к следующему');
     nextTrack();
     if (isPlaying) {
-      playTrack();
+      setTimeout(() => playTrack(), 100);
     }
   });
   
   audioPlayer.addEventListener('play', () => {
     isPlaying = true;
     updatePlayButton();
+    musicPlayer.classList.add('playing');
   });
   
   audioPlayer.addEventListener('pause', () => {
     isPlaying = false;
     updatePlayButton();
+    musicPlayer.classList.remove('playing');
+  });
+  
+  audioPlayer.addEventListener('error', (e) => {
+    console.error('Ошибка аудио:', e);
+    console.error('Код ошибки:', audioPlayer.error ? audioPlayer.error.code : 'неизвестно');
   });
   
   // Клавиатурные сокращения
   document.addEventListener('keydown', (e) => {
+    // Игнорировать, если фокус на input элементах
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+      return;
+    }
+    
     switch(e.code) {
       case 'Space':
         e.preventDefault();
@@ -285,11 +364,15 @@ function attachEventListeners() {
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 5);
+        if (audioPlayer.duration) {
+          audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 5);
+        }
         break;
       case 'ArrowRight':
         e.preventDefault();
-        audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 5);
+        if (audioPlayer.duration) {
+          audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 5);
+        }
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -301,11 +384,32 @@ function attachEventListeners() {
         volumeSlider.value = Math.max(0, parseInt(volumeSlider.value) - 10);
         updateVolume();
         break;
+      case 'KeyM':
+        e.preventDefault();
+        toggleMute();
+        break;
     }
   });
+  
+  console.log('Обработчики событий установлены');
 }
 
 // === ИНИЦИАЛИЗАЦИЯ ГРОМКОСТИ ===
-audioPlayer.volume = 1;
-volumeSlider.value = 100;
-volumeValue.textContent = '100%';
+if (audioPlayer) {
+  audioPlayer.volume = 1;
+  volumeSlider.value = 100;
+  volumeValue.textContent = '100%';
+  updateVolumeIcon(1);
+}
+
+// === ДОПОЛНИТЕЛЬНАЯ ОБРАБОТКА ОШИБОК ===
+window.addEventListener('error', (e) => {
+  console.error('Глобальная ошибка:', e.message);
+});
+
+// Предотвращение автоматической прокрутки при нажатии пробела
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && e.target === document.body) {
+    e.preventDefault();
+  }
+});
