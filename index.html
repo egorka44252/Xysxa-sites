@@ -26,10 +26,8 @@
   </header>
 
   <main class="container">
-    <section class="card player">
-      <img class="cover" src="https://via.placeholder.com/96?text=Cover" alt="cover">
-
-      <!-- repo-logo removed -->
+    <section class="card player card-animated">
+      <img class="cover" src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/img/logo.jpg" alt="cover">
       <div class="body">
         <div class="meta">
           <div id="title" class="track-title">—</div>
@@ -37,12 +35,20 @@
         </div>
 
         <div class="controls">
-          <button id="prev" class="ctrl">⏮</button>
-          <button id="play" class="ctrl">▶</button>
-          <button id="next" class="ctrl">⏭</button>
+          <button id="prev" class="ctrl" title="Предыдущий">‹‹</button>
+          <button id="play" class="ctrl primary" title="Воспроизвести/пауза">▶</button>
+          <button id="next" class="ctrl" title="Следующий">››</button>
 
-          <input id="progress" type="range" min="0" max="100" value="0" class="range">
-          <input id="volume" type="range" min="0" max="1" step="0.01" value="1" class="range small">
+          <div class="progress-wrap" aria-hidden="false">
+            <input id="progress" type="range" min="0" max="100" value="0" class="progress">
+            <div class="progress-time small" aria-hidden="true"><span id="curtime">00:00</span> / <span id="durtime">00:00</span></div>
+          </div>
+
+          <div class="volume-wrap">
+            <button id="mute" class="ctrl" title="Вкл/выкл звук">🔊</button>
+            <input id="volume" type="range" min="0" max="1" step="0.01" value="1" class="volume-range">
+            <div id="vol-percent" class="vol-percent">100%</div>
+          </div>
         </div>
 
         <select id="playlist" class="track-list"></select>
