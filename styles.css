@@ -289,6 +289,11 @@ body {
   color: #fff;
 }
 
+.btn-minecraft {
+  background: linear-gradient(135deg, #5cb85c, #3d8b3d);
+  color: #fff;
+}
+
 .btn:hover {
   transform: translateY(-5px) scale(1.05);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
