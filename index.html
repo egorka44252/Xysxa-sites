@@ -3,92 +3,53 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Мой сайт (CSS only)</title>
+  <title>Мой сайт — demo</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <div class="bg-layer" aria-hidden="true">
-    <!-- Видео загружается прямо с GitHub (raw.githubusercontent.com) -->
-    <video id="bg-video" class="bg-animated" autoplay loop muted playsinline crossorigin="anonymous">
-      <source src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/video/bg.mp4" type="video/mp4">
-      <!-- fallback: если видео не загрузится, показываем градиент -->
-    </video>
-    <div class="bg-gradient"></div>
+    <video id="bg-video" class="bg-animated" autoplay loop muted playsinline crossorigin="anonymous"></video>
+    <div class="bg-fallback"></div>
   </div>
 
   <header class="site-header">
-    <h1 class="title rainbow">Добро пожаловать на мой сайт!</h1>
+    <h1 class="title rainbow">Добро пожаловать!</h1>
     <div class="header-actions">
-      <a class="btn btn-yt" href="#" aria-label="YouTube">Мой YouTube</a>
-      <a class="btn btn-tt" href="#" aria-label="TikTok">Мой TikTok</a>
+      <a class="btn" href="#" target="_blank" rel="noopener">YouTube</a>
+      <a class="btn" href="#" target="_blank" rel="noopener">TikTok</a>
     </div>
   </header>
 
   <main class="container">
-    <p class="lead">Демонстрация: всё поведение и анимации выполнены только на CSS. Нет JS, нет внешних загрузок.</p>
-
-    <div class="controls-row">
-      <a class="btn btn-idea" href="#">💡 Предложить идею</a>
-      <a class="btn btn-telegram" href="#">Мой ТГ</a>
-    </div>
-
-    <section class="player card-animated" aria-label="player">
-      <img class="cover" src="https://via.placeholder.com/96?text=Cover" alt="обложка">
-      <div class="player-body">
+    <section class="card player">
+      <img class="cover" src="https://via.placeholder.com/96?text=Cover" alt="cover">
+      <div class="body">
         <div class="meta">
-          <div class="track-title">Песня (демо)</div>
-          <div class="track-time">00:00 / 03:15</div>
+          <div id="title" class="track-title">—</div>
+          <div id="time" class="track-time">00:00 / 00:00</div>
         </div>
 
         <div class="controls">
-          <button class="ctrl" aria-label="prev">⏮</button>
+          <button id="prev" class="ctrl">⏮</button>
+          <button id="play" class="ctrl">▶</button>
+          <button id="next" class="ctrl">⏭</button>
 
-          <!-- CSS-only play/pause toggle -->
-          <input id="play-toggle" type="checkbox" class="visually-hidden">
-          <label for="play-toggle" class="ctrl play" role="button" aria-pressed="false"></label>
-
-          <button class="ctrl" aria-label="next">⏭</button>
-
-          <div class="fake-range-wrap">
-            <div class="fake-range">
-              <div class="fake-range-fill"></div>
-              <div class="fake-range-thumb"></div>
-            </div>
-            <span class="small">00:45 / 03:15</span>
-          </div>
-
-          <div class="volume-wrap">
-            <div class="volume-icon">🔊</div>
-            <div class="volume-bar">
-              <div class="volume-level"></div>
-            </div>
-            <span class="small">100%</span>
-          </div>
+          <input id="progress" type="range" min="0" max="100" value="0" class="range">
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="1" class="range small">
         </div>
 
-        <select class="track-list" aria-label="Список треков">
-          <option>пипсики_доритос_xD.mp3</option>
-          <option>Бэквуд.mp3</option>
-          <option>Дисклеймер.mp3</option>
-        </select>
+        <select id="playlist" class="track-list"></select>
+        <audio id="audio" preload="metadata"></audio>
       </div>
     </section>
 
-    <section class="about card-animated">
+    <section class="card about">
       <h2>О сайте</h2>
-      <p>Полностью статическая демонстрация. Анимации фона, плавающие карточки и управление состоянием (play/pause) реализованы через CSS.</p>
-
-      <h3>Контакты</h3>
-      <ul class="contacts">
-        <li><strong>Email:</strong> contact@example.com</li>
-      </ul>
+      <p>Пример рабочего сайта с фон-видео из GitHub и простым плеером.</p>
     </section>
   </main>
 
-  <div class="online" id="online-count">Онлайн: <span>1</span></div>
-
-  <footer class="site-footer">
-    © Мой сайт
-  </footer>
+  <footer class="site-footer">© Demo</footer>
 </body>
 </html>
