@@ -4,12 +4,10 @@ const COVER_URL = RAW_BASE + '/img/logo.jpg'; // общая обложка дл�
 
 document.addEventListener('DOMContentLoaded', () => {
   const video = document.getElementById('bg-video');
-  // назначаем видео с raw.githubusercontent (GitHub)
   if (video) {
     video.src = RAW_BASE + '/video/bg.mp4';
     video.load();
-    // попытка автозапуска (может быть заблокирована браузером до взаимодействия)
-    video.play().catch(()=>{/* автоплей может быть заблокирован */});
+    video.play().catch(()=>{});
   }
 
   // Плеер
@@ -23,6 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const progress = document.getElementById('progress');
   const volume = document.getElementById('volume');
   const cover = document.querySelector('.cover');
+  const curTime = document.getElementById('curtime');
+  const durTime = document.getElementById('durtime');
+  const volPercent = document.getElementById('vol-percent');
+  const muteBtn = document.getElementById('mute');
 
   // Список треков (файлы в репозитории)
   const tracks = [
@@ -51,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.src = t.src;
     audio.load();
     playlistEl.value = idx;
-    // ставим общую обложку (logo.jpg) для всех треков
     if (cover) cover.src = t.cover;
   }
 
@@ -61,30 +62,72 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
   }
 
+  // play/pause
+  function updatePlayIcon(){
+    playBtn.textContent = audio.paused ? '▶' : '⏸';
+  }
   playBtn.addEventListener('click', () => {
-    if (audio.paused) { audio.play(); playBtn.textContent = '⏸'; }
-    else { audio.pause(); playBtn.textContent = '▶'; }
+    if (audio.paused) { audio.play(); } else { audio.pause(); }
+    updatePlayIcon();
   });
-  prevBtn.addEventListener('click', () => { load(idx-1); audio.play(); playBtn.textContent = '⏸'; });
-  nextBtn.addEventListener('click', () => { load(idx+1); audio.play(); playBtn.textContent = '⏸'; });
-  playlistEl.addEventListener('change', () => { load(+playlistEl.value); audio.play(); playBtn.textContent = '⏸'; });
+  audio.addEventListener('play', updatePlayIcon);
+  audio.addEventListener('pause', updatePlayIcon);
+
+  prevBtn.addEventListener('click', () => { load(idx-1); audio.play(); });
+  nextBtn.addEventListener('click', () => { load(idx+1); audio.play(); });
+  playlistEl.addEventListener('change', () => { load(+playlistEl.value); audio.play(); });
 
   audio.addEventListener('loadedmetadata', () => {
-    timeEl.textContent = formatTime(0) + ' / ' + formatTime(audio.duration);
+    durTime.textContent = formatTime(audio.duration);
+    curTime.textContent = formatTime(0);
+    // sync progress initial background
+    updateProgressBackground();
   });
   audio.addEventListener('timeupdate', () => {
     if (audio.duration) {
-      progress.value = Math.floor(audio.currentTime / audio.duration * 100);
-      timeEl.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+      const pct = Math.floor(audio.currentTime / audio.duration * 100);
+      progress.value = pct;
+      curTime.textContent = formatTime(audio.currentTime);
+      // update visual progress
+      updateProgressBackground();
     }
   });
+
   progress.addEventListener('input', () => {
     if (audio.duration) audio.currentTime = progress.value / 100 * audio.duration;
+    updateProgressBackground();
   });
-  volume.addEventListener('input', () => { audio.volume = volume.value; });
+
+  // custom background for progress (fill)
+  function updateProgressBackground(){
+    const v = progress.value || 0;
+    progress.style.background = `linear-gradient(90deg, var(--accent-a) ${v}%, #e6e6e6 ${v}%)`;
+  }
+
+  // volume handling and percent
+  volume.addEventListener('input', () => {
+    audio.volume = Number(volume.value);
+    volPercent.textContent = Math.round(audio.volume * 100) + '%';
+    // toggle mute icon
+    muteBtn.textContent = audio.volume === 0 ? '🔇' : '🔊';
+  });
+  // initialize volume UI
+  audio.volume = Number(volume.value);
+  volPercent.textContent = Math.round(audio.volume * 100) + '%';
+
+  // mute toggle
+  let lastVol = audio.volume;
+  muteBtn.addEventListener('click', () => {
+    if (audio.volume > 0) { lastVol = audio.volume; audio.volume = 0; volume.value = 0; } 
+    else { audio.volume = lastVol || 1; volume.value = audio.volume; }
+    volPercent.textContent = Math.round(audio.volume * 100) + '%';
+    muteBtn.textContent = audio.volume === 0 ? '🔇' : '🔊';
+  });
 
   audio.addEventListener('ended', () => { load(idx+1); audio.play(); });
 
   // старт
   load(0);
+  updatePlayIcon();
+  updateProgressBackground();
 });
