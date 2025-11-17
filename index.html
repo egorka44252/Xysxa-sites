@@ -34,6 +34,17 @@
       <span class="logo-text">Xysxa</span>
       <span class="logo-emoji">X_X</span>
     </h1>
+    
+    <!-- Переключатель темы -->
+    <button id="theme-toggle" class="theme-toggle" title="Сменить тему">
+      <svg id="sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6zm0-10c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zM13 3h-2v3h2V3zm0 15h-2v3h2v-3zM6 13H3v-2h3v2zm15 0h-3v-2h3v2zM7.1 7.1L4.9 4.9 6.3 3.5l2.2 2.2-1.4 1.4zm12.7 12.7l-2.2-2.2 1.4-1.4 2.2 2.2-1.4 1.4zM6.3 20.5l-1.4-1.4 2.2-2.2 1.4 1.4-2.2 2.2zM19.8 6.3l-1.4-1.4-2.2 2.2 1.4 1.4 2.2-2.2z"/>
+      </svg>
+      <svg id="moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+        <path d="M9 2c-1.05 0-2.05.16-3 .46 4.06 1.27 7 5.06 7 9.54 0 4.48-2.94 8.27-7 9.54.95.3 1.95.46 3 .46 5.52 0 10-4.48 10-10S14.52 2 9 2z"/>
+      </svg>
+    </button>
+    
     <div class="header-buttons">
       <a href="https://www.youtube.com/@kotvsmetane44252/videos" target="_blank" class="btn btn-youtube">
         <span class="btn-icon">📺</span>
@@ -88,6 +99,12 @@
               <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
             </svg>
           </button>
+          
+          <button id="lyrics-toggle" class="control-btn" title="Показать текст песни">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 3v9.28c-.47-.17-.97-.28-1.5-.28C8.01 12 6 14.01 6 16.5S8.01 21 10.5 21c2.31 0 4.2-1.75 4.45-4H15V6h4V3h-7z"/>
+            </svg>
+          </button>
         </div>
 
         <!-- Прогресс бар -->
@@ -119,6 +136,19 @@
 
         <!-- Скрытый аудио элемент -->
         <audio id="audio-player" preload="metadata"></audio>
+      </div>
+    </section>
+
+    <!-- Текст песни -->
+    <section id="lyrics-section" class="lyrics-section" style="display: none;">
+      <div class="lyrics-wrapper">
+        <div class="lyrics-header">
+          <h3>Текст песни</h3>
+          <button id="close-lyrics" class="close-lyrics">✕</button>
+        </div>
+        <div id="lyrics-content" class="lyrics-content">
+          <p class="no-lyrics">Выберите трек для отображения текста</p>
+        </div>
       </div>
     </section>
 
