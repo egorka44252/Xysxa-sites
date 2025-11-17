@@ -1,11 +1,12 @@
 // Простая логика: подгрузить bg видео с GitHub и реализовать плеер
 const RAW_BASE = 'https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main';
+const COVER_URL = RAW_BASE + '/img/logo.jpg'; // общая обложка для всех треков
 
 document.addEventListener('DOMContentLoaded', () => {
   const video = document.getElementById('bg-video');
-  const videoUrl = RAW_BASE + '/video/bg.mp4';
-  // назначаем src напрямую (GitHub raw)
-  video.src = videoUrl;
+  // видео удалено/скрыто — не назначаем src
+  if (video) video.remove?.();
+
   // Плеер
   const audio = document.getElementById('audio');
   const playlistEl = document.getElementById('playlist');
@@ -16,15 +17,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextBtn = document.getElementById('next');
   const progress = document.getElementById('progress');
   const volume = document.getElementById('volume');
+  const cover = document.querySelector('.cover');
 
-  // Список треков (файлы в вашем репозитории). Если имена с кириллицей — кодируем.
+  // Список треков (файлы в репозитории)
   const tracks = [
     'пипсики_доритос_xD.mp3',
     'Бэквуд.mp3',
     'Дисклеймер.mp3'
   ].map(name => ({
     title: name,
-    src: RAW_BASE + '/music/' + encodeURIComponent(name)
+    src: RAW_BASE + '/music/' + encodeURIComponent(name),
+    cover: COVER_URL
   }));
 
   // заполнить select
@@ -43,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.src = t.src;
     audio.load();
     playlistEl.value = idx;
+    // ставим общую обложку (logo.jpg) для всех треков
+    if (cover) cover.src = t.cover;
   }
 
   function formatTime(sec){
@@ -77,6 +82,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // старт
   load(0);
-
-  // рекомендую запускать через http(s) (github pages или локальный сервер)
 });
