@@ -9,10 +9,22 @@
 <body>
   <!-- Фоновое видео -->
   <div class="bg-layer">
-    <video id="bg-video" autoplay loop muted playsinline>
+    <video id="bg-video" autoplay loop muted playsinline preload="auto">
       <source src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/video/bg.mp4" type="video/mp4">
     </video>
     <div class="bg-overlay"></div>
+  </div>
+
+  <!-- Анимированные частицы -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
   </div>
 
   <!-- Шапка сайта -->
@@ -23,10 +35,12 @@
     </h1>
     <div class="header-buttons">
       <a href="https://www.youtube.com/@kotvsmetane44252/videos" target="_blank" class="btn btn-youtube">
-        <span>📺</span> YouTube
+        <span class="btn-icon">📺</span>
+        <span>YouTube</span>
       </a>
       <a href="https://www.tiktok.com/@egorka4425" target="_blank" class="btn btn-tiktok">
-        <span>🎵</span> TikTok
+        <span class="btn-icon">🎵</span>
+        <span>TikTok</span>
       </a>
     </div>
   </header>
@@ -37,9 +51,12 @@
     <section class="music-player">
       <div class="player-wrapper">
         <!-- Обложка -->
-        <div class="album-cover">
-          <img id="cover-img" src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/img/logo.jpg" alt="Album Cover">
-          <div class="vinyl-effect"></div>
+        <div class="album-cover-wrapper">
+          <div class="album-cover">
+            <img id="cover-img" src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/img/logo.jpg" alt="Album Cover">
+            <div class="vinyl-effect"></div>
+          </div>
+          <div class="glow-effect"></div>
         </div>
 
         <!-- Информация о треке -->
@@ -57,10 +74,10 @@
           </button>
           
           <button id="play-btn" class="control-btn play-btn" title="Воспроизвести">
-            <svg id="play-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <svg id="play-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z"/>
             </svg>
-            <svg id="pause-icon" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
+            <svg id="pause-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
               <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
             </svg>
           </button>
@@ -74,7 +91,7 @@
 
         <!-- Прогресс бар -->
         <div class="progress-container">
-          <input type="range" id="progress-bar" class="progress-bar" min="0" max="100" value="0">
+          <input type="range" id="progress-bar" class="progress-bar" min="0" max="100" value="0" step="0.1">
           <div class="time-display">
             <span id="current-time">00:00</span>
             <span id="total-time">00:00</span>
@@ -85,11 +102,14 @@
         <div class="bottom-controls">
           <div class="volume-control">
             <button id="mute-btn" class="volume-btn" title="Звук">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <svg id="volume-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
               </svg>
+              <svg id="mute-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+              </svg>
             </button>
-            <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100">
+            <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100" step="1">
             <span id="volume-value" class="volume-value">100%</span>
           </div>
 
@@ -105,8 +125,10 @@
 
     <!-- Информационная карточка -->
     <section class="info-card">
+      <div class="info-icon">🎧</div>
       <h2 class="info-title">О проекте</h2>
       <p class="info-text">Добро пожаловать на музыкальный портал Xysxa!</p>
+      <p class="info-text">Наслаждайтесь лучшими треками</p>
       <p class="contact-info">📞 Контакт: +380 93 417 3944</p>
     </section>
   </main>
