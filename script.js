@@ -4,8 +4,13 @@ const COVER_URL = RAW_BASE + '/img/logo.jpg'; // общая обложка дл�
 
 document.addEventListener('DOMContentLoaded', () => {
   const video = document.getElementById('bg-video');
-  // видео удалено/скрыто — не назначаем src
-  if (video) video.remove?.();
+  // назначаем видео с raw.githubusercontent (GitHub)
+  if (video) {
+    video.src = RAW_BASE + '/video/bg.mp4';
+    video.load();
+    // попытка автозапуска (может быть заблокирована браузером до взаимодействия)
+    video.play().catch(()=>{/* автоплей может быть заблокирован */});
+  }
 
   // Плеер
   const audio = document.getElementById('audio');
