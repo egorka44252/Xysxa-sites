@@ -99,7 +99,7 @@
           </div>
         </div>
 
-        <!-- Громкость и плейлист -->
+        <!-- Громкость -->
         <div class="bottom-controls">
           <div class="volume-control">
             <button id="mute-btn" class="volume-btn" title="Звук">
@@ -113,8 +113,15 @@
             <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100" step="1">
             <span id="volume-value" class="volume-value">100%</span>
           </div>
+        </div>
 
-          <select id="playlist-select" class="playlist-select"></select>
+        <!-- Красивый список треков -->
+        <div class="playlist-section">
+          <h3 class="playlist-title">
+            <span class="playlist-icon">🎶</span>
+            Плейлист
+          </h3>
+          <div id="playlist-tracks" class="playlist-tracks"></div>
         </div>
 
         <!-- Скрытый аудио элемент -->
