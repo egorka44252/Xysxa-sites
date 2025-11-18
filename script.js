@@ -4,7 +4,7 @@ const COVER_URL = RAW_BASE + '/img/logo.jpg';
 
 // Список треков
 const tracks = [
-  { title: 'пипсики доритос xD', file: 'пипсики_доритос_xD.mp3' },
+  { title: 'чипсики доритос xD', file: 'пипсики_доритос_xD.mp3' },
   { title: 'Бэквуд', file: 'Бэквуд.mp3' },
   { title: 'Дисклеймер', file: 'Дисклеймер.mp3' }
 ];
