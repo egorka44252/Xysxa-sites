@@ -823,38 +823,111 @@ body {
 /* === КНОПКА СМЕНЫ ФОНА === */
 .theme-toggle-btn {
   position: fixed;
-  top: 20px;
+  top: 100px;
   right: 20px;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15));
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, #ff6ec4, #a259ff);
+  border: 3px solid rgba(255, 255, 255, 0.5);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(255, 110, 196, 0.5), 0 0 20px rgba(162, 89, 255, 0.3);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1000;
-  animation: themeButtonPulse 3s ease-in-out infinite;
+  animation: themeBtnFloat 3s ease-in-out infinite;
+  overflow: hidden;
 }
 
-@keyframes themeButtonPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
-  50% { transform: scale(1.05); box-shadow: 0 10px 35px rgba(255, 110, 196, 0.5); }
+.theme-toggle-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.theme-toggle-btn:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.theme-btn-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+}
+
+.theme-icon {
+  animation: themeIconRotate 4s linear infinite;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+}
+
+.theme-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.theme-toggle-btn:hover .theme-text {
+  opacity: 1;
+}
+
+@keyframes themeBtnFloat {
+  0%, 100% { 
+    transform: translateY(0) scale(1);
+    box-shadow: 0 10px 30px rgba(255, 110, 196, 0.5), 0 0 20px rgba(162, 89, 255, 0.3);
+  }
+  50% { 
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(255, 110, 196, 0.7), 0 0 30px rgba(162, 89, 255, 0.5);
+  }
+}
+
+@keyframes themeIconRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
 }
 
 .theme-toggle-btn:hover {
-  transform: scale(1.1) rotate(180deg);
-  background: linear-gradient(135deg, rgba(255, 110, 196, 0.5), rgba(162, 89, 255, 0.5));
-  box-shadow: 0 12px 40px rgba(255, 110, 196, 0.6);
+  transform: scale(1.15) rotate(15deg);
+  background: linear-gradient(135deg, #a259ff, #ff6ec4);
+  box-shadow: 0 15px 50px rgba(255, 110, 196, 0.8), 0 0 40px rgba(162, 89, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .theme-toggle-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.95) rotate(-5deg);
+}
+
+/* Пульсирующий эффект при клике */
+@keyframes btnClickEffect {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.theme-toggle-btn.clicked {
+  animation: btnClickEffect 0.6s ease;
 }
 
 /* === ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ === */
