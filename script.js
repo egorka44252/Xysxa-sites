@@ -19,7 +19,7 @@ let previousVolume = 1;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('Инициализация плеера...');
+  console.log('🎵 Инициализация плеера...');
   initializeElements();
   initializeBackgroundVideo();
   
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   
   attachEventListeners();
-  console.log('Плеер готов к работе');
+  console.log('✅ Плеер готов к работе!');
 });
 
 // Показать состояние загрузки
@@ -46,7 +46,8 @@ function showLoadingState() {
     playlistTracks.innerHTML = `
       <div style="text-align: center; padding: 40px; color: #fffbe6;">
         <div style="font-size: 2rem; margin-bottom: 15px;">🎵</div>
-        <div style="font-size: 1.2rem;">Загрузка треков...</div>
+        <div style="font-size: 1.2rem;">Загрузка треков с GitHub...</div>
+        <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">Подождите немного</div>
       </div>
     `;
   }
@@ -75,7 +76,7 @@ function showErrorState() {
 async function loadTracksFromGitHub() {
   try {
     const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${MUSIC_FOLDER}`;
-    console.log('Загрузка треков из:', apiUrl);
+    console.log('🔄 Загрузка треков из GitHub API:', apiUrl);
     
     const response = await fetch(apiUrl);
     
@@ -84,8 +85,9 @@ async function loadTracksFromGitHub() {
     }
     
     const files = await response.json();
+    console.log('📦 Получено файлов:', files.length);
     
-    // Фильтруем только mp3 файлы
+    // Фильтруем только аудио файлы
     const musicFiles = files.filter(file => 
       file.type === 'file' && 
       (file.name.toLowerCase().endsWith('.mp3') || 
@@ -93,21 +95,29 @@ async function loadTracksFromGitHub() {
        file.name.toLowerCase().endsWith('.ogg'))
     );
     
-    // Преобразуем в формат треков
-    tracks = musicFiles.map(file => ({
-      title: decodeURIComponent(file.name).replace(/\.(mp3|wav|ogg)$/i, ''),
-      file: file.name,
-      download_url: file.download_url
-    }));
+    console.log('🎵 Найдено аудио файлов:', musicFiles.length);
     
-    console.log(`Загружено треков: ${tracks.length}`);
+    // Преобразуем в формат треков
+    tracks = musicFiles.map(file => {
+      // Убираем расширение из названия
+      const title = decodeURIComponent(file.name).replace(/\.(mp3|wav|ogg)$/i, '');
+      console.log(`  ✓ ${title}`);
+      return {
+        title: title,
+        file: file.name,
+        download_url: file.download_url
+      };
+    });
+    
+    console.log(`✅ Успешно загружено треков: ${tracks.length}`);
     
     if (tracks.length === 0) {
-      console.warn('В папке music не найдено аудиофайлов');
+      console.warn('⚠️ В папке music не найдено аудиофайлов');
     }
     
   } catch (error) {
-    console.error('Ошибка загрузки треков:', error);
+    console.error('❌ Ошибка загрузки треков:', error);
+    console.error('Детали:', error.message);
     tracks = [];
   }
 }
@@ -134,10 +144,10 @@ function initializeElements() {
   muteIcon = document.getElementById('mute-icon');
   musicPlayer = document.querySelector('.music-player');
   
-  // Проверка наличия всех элементов
-  if (!audioPlayer) console.error('Аудио плеер не найден!');
-  if (!playBtn) console.error('Кнопка Play не найдена!');
-  if (!playlistTracks) console.error('Контейнер плейлиста не найден!');
+  // Проверка наличия критических элементов
+  if (!audioPlayer) console.error('❌ Аудио плеер не найден!');
+  if (!playBtn) console.error('❌ Кнопка Play не найдена!');
+  if (!playlistTracks) console.error('❌ Контейнер плейлиста не найден!');
 }
 
 // === ФОНОВОЕ ВИДЕО ===
@@ -145,20 +155,19 @@ function initializeBackgroundVideo() {
   const video = document.getElementById('bg-video');
   if (video) {
     video.addEventListener('loadeddata', () => {
-      console.log('Видео загружено');
+      console.log('📹 Видео загружено');
     });
     
     video.addEventListener('error', (e) => {
-      console.error('Ошибка загрузки видео:', e);
+      console.warn('⚠️ Ошибка загрузки видео');
     });
     
-    // Попытка воспроизведения видео
     const playPromise = video.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
-        console.log('Видео воспроизводится');
+        console.log('▶️ Видео воспроизводится');
       }).catch(error => {
-        console.log('Автовоспроизведение видео заблокировано:', error);
+        console.log('🔇 Автовоспроизведение видео заблокировано');
       });
     }
   }
@@ -180,7 +189,7 @@ function renderPlaylist() {
     }
     
     // Создаем красивую анимацию появления
-    trackItem.style.animation = `trackFadeIn 0.4s ease ${index * 0.05}s backwards`;
+    trackItem.style.animation = `trackFadeIn 0.5s ease ${index * 0.1}s backwards`;
     
     trackItem.innerHTML = `
       <div class="track-item-left">
@@ -193,8 +202,9 @@ function renderPlaylist() {
     `;
     
     trackItem.addEventListener('click', () => {
+      console.log(`🎵 Выбран трек: ${track.title}`);
       loadTrack(index);
-      setTimeout(() => playTrack(), 100);
+      setTimeout(() => playTrack(), 150);
     });
     
     playlistTracks.appendChild(trackItem);
@@ -219,7 +229,7 @@ function renderPlaylist() {
     document.head.appendChild(style);
   }
   
-  console.log(`Плейлист отрендерен: ${tracks.length} треков`);
+  console.log(`📋 Плейлист отрендерен: ${tracks.length} треков`);
 }
 
 // === ОБНОВЛЕНИЕ АКТИВНОГО ТРЕКА В ПЛЕЙЛИСТЕ ===
@@ -248,18 +258,21 @@ function updatePlaylistUI() {
 // === ЗАГРУЗКА ТРЕКА ===
 function loadTrack(index) {
   if (index < 0 || index >= tracks.length) {
-    console.error('Неверный индекс трека:', index);
+    console.error('❌ Неверный индекс трека:', index);
     return;
   }
   
   currentTrackIndex = index;
   const track = tracks[index];
   
-  console.log(`Загрузка трека: ${track.title}`);
+  console.log(`📀 Загрузка: ${track.title}`);
   
   // Обновление информации
   trackName.textContent = track.title;
   const trackUrl = RAW_BASE + '/music/' + encodeURIComponent(track.file);
+  
+  console.log(`🔗 URL: ${trackUrl}`);
+  
   audioPlayer.src = trackUrl;
   coverImg.src = COVER_URL;
   
@@ -273,13 +286,13 @@ function loadTrack(index) {
   // Обновление плейлиста
   updatePlaylistUI();
   
-  console.log(`Трек загружен: ${trackUrl}`);
+  console.log(`✅ Трек загружен`);
 }
 
 // === ВОСПРОИЗВЕДЕНИЕ / ПАУЗА ===
 function togglePlay() {
   if (!audioPlayer.src) {
-    console.warn('Источник аудио не установлен');
+    console.warn('⚠️ Источник аудио не установлен');
     return;
   }
   
@@ -299,9 +312,10 @@ function playTrack() {
       updatePlayButton();
       updatePlaylistUI();
       if (musicPlayer) musicPlayer.classList.add('playing');
-      console.log('Воспроизведение начато');
+      console.log('▶️ Воспроизведение начато');
     }).catch(error => {
-      console.error('Ошибка воспроизведения:', error);
+      console.error('❌ Ошибка воспроизведения:', error);
+      console.error('Детали:', error.message);
       isPlaying = false;
       updatePlayButton();
       updatePlaylistUI();
@@ -315,10 +329,12 @@ function pauseTrack() {
   updatePlayButton();
   updatePlaylistUI();
   if (musicPlayer) musicPlayer.classList.remove('playing');
-  console.log('Воспроизведение приостановлено');
+  console.log('⏸️ Пауза');
 }
 
 function updatePlayButton() {
+  if (!playIcon || !pauseIcon) return;
+  
   if (isPlaying) {
     playIcon.style.display = 'none';
     pauseIcon.style.display = 'block';
@@ -331,17 +347,19 @@ function updatePlayButton() {
 // === НАВИГАЦИЯ ПО ТРЕКАМ ===
 function previousTrack() {
   const newIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+  console.log(`⏮️ Предыдущий трек: ${tracks[newIndex].title}`);
   loadTrack(newIndex);
   if (isPlaying) {
-    setTimeout(() => playTrack(), 100);
+    setTimeout(() => playTrack(), 150);
   }
 }
 
 function nextTrack() {
   const newIndex = (currentTrackIndex + 1) % tracks.length;
+  console.log(`⏭️ Следующий трек: ${tracks[newIndex].title}`);
   loadTrack(newIndex);
   if (isPlaying) {
-    setTimeout(() => playTrack(), 100);
+    setTimeout(() => playTrack(), 150);
   }
 }
 
@@ -387,7 +405,7 @@ function seekTrack() {
   if (!isNaN(duration) && isFinite(duration) && duration > 0) {
     const seekTime = (progressBar.value / 100) * duration;
     audioPlayer.currentTime = seekTime;
-    console.log(`Перемотка на: ${formatTime(seekTime)}`);
+    console.log(`⏩ Перемотка: ${formatTime(seekTime)}`);
   }
 }
 
@@ -397,7 +415,6 @@ function updateVolume() {
   audioPlayer.volume = volume;
   volumeValue.textContent = `${Math.round(volumeSlider.value)}%`;
   
-  // Обновление иконки
   updateVolumeIcon(volume);
   
   if (volume === 0) {
@@ -408,6 +425,8 @@ function updateVolume() {
 }
 
 function updateVolumeIcon(volume) {
+  if (!volumeIcon || !muteIcon) return;
+  
   if (volume === 0 || isMuted) {
     volumeIcon.style.display = 'none';
     muteIcon.style.display = 'block';
@@ -424,14 +443,14 @@ function toggleMute() {
     audioPlayer.volume = newVolume;
     volumeSlider.value = newVolume * 100;
     isMuted = false;
-    console.log('Звук включен');
+    console.log('🔊 Звук включен');
   } else {
     // Выключить звук
     previousVolume = audioPlayer.volume;
     audioPlayer.volume = 0;
     volumeSlider.value = 0;
     isMuted = true;
-    console.log('Звук выключен');
+    console.log('🔇 Звук выключен');
   }
   
   volumeValue.textContent = `${Math.round(volumeSlider.value)}%`;
@@ -441,63 +460,70 @@ function toggleMute() {
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 function attachEventListeners() {
   // Управление воспроизведением
-  playBtn.addEventListener('click', togglePlay);
-  prevBtn.addEventListener('click', previousTrack);
-  nextBtn.addEventListener('click', nextTrack);
+  if (playBtn) playBtn.addEventListener('click', togglePlay);
+  if (prevBtn) prevBtn.addEventListener('click', previousTrack);
+  if (nextBtn) nextBtn.addEventListener('click', nextTrack);
   
   // Прогресс бар
-  progressBar.addEventListener('input', () => {
-    seekTrack();
-    updateProgressBackground();
-  });
+  if (progressBar) {
+    progressBar.addEventListener('input', () => {
+      seekTrack();
+      updateProgressBackground();
+    });
+  }
   
   // Громкость
-  volumeSlider.addEventListener('input', updateVolume);
-  muteBtn.addEventListener('click', toggleMute);
+  if (volumeSlider) volumeSlider.addEventListener('input', updateVolume);
+  if (muteBtn) muteBtn.addEventListener('click', toggleMute);
   
   // События аудио
-  audioPlayer.addEventListener('loadedmetadata', () => {
-    const duration = audioPlayer.duration;
-    if (!isNaN(duration) && isFinite(duration)) {
-      totalTimeEl.textContent = formatTime(duration);
-      currentTimeEl.textContent = '00:00';
-      trackTime.textContent = `00:00 / ${formatTime(duration)}`;
-      console.log(`Длительность трека: ${formatTime(duration)}`);
-    }
-  });
-  
-  audioPlayer.addEventListener('timeupdate', updateTime);
-  
-  audioPlayer.addEventListener('ended', () => {
-    console.log('Трек завершен, переход к следующему');
-    nextTrack();
-    if (isPlaying) {
-      setTimeout(() => playTrack(), 100);
-    }
-  });
-  
-  audioPlayer.addEventListener('play', () => {
-    isPlaying = true;
-    updatePlayButton();
-    updatePlaylistUI();
-    if (musicPlayer) musicPlayer.classList.add('playing');
-  });
-  
-  audioPlayer.addEventListener('pause', () => {
-    isPlaying = false;
-    updatePlayButton();
-    updatePlaylistUI();
-    if (musicPlayer) musicPlayer.classList.remove('playing');
-  });
-  
-  audioPlayer.addEventListener('error', (e) => {
-    console.error('Ошибка аудио:', e);
-    console.error('Код ошибки:', audioPlayer.error ? audioPlayer.error.code : 'неизвестно');
-  });
+  if (audioPlayer) {
+    audioPlayer.addEventListener('loadedmetadata', () => {
+      const duration = audioPlayer.duration;
+      if (!isNaN(duration) && isFinite(duration)) {
+        totalTimeEl.textContent = formatTime(duration);
+        currentTimeEl.textContent = '00:00';
+        trackTime.textContent = `00:00 / ${formatTime(duration)}`;
+        console.log(`⏱️ Длительность: ${formatTime(duration)}`);
+      }
+    });
+    
+    audioPlayer.addEventListener('timeupdate', updateTime);
+    
+    audioPlayer.addEventListener('ended', () => {
+      console.log('✅ Трек завершен');
+      nextTrack();
+    });
+    
+    audioPlayer.addEventListener('play', () => {
+      isPlaying = true;
+      updatePlayButton();
+      updatePlaylistUI();
+      if (musicPlayer) musicPlayer.classList.add('playing');
+    });
+    
+    audioPlayer.addEventListener('pause', () => {
+      isPlaying = false;
+      updatePlayButton();
+      updatePlaylistUI();
+      if (musicPlayer) musicPlayer.classList.remove('playing');
+    });
+    
+    audioPlayer.addEventListener('error', (e) => {
+      console.error('❌ Ошибка загрузки аудио');
+      console.error('Код ошибки:', audioPlayer.error ? audioPlayer.error.code : 'неизвестно');
+      if (audioPlayer.error) {
+        console.error('Сообщение:', audioPlayer.error.message);
+      }
+    });
+    
+    audioPlayer.addEventListener('canplay', () => {
+      console.log('✅ Трек готов к воспроизведению');
+    });
+  }
   
   // Клавиатурные сокращения
   document.addEventListener('keydown', (e) => {
-    // Игнорировать, если фокус на input элементах
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
       return;
     }
@@ -533,28 +559,34 @@ function attachEventListeners() {
         e.preventDefault();
         toggleMute();
         break;
+      case 'KeyN':
+        e.preventDefault();
+        nextTrack();
+        break;
+      case 'KeyP':
+        e.preventDefault();
+        previousTrack();
+        break;
     }
   });
   
-  console.log('Обработчики событий установлены');
+  console.log('🎮 Обработчики событий установлены');
 }
 
 // === ИНИЦИАЛИЗАЦИЯ ГРОМКОСТИ ===
 if (audioPlayer) {
   audioPlayer.volume = 1;
-  volumeSlider.value = 100;
-  volumeValue.textContent = '100%';
+  if (volumeSlider) volumeSlider.value = 100;
+  if (volumeValue) volumeValue.textContent = '100%';
   updateVolumeIcon(1);
 }
 
-// === ДОПОЛНИТЕЛЬНАЯ ОБРАБОТКА ОШИБОК ===
-window.addEventListener('error', (e) => {
-  console.error('Глобальная ошибка:', e.message);
-});
-
-// Предотвращение автоматической прокрутки при нажатии пробела
+// Предотвращение прокрутки при нажатии пробела
 window.addEventListener('keydown', (e) => {
   if (e.code === 'Space' && e.target === document.body) {
     e.preventDefault();
   }
 });
+
+console.log('🎵 Музыкальный плеер Xysxa загружен');
+console.log('⌨️ Горячие клавиши: Пробел - play/pause, ←→ - перемотка, ↑↓ - громкость, M - mute, N/P - next/prev');
