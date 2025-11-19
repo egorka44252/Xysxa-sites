@@ -559,8 +559,8 @@ function attachEventListeners() {
   if (repeatBtn) repeatBtn.addEventListener('click', toggleRepeatMode);
   if (themeBtn) themeBtn.addEventListener('click', changeBackgroundVideo);
   
-  // Копирование Discord при клике
-  const discordBtn = document.querySelector('.social-discord');
+  // Копирование Discord при клике (в шапке)
+  const discordBtn = document.querySelector('.header-discord');
   if (discordBtn) {
     discordBtn.addEventListener('click', () => {
       const discordName = 'xysxax_x';
@@ -605,20 +605,33 @@ function attachEventListeners() {
         // Повтор одного трека
         console.log('🔁 Повтор текущего трека');
         audioPlayer.currentTime = 0;
-        setTimeout(() => {
-          playTrack();
-        }, 100);
+        audioPlayer.play().then(() => {
+          console.log('▶️ Трек перезапущен');
+          isPlaying = true;
+          updatePlayButton();
+        }).catch(err => {
+          console.error('❌ Ошибка перезапуска:', err);
+        });
       } else if (repeatMode === 'all') {
         // Следующий трек с автовоспроизведением
         console.log('⏭️ Переход к следующему треку');
-        const wasPlaying = isPlaying;
-        nextTrack();
-        // Гарантируем воспроизведение
-        if (wasPlaying) {
-          setTimeout(() => {
-            playTrack();
-          }, 300);
-        }
+        const newIndex = (currentTrackIndex + 1) % tracks.length;
+        loadTrack(newIndex);
+        
+        // Ждём полной загрузки трека
+        audioPlayer.addEventListener('canplaythrough', function autoPlay() {
+          console.log('✅ Трек готов к воспроизведению');
+          audioPlayer.play().then(() => {
+            console.log('▶️ Автовоспроизведение начато');
+            isPlaying = true;
+            updatePlayButton();
+            updatePlaylistUI();
+          }).catch(err => {
+            console.error('❌ Ошибка автовоспроизведения:', err);
+          });
+          // Удаляем обработчик после использования
+          audioPlayer.removeEventListener('canplaythrough', autoPlay);
+        }, { once: true });
       } else {
         // Остановка
         console.log('⏹️ Воспроизведение остановлено');
