@@ -2,6 +2,7 @@
 const GITHUB_USER = 'egorka44252';
 const GITHUB_REPO = 'Xysxa-sites';
 const MUSIC_FOLDER = 'music';
+const VIDEO_FOLDER = 'video';
 const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main`;
 const COVER_URL = RAW_BASE + '/img/logo.jpg';
 
@@ -9,25 +10,33 @@ const COVER_URL = RAW_BASE + '/img/logo.jpg';
 let audioPlayer, playBtn, prevBtn, nextBtn, progressBar, volumeSlider, muteBtn;
 let playlistTracks, trackName, trackTime, currentTimeEl, totalTimeEl, coverImg;
 let volumeValue, playIcon, pauseIcon, volumeIcon, muteIcon, musicPlayer;
+let repeatBtn, themeBtn, bgVideo;
 
 // === СОСТОЯНИЕ ===
 let tracks = [];
+let backgroundVideos = [];
 let currentTrackIndex = 0;
+let currentVideoIndex = 0;
 let isPlaying = false;
 let isMuted = false;
 let previousVolume = 1;
+let repeatMode = 'all'; // 'all', 'one', 'none'
 
 // === ИНИЦИАЛИЗАЦИЯ ===
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('🎵 Инициализация плеера...');
   initializeElements();
+  addControlButtons();
   initializeBackgroundVideo();
   
   // Показываем индикатор загрузки
   showLoadingState();
   
-  // Загружаем треки с GitHub
-  await loadTracksFromGitHub();
+  // Загружаем треки и видео с GitHub
+  await Promise.all([
+    loadTracksFromGitHub(),
+    loadVideosFromGitHub()
+  ]);
   
   if (tracks.length > 0) {
     renderPlaylist();
@@ -40,16 +49,68 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('✅ Плеер готов к работе!');
 });
 
+// Добавление кнопок управления
+function addControlButtons() {
+  // Создаем кнопку повтора
+  const controlsDiv = document.querySelector('.player-controls');
+  if (controlsDiv && !document.getElementById('repeat-btn')) {
+    const repeatButton = document.createElement('button');
+    repeatButton.id = 'repeat-btn';
+    repeatButton.className = 'control-btn';
+    repeatButton.title = 'Повтор: Все треки';
+    repeatButton.innerHTML = `
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+      </svg>
+    `;
+    controlsDiv.appendChild(repeatButton);
+    repeatBtn = repeatButton;
+  }
+  
+  // Создаем кнопку смены темы (видео)
+  if (!document.getElementById('theme-btn')) {
+    const themeButton = document.createElement('button');
+    themeButton.id = 'theme-btn';
+    themeButton.className = 'theme-toggle-btn';
+    themeButton.title = 'Сменить фон';
+    themeButton.innerHTML = `
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+      </svg>
+    `;
+    document.body.appendChild(themeButton);
+    themeBtn = themeButton;
+  }
+}
+
 // Показать состояние загрузки
 function showLoadingState() {
   if (playlistTracks) {
     playlistTracks.innerHTML = `
       <div style="text-align: center; padding: 40px; color: #fffbe6;">
-        <div style="font-size: 2rem; margin-bottom: 15px;">🎵</div>
+        <div style="font-size: 2rem; margin-bottom: 15px;">
+          <div class="loading-spinner">🎵</div>
+        </div>
         <div style="font-size: 1.2rem;">Загрузка треков с GitHub...</div>
         <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">Подождите немного</div>
       </div>
     `;
+    
+    // Добавляем анимацию спиннера
+    if (!document.getElementById('spinner-style')) {
+      const style = document.createElement('style');
+      style.id = 'spinner-style';
+      style.textContent = `
+        .loading-spinner {
+          display: inline-block;
+          animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+          100% { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    }
   }
   if (trackName) {
     trackName.textContent = 'Загрузка...';
@@ -69,6 +130,44 @@ function showErrorState() {
   }
   if (trackName) {
     trackName.textContent = 'Треки не найдены';
+  }
+}
+
+// Загрузка видео с GitHub API
+async function loadVideosFromGitHub() {
+  try {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${VIDEO_FOLDER}`;
+    console.log('🎬 Загрузка видео из GitHub API:', apiUrl);
+    
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const files = await response.json();
+    console.log('📦 Получено видео файлов:', files.length);
+    
+    // Фильтруем только видео файлы
+    const videoFiles = files.filter(file => 
+      file.type === 'file' && 
+      (file.name.toLowerCase().endsWith('.mp4') || 
+       file.name.toLowerCase().endsWith('.webm'))
+    );
+    
+    backgroundVideos = videoFiles.map(file => ({
+      name: file.name,
+      url: RAW_BASE + '/video/' + encodeURIComponent(file.name)
+    }));
+    
+    console.log(`✅ Загружено видео: ${backgroundVideos.length}`);
+    
+  } catch (error) {
+    console.error('❌ Ошибка загрузки видео:', error);
+    backgroundVideos = [{
+      name: 'bg.mp4',
+      url: RAW_BASE + '/video/bg.mp4'
+    }];
   }
 }
 
@@ -99,7 +198,6 @@ async function loadTracksFromGitHub() {
     
     // Преобразуем в формат треков
     tracks = musicFiles.map(file => {
-      // Убираем расширение из названия
       const title = decodeURIComponent(file.name).replace(/\.(mp3|wav|ogg)$/i, '');
       console.log(`  ✓ ${title}`);
       return {
@@ -143,6 +241,7 @@ function initializeElements() {
   volumeIcon = document.getElementById('volume-icon');
   muteIcon = document.getElementById('mute-icon');
   musicPlayer = document.querySelector('.music-player');
+  bgVideo = document.getElementById('bg-video');
   
   // Проверка наличия критических элементов
   if (!audioPlayer) console.error('❌ Аудио плеер не найден!');
@@ -152,17 +251,19 @@ function initializeElements() {
 
 // === ФОНОВОЕ ВИДЕО ===
 function initializeBackgroundVideo() {
-  const video = document.getElementById('bg-video');
-  if (video) {
-    video.addEventListener('loadeddata', () => {
+  if (bgVideo) {
+    // Делаем видео зацикленным
+    bgVideo.loop = true;
+    
+    bgVideo.addEventListener('loadeddata', () => {
       console.log('📹 Видео загружено');
     });
     
-    video.addEventListener('error', (e) => {
+    bgVideo.addEventListener('error', (e) => {
       console.warn('⚠️ Ошибка загрузки видео');
     });
     
-    const playPromise = video.play();
+    const playPromise = bgVideo.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         console.log('▶️ Видео воспроизводится');
@@ -171,6 +272,33 @@ function initializeBackgroundVideo() {
       });
     }
   }
+}
+
+// Смена фонового видео
+function changeBackgroundVideo() {
+  if (!bgVideo || backgroundVideos.length === 0) return;
+  
+  currentVideoIndex = (currentVideoIndex + 1) % backgroundVideos.length;
+  const newVideo = backgroundVideos[currentVideoIndex];
+  
+  console.log(`🎬 Смена фона: ${newVideo.name}`);
+  
+  // Плавная смена видео
+  bgVideo.style.opacity = '0';
+  
+  setTimeout(() => {
+    bgVideo.src = newVideo.url;
+    bgVideo.load();
+    bgVideo.play().then(() => {
+      bgVideo.style.opacity = '1';
+    });
+  }, 300);
+}
+
+// Получение иконки для трека
+function getTrackIcon(index) {
+  const icons = ['🎸', '🎹', '🎤', '🎧', '🎼', '🎺', '🎷', '🥁', '🎻', '🪕'];
+  return icons[index % icons.length];
 }
 
 // === РЕНДЕР ПЛЕЙЛИСТА ===
@@ -191,14 +319,20 @@ function renderPlaylist() {
     // Создаем красивую анимацию появления
     trackItem.style.animation = `trackFadeIn 0.5s ease ${index * 0.1}s backwards`;
     
+    const icon = getTrackIcon(index);
+    const playingIcon = index === currentTrackIndex && isPlaying ? 
+      '<span class="playing-bars">🔊</span>' : 
+      `<span class="track-icon">${icon}</span>`;
+    
     trackItem.innerHTML = `
       <div class="track-item-left">
         <div class="track-number">${index + 1}</div>
+        <div class="track-icon-wrapper">${playingIcon}</div>
         <div class="track-details">
           <div class="track-title-small">${track.title}</div>
         </div>
       </div>
-      <div class="track-play-icon">${index === currentTrackIndex && isPlaying ? '🔊' : '▶️'}</div>
+      <div class="track-play-icon">${index === currentTrackIndex && isPlaying ? '⏸️' : '▶️'}</div>
     `;
     
     trackItem.addEventListener('click', () => {
@@ -210,7 +344,7 @@ function renderPlaylist() {
     playlistTracks.appendChild(trackItem);
   });
   
-  // Добавляем CSS анимацию если её нет
+  // Добавляем CSS анимации
   if (!document.getElementById('track-animations')) {
     const style = document.createElement('style');
     style.id = 'track-animations';
@@ -225,6 +359,70 @@ function renderPlaylist() {
           transform: translateX(0);
         }
       }
+      
+      .track-icon-wrapper {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+      }
+      
+      .track-icon {
+        animation: iconFloat 2s ease-in-out infinite;
+      }
+      
+      @keyframes iconFloat {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-3px) scale(1.1); }
+      }
+      
+      .playing-bars {
+        display: inline-block;
+        animation: pulse 1s ease-in-out infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+      }
+      
+      .theme-toggle-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15));
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.4);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        animation: themeButtonPulse 3s ease-in-out infinite;
+      }
+      
+      @keyframes themeButtonPulse {
+        0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+        50% { transform: scale(1.05); box-shadow: 0 10px 35px rgba(255, 110, 196, 0.5); }
+      }
+      
+      .theme-toggle-btn:hover {
+        transform: scale(1.1) rotate(180deg);
+        background: linear-gradient(135deg, rgba(255, 110, 196, 0.5), rgba(162, 89, 255, 0.5));
+        box-shadow: 0 12px 40px rgba(255, 110, 196, 0.6);
+      }
+      
+      .theme-toggle-btn:active {
+        transform: scale(0.95);
+      }
     `;
     document.head.appendChild(style);
   }
@@ -232,7 +430,7 @@ function renderPlaylist() {
   console.log(`📋 Плейлист отрендерен: ${tracks.length} треков`);
 }
 
-// === ОБНОВЛЕНИЕ АКТИВНОГО ТРЕКА В ПЛЕЙЛИСТЕ ===
+// === ОБНОВЛЕНИЕ UI ПЛЕЙЛИСТА ===
 function updatePlaylistUI() {
   if (!playlistTracks) return;
   
@@ -240,19 +438,64 @@ function updatePlaylistUI() {
   
   allItems.forEach((item, index) => {
     const playIcon = item.querySelector('.track-play-icon');
+    const iconWrapper = item.querySelector('.track-icon-wrapper');
     
     if (index === currentTrackIndex) {
       item.classList.add('active');
       if (playIcon) {
-        playIcon.textContent = isPlaying ? '🔊' : '▶️';
+        playIcon.textContent = isPlaying ? '⏸️' : '▶️';
+      }
+      if (iconWrapper && isPlaying) {
+        iconWrapper.innerHTML = '<span class="playing-bars">🔊</span>';
+      } else if (iconWrapper) {
+        iconWrapper.innerHTML = `<span class="track-icon">${getTrackIcon(index)}</span>`;
       }
     } else {
       item.classList.remove('active');
       if (playIcon) {
         playIcon.textContent = '▶️';
       }
+      if (iconWrapper) {
+        iconWrapper.innerHTML = `<span class="track-icon">${getTrackIcon(index)}</span>`;
+      }
     }
   });
+}
+
+// === УПРАВЛЕНИЕ ПОВТОРОМ ===
+function toggleRepeatMode() {
+  const modes = ['all', 'one', 'none'];
+  const currentIndex = modes.indexOf(repeatMode);
+  repeatMode = modes[(currentIndex + 1) % modes.length];
+  
+  updateRepeatButton();
+  console.log(`🔁 Режим повтора: ${repeatMode}`);
+}
+
+function updateRepeatButton() {
+  if (!repeatBtn) return;
+  
+  const icons = {
+    'all': '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>',
+    'one': '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/><text x="12" y="16" text-anchor="middle" font-size="10" fill="currentColor">1</text></svg>',
+    'none': '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" opacity="0.5"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>'
+  };
+  
+  const titles = {
+    'all': 'Повтор: Все треки',
+    'one': 'Повтор: Один трек',
+    'none': 'Повтор: Выключен'
+  };
+  
+  repeatBtn.innerHTML = icons[repeatMode];
+  repeatBtn.title = titles[repeatMode];
+  
+  // Подсветка активного режима
+  if (repeatMode !== 'none') {
+    repeatBtn.style.background = 'linear-gradient(135deg, rgba(255, 110, 196, 0.3), rgba(162, 89, 255, 0.3))';
+  } else {
+    repeatBtn.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15))';
+  }
 }
 
 // === ЗАГРУЗКА ТРЕКА ===
@@ -438,14 +681,12 @@ function updateVolumeIcon(volume) {
 
 function toggleMute() {
   if (isMuted || audioPlayer.volume === 0) {
-    // Включить звук
     const newVolume = previousVolume > 0 ? previousVolume : 1;
     audioPlayer.volume = newVolume;
     volumeSlider.value = newVolume * 100;
     isMuted = false;
     console.log('🔊 Звук включен');
   } else {
-    // Выключить звук
     previousVolume = audioPlayer.volume;
     audioPlayer.volume = 0;
     volumeSlider.value = 0;
@@ -463,6 +704,8 @@ function attachEventListeners() {
   if (playBtn) playBtn.addEventListener('click', togglePlay);
   if (prevBtn) prevBtn.addEventListener('click', previousTrack);
   if (nextBtn) nextBtn.addEventListener('click', nextTrack);
+  if (repeatBtn) repeatBtn.addEventListener('click', toggleRepeatMode);
+  if (themeBtn) themeBtn.addEventListener('click', changeBackgroundVideo);
   
   // Прогресс бар
   if (progressBar) {
@@ -492,101 +735,13 @@ function attachEventListeners() {
     
     audioPlayer.addEventListener('ended', () => {
       console.log('✅ Трек завершен');
-      nextTrack();
-    });
-    
-    audioPlayer.addEventListener('play', () => {
-      isPlaying = true;
-      updatePlayButton();
-      updatePlaylistUI();
-      if (musicPlayer) musicPlayer.classList.add('playing');
-    });
-    
-    audioPlayer.addEventListener('pause', () => {
-      isPlaying = false;
-      updatePlayButton();
-      updatePlaylistUI();
-      if (musicPlayer) musicPlayer.classList.remove('playing');
-    });
-    
-    audioPlayer.addEventListener('error', (e) => {
-      console.error('❌ Ошибка загрузки аудио');
-      console.error('Код ошибки:', audioPlayer.error ? audioPlayer.error.code : 'неизвестно');
-      if (audioPlayer.error) {
-        console.error('Сообщение:', audioPlayer.error.message);
-      }
-    });
-    
-    audioPlayer.addEventListener('canplay', () => {
-      console.log('✅ Трек готов к воспроизведению');
-    });
-  }
-  
-  // Клавиатурные сокращения
-  document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
-      return;
-    }
-    
-    switch(e.code) {
-      case 'Space':
-        e.preventDefault();
-        togglePlay();
-        break;
-      case 'ArrowLeft':
-        e.preventDefault();
-        if (audioPlayer.duration) {
-          audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 5);
-        }
-        break;
-      case 'ArrowRight':
-        e.preventDefault();
-        if (audioPlayer.duration) {
-          audioPlayer.currentTime = Math.min(audioPlayer.duration, audioPlayer.currentTime + 5);
-        }
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        volumeSlider.value = Math.min(100, parseInt(volumeSlider.value) + 10);
-        updateVolume();
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        volumeSlider.value = Math.max(0, parseInt(volumeSlider.value) - 10);
-        updateVolume();
-        break;
-      case 'KeyM':
-        e.preventDefault();
-        toggleMute();
-        break;
-      case 'KeyN':
-        e.preventDefault();
+      
+      if (repeatMode === 'one') {
+        // Повтор одного трека
+        audioPlayer.currentTime = 0;
+        playTrack();
+      } else if (repeatMode === 'all') {
+        // Следующий трек
         nextTrack();
-        break;
-      case 'KeyP':
-        e.preventDefault();
-        previousTrack();
-        break;
-    }
-  });
-  
-  console.log('🎮 Обработчики событий установлены');
-}
-
-// === ИНИЦИАЛИЗАЦИЯ ГРОМКОСТИ ===
-if (audioPlayer) {
-  audioPlayer.volume = 1;
-  if (volumeSlider) volumeSlider.value = 100;
-  if (volumeValue) volumeValue.textContent = '100%';
-  updateVolumeIcon(1);
-}
-
-// Предотвращение прокрутки при нажатии пробела
-window.addEventListener('keydown', (e) => {
-  if (e.code === 'Space' && e.target === document.body) {
-    e.preventDefault();
-  }
-});
-
-console.log('🎵 Музыкальный плеер Xysxa загружен');
-console.log('⌨️ Горячие клавиши: Пробел - play/pause, ←→ - перемотка, ↑↓ - громкость, M - mute, N/P - next/prev');
+      } else {
+        // Остановка
