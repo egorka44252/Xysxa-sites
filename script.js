@@ -124,13 +124,25 @@ async function loadTracksFromGitHub() {
 // === ЗАГРУЗКА ВИДЕО С GITHUB ===
 async function loadVideosFromGitHub() {
   try {
+    console.log('🎬 Начинаю загрузку видео с GitHub...');
     const response = await fetch(`${GITHUB_API}/video`);
-    if (!response.ok) throw new Error('Ошибка загрузки');
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     
     const files = await response.json();
+    console.log('📦 Получено файлов из папки video:', files.length);
+    
     const videoFiles = files.filter(f => 
       f.type === 'file' && /\.(mp4|webm)$/i.test(f.name)
     );
+    
+    if (videoFiles.length === 0) {
+      console.warn('⚠️ В папке video не найдено видео файлов');
+      backgroundVideos = [{ name: 'bg.mp4', url: RAW_BASE + '/video/bg.mp4' }];
+      return;
+    }
     
     backgroundVideos = videoFiles.map(f => ({
       name: f.name,
@@ -138,6 +150,16 @@ async function loadVideosFromGitHub() {
     }));
     
     console.log(`✅ Загружено видео: ${backgroundVideos.length}`);
+    backgroundVideos.forEach((v, i) => {
+      console.log(`  ${i + 1}. ${v.name}`);
+    });
+    
+    // Устанавливаем первое видео
+    if (bgVideo && backgroundVideos.length > 0) {
+      bgVideo.src = backgroundVideos[0].url;
+      bgVideo.load();
+    }
+    
   } catch (error) {
     console.error('❌ Ошибка загрузки видео:', error);
     backgroundVideos = [{ name: 'bg.mp4', url: RAW_BASE + '/video/bg.mp4' }];
@@ -437,14 +459,26 @@ function updatePlayButton() {
 // === НАВИГАЦИЯ ПО ТРЕКАМ ===
 function previousTrack() {
   const newIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+  console.log(`⏮️ Предыдущий трек: ${tracks[newIndex].title}`);
   loadTrack(newIndex);
-  if (isPlaying) setTimeout(() => playTrack(), 150);
+  if (isPlaying) {
+    // Увеличиваем задержку для надёжной загрузки
+    setTimeout(() => {
+      playTrack();
+    }, 200);
+  }
 }
 
 function nextTrack() {
   const newIndex = (currentTrackIndex + 1) % tracks.length;
+  console.log(`⏭️ Следующий трек: ${tracks[newIndex].title}`);
   loadTrack(newIndex);
-  if (isPlaying) setTimeout(() => playTrack(), 150);
+  if (isPlaying) {
+    // Увеличиваем задержку для надёжной загрузки
+    setTimeout(() => {
+      playTrack();
+    }, 200);
+  }
 }
 
 // === ФОРМАТИРОВАНИЕ ВРЕМЕНИ ===
@@ -525,6 +559,23 @@ function attachEventListeners() {
   if (repeatBtn) repeatBtn.addEventListener('click', toggleRepeatMode);
   if (themeBtn) themeBtn.addEventListener('click', changeBackgroundVideo);
   
+  // Копирование Discord при клике
+  const discordBtn = document.querySelector('.social-discord');
+  if (discordBtn) {
+    discordBtn.addEventListener('click', () => {
+      const discordName = 'xysxax_x';
+      navigator.clipboard.writeText(discordName).then(() => {
+        console.log('📋 Discord скопирован в буфер обмена');
+        showNotification('📋 Discord скопирован: ' + discordName);
+        discordBtn.classList.add('copied');
+        setTimeout(() => discordBtn.classList.remove('copied'), 600);
+      }).catch(err => {
+        console.error('Ошибка копирования:', err);
+        showNotification('❌ Не удалось скопировать');
+      });
+    });
+  }
+  
   if (progressBar) {
     progressBar.addEventListener('input', () => {
       seekTrack();
@@ -548,13 +599,29 @@ function attachEventListeners() {
     audioPlayer.addEventListener('timeupdate', updateTime);
     
     audioPlayer.addEventListener('ended', () => {
-      console.log('✅ Трек завершен');
+      console.log('✅ Трек завершен. Режим повтора:', repeatMode);
+      
       if (repeatMode === 'one') {
+        // Повтор одного трека
+        console.log('🔁 Повтор текущего трека');
         audioPlayer.currentTime = 0;
-        playTrack();
+        setTimeout(() => {
+          playTrack();
+        }, 100);
       } else if (repeatMode === 'all') {
+        // Следующий трек с автовоспроизведением
+        console.log('⏭️ Переход к следующему треку');
+        const wasPlaying = isPlaying;
         nextTrack();
+        // Гарантируем воспроизведение
+        if (wasPlaying) {
+          setTimeout(() => {
+            playTrack();
+          }, 300);
+        }
       } else {
+        // Остановка
+        console.log('⏹️ Воспроизведение остановлено');
         isPlaying = false;
         updatePlayButton();
         updatePlaylistUI();
