@@ -205,21 +205,6 @@ body {
   z-index: 1;
 }
 
-/* Стили для кастомных иконок */
-.social-icon-img {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  transition: transform 0.3s ease;
-}
-
-.header-social-btn:hover .social-icon-img {
-  transform: scale(1.15) rotate(5deg);
-}
-
 .header-social-btn span:last-child {
   position: relative;
   z-index: 1;
