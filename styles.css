@@ -153,6 +153,105 @@ body {
   animation: fadeInUp 1s ease 0.3s backwards;
 }
 
+/* === СОЦИАЛЬНЫЕ КНОПКИ В ШАПКЕ === */
+.header-social {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeInUp 1s ease 0.3s backwards;
+  margin-top: 20px;
+}
+
+.header-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.header-social-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.header-social-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.header-social-btn .social-icon {
+  font-size: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.header-social-btn span:last-child {
+  position: relative;
+  z-index: 1;
+}
+
+.header-youtube {
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+}
+
+.header-tiktok {
+  background: linear-gradient(135deg, #00f2ea, #ff0050);
+}
+
+.header-telegram {
+  background: linear-gradient(135deg, #0088cc, #00aaff);
+}
+
+.header-steam {
+  background: linear-gradient(135deg, #171a21, #1b2838);
+}
+
+.header-discord {
+  background: linear-gradient(135deg, #5865F2, #7289da);
+}
+
+.header-social-btn:hover {
+  transform: translateY(-5px) scale(1.08);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.header-social-btn:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Анимация для Discord */
+.header-discord.copied {
+  animation: copySuccess 0.6s ease;
+}
+
+@keyframes copySuccess {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* === СТАРЫЕ СТИЛИ КНОПОК === */
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -817,99 +916,6 @@ body {
 @keyframes contactPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.05); }
-}
-
-/* === СОЦИАЛЬНЫЕ КНОПКИ === */
-.social-links {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin: 25px 0;
-  position: relative;
-  z-index: 1;
-}
-
-.social-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 700;
-  border-radius: 50px;
-  text-decoration: none;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.social-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.social-btn:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
-.social-icon {
-  font-size: 1.3rem;
-  animation: iconBounce 2s ease-in-out infinite;
-  position: relative;
-  z-index: 1;
-}
-
-.social-btn span:last-child {
-  position: relative;
-  z-index: 1;
-}
-
-.social-telegram {
-  background: linear-gradient(135deg, #0088cc, #00aaff);
-  color: #fff;
-}
-
-.social-steam {
-  background: linear-gradient(135deg, #171a21, #1b2838);
-  color: #fff;
-}
-
-.social-discord {
-  background: linear-gradient(135deg, #5865F2, #7289da);
-  color: #fff;
-}
-
-.social-btn:hover {
-  transform: translateY(-5px) scale(1.08);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-  border-color: rgba(255, 255, 255, 0.6);
-}
-
-.social-btn:active {
-  transform: translateY(-2px) scale(1.02);
-}
-
-/* Анимация копирования для Discord */
-@keyframes copySuccess {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.social-discord.copied {
-  animation: copySuccess 0.6s ease;
 }
 
 /* === ФУТЕР === */
