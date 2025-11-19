@@ -820,5 +820,92 @@ body {
 }
 
 /* === ФУТЕР === */
+/* === КНОПКА СМЕНЫ ФОНА === */
+.theme-toggle-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15));
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  animation: themeButtonPulse 3s ease-in-out infinite;
+}
+
+@keyframes themeButtonPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); }
+  50% { transform: scale(1.05); box-shadow: 0 10px 35px rgba(255, 110, 196, 0.5); }
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1) rotate(180deg);
+  background: linear-gradient(135deg, rgba(255, 110, 196, 0.5), rgba(162, 89, 255, 0.5));
+  box-shadow: 0 12px 40px rgba(255, 110, 196, 0.6);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* === ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ === */
+@keyframes trackFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.track-icon-wrapper {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.track-icon {
+  animation: iconFloat 2s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.1); }
+}
+
+.playing-bars {
+  display: inline-block;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
+}
+
+.loading-spinner {
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+/* === ФУТЕР === */
 .site-footer {
   position: fixed;
