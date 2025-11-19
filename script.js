@@ -147,21 +147,52 @@ async function loadVideosFromGitHub() {
 // === ФОНОВОЕ ВИДЕО ===
 function initializeBackgroundVideo() {
   if (bgVideo) {
-    bgVideo.addEventListener('loadeddata', () => console.log('📹 Видео загружено'));
-    bgVideo.play().catch(() => console.log('🔇 Автовоспроизведение заблокировано'));
+    bgVideo.addEventListener('loadeddata', () => {
+      console.log('📹 Видео загружено');
+    });
+    
+    bgVideo.addEventListener('error', (e) => {
+      console.error('❌ Ошибка загрузки видео:', e);
+    });
+    
+    // Попытка воспроизведения
+    const playPromise = bgVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log('▶️ Видео воспроизводится');
+      }).catch(error => {
+        console.log('🔇 Автовоспроизведение заблокировано');
+        // Попробуем включить при первом клике пользователя
+        document.addEventListener('click', () => {
+          bgVideo.play();
+        }, { once: true });
+      });
+    }
   }
 }
 
 // Смена фонового видео
 function changeBackgroundVideo() {
-  if (!bgVideo || backgroundVideos.length === 0) return;
+  if (!bgVideo || backgroundVideos.length === 0) {
+    console.warn('⚠️ Нет доступных видео для смены фона');
+    return;
+  }
+  
+  // Добавляем эффект клика на кнопку
+  if (themeBtn) {
+    themeBtn.classList.add('clicked');
+    setTimeout(() => themeBtn.classList.remove('clicked'), 600);
+  }
   
   currentVideoIndex = (currentVideoIndex + 1) % backgroundVideos.length;
   const newVideo = backgroundVideos[currentVideoIndex];
   
-  console.log(`🎬 Смена фона: ${newVideo.name}`);
+  console.log(`🎬 Смена фона ${currentVideoIndex + 1}/${backgroundVideos.length}: ${newVideo.name}`);
   
-  bgVideo.style.transition = 'opacity 0.5s';
+  // Показываем уведомление
+  showNotification(`🎬 Фон: ${newVideo.name.replace(/\.(mp4|webm)$/i, '')}`);
+  
+  bgVideo.style.transition = 'opacity 0.5s ease';
   bgVideo.style.opacity = '0';
   
   setTimeout(() => {
@@ -169,8 +200,73 @@ function changeBackgroundVideo() {
     bgVideo.load();
     bgVideo.play().then(() => {
       bgVideo.style.opacity = '1';
+      console.log('✅ Новый фон загружен');
+    }).catch(err => {
+      console.error('❌ Ошибка воспроизведения видео:', err);
+      bgVideo.style.opacity = '1';
     });
   }, 500);
+}
+
+// Показать уведомление
+function showNotification(message) {
+  // Удаляем старое уведомление если есть
+  const oldNotif = document.querySelector('.video-notification');
+  if (oldNotif) oldNotif.remove();
+  
+  const notification = document.createElement('div');
+  notification.className = 'video-notification';
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 180px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(255, 110, 196, 0.95), rgba(162, 89, 255, 0.95));
+    color: white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    animation: slideInRight 0.5s ease, slideOutRight 0.5s ease 2.5s;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => notification.remove(), 3000);
+}
+
+// Добавляем CSS для уведомлений
+if (!document.getElementById('notification-styles')) {
+  const style = document.createElement('style');
+  style.id = 'notification-styles';
+  style.textContent = `
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes slideOutRight {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+    }
+  `;
+  document.head.appendChild(style);
 }
 
 // Получение иконки для трека
