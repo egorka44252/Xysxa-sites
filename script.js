@@ -11,7 +11,7 @@ const tracks = [
 
 // === ЭЛЕМЕНТЫ DOM ===
 let audioPlayer, playBtn, prevBtn, nextBtn, progressBar, volumeSlider, muteBtn;
-let playlistSelect, trackName, trackTime, currentTimeEl, totalTimeEl, coverImg;
+let playlistTracks, trackName, trackTime, currentTimeEl, totalTimeEl, coverImg;
 let volumeValue, playIcon, pauseIcon, volumeIcon, muteIcon, musicPlayer;
 
 // === СОСТОЯНИЕ ===
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log('Инициализация плеера...');
   initializeElements();
   initializeBackgroundVideo();
-  loadPlaylist();
+  renderPlaylist();
   loadTrack(0);
   attachEventListeners();
   console.log('Плеер готов к работе');
@@ -40,7 +40,7 @@ function initializeElements() {
   progressBar = document.getElementById('progress-bar');
   volumeSlider = document.getElementById('volume-slider');
   muteBtn = document.getElementById('mute-btn');
-  playlistSelect = document.getElementById('playlist-select');
+  playlistTracks = document.getElementById('playlist-tracks');
   trackName = document.getElementById('track-name');
   trackTime = document.getElementById('track-time');
   currentTimeEl = document.getElementById('current-time');
@@ -56,6 +56,7 @@ function initializeElements() {
   // Проверка наличия всех элементов
   if (!audioPlayer) console.error('Аудио плеер не найден!');
   if (!playBtn) console.error('Кнопка Play не найдена!');
+  if (!playlistTracks) console.error('Контейнер плейлиста не найден!');
 }
 
 // === ФОНОВОЕ ВИДЕО ===
@@ -82,18 +83,61 @@ function initializeBackgroundVideo() {
   }
 }
 
-// === ЗАГРУЗКА ПЛЕЙЛИСТА ===
-function loadPlaylist() {
-  playlistSelect.innerHTML = '';
+// === РЕНДЕР ПЛЕЙЛИСТА ===
+function renderPlaylist() {
+  if (!playlistTracks) return;
+  
+  playlistTracks.innerHTML = '';
   
   tracks.forEach((track, index) => {
-    const option = document.createElement('option');
-    option.value = index;
-    option.textContent = track.title;
-    playlistSelect.appendChild(option);
+    const trackItem = document.createElement('div');
+    trackItem.className = 'track-item';
+    trackItem.dataset.index = index;
+    
+    if (index === currentTrackIndex) {
+      trackItem.classList.add('active');
+    }
+    
+    trackItem.innerHTML = `
+      <div class="track-item-left">
+        <div class="track-number">${index + 1}</div>
+        <div class="track-details">
+          <div class="track-title-small">${track.title}</div>
+        </div>
+      </div>
+      <div class="track-play-icon">${index === currentTrackIndex && isPlaying ? '🔊' : '▶️'}</div>
+    `;
+    
+    trackItem.addEventListener('click', () => {
+      loadTrack(index);
+      setTimeout(() => playTrack(), 100);
+    });
+    
+    playlistTracks.appendChild(trackItem);
   });
   
-  console.log(`Загружено треков: ${tracks.length}`);
+  console.log(`Плейлист отрендерен: ${tracks.length} треков`);
+}
+
+// === ОБНОВЛЕНИЕ АКТИВНОГО ТРЕКА В ПЛЕЙЛИСТЕ ===
+function updatePlaylistUI() {
+  const allItems = playlistTracks.querySelectorAll('.track-item');
+  
+  allItems.forEach((item, index) => {
+    const playIcon = item.querySelector('.track-play-icon');
+    
+    if (index === currentTrackIndex) {
+      item.classList.add('active');
+      if (playIcon) {
+        playIcon.textContent = isPlaying ? '🔊' : '▶️';
+      }
+    } else {
+      item.classList.remove('active');
+      if (playIcon) {
+        playIcon.textContent = '▶️';
+      }
+    }
+  });
 }
 
 // === ЗАГРУЗКА ТРЕКА ===
@@ -114,15 +158,15 @@ function loadTrack(index) {
   audioPlayer.src = trackUrl;
   coverImg.src = COVER_URL;
   
-  // Обновление выбора в плейлисте
-  playlistSelect.value = index;
-  
   // Загрузка метаданных
   audioPlayer.load();
   
   // Сброс прогресса
   progressBar.value = 0;
   updateProgressBackground();
+  
+  // Обновление плейлиста
+  updatePlaylistUI();
   
   console.log(`Трек загружен: ${trackUrl}`);
 }
@@ -148,12 +192,14 @@ function playTrack() {
     playPromise.then(() => {
       isPlaying = true;
       updatePlayButton();
-      musicPlayer.classList.add('playing');
+      updatePlaylistUI();
+      if (musicPlayer) musicPlayer.classList.add('playing');
       console.log('Воспроизведение начато');
     }).catch(error => {
       console.error('Ошибка воспроизведения:', error);
       isPlaying = false;
       updatePlayButton();
+      updatePlaylistUI();
     });
   }
 }
@@ -162,7 +208,8 @@ function pauseTrack() {
   audioPlayer.pause();
   isPlaying = false;
   updatePlayButton();
-  musicPlayer.classList.remove('playing');
+  updatePlaylistUI();
+  if (musicPlayer) musicPlayer.classList.remove('playing');
   console.log('Воспроизведение приостановлено');
 }
 
@@ -303,15 +350,6 @@ function attachEventListeners() {
   volumeSlider.addEventListener('input', updateVolume);
   muteBtn.addEventListener('click', toggleMute);
   
-  // Плейлист
-  playlistSelect.addEventListener('change', (e) => {
-    const index = parseInt(e.target.value);
-    if (!isNaN(index) && index >= 0) {
-      loadTrack(index);
-      setTimeout(() => playTrack(), 100);
-    }
-  });
-  
   // События аудио
   audioPlayer.addEventListener('loadedmetadata', () => {
     const duration = audioPlayer.duration;
@@ -336,13 +374,15 @@ function attachEventListeners() {
   audioPlayer.addEventListener('play', () => {
     isPlaying = true;
     updatePlayButton();
-    musicPlayer.classList.add('playing');
+    updatePlaylistUI();
+    if (musicPlayer) musicPlayer.classList.add('playing');
   });
   
   audioPlayer.addEventListener('pause', () => {
     isPlaying = false;
     updatePlayButton();
-    musicPlayer.classList.remove('playing');
+    updatePlaylistUI();
+    if (musicPlayer) musicPlayer.classList.remove('playing');
   });
   
   audioPlayer.addEventListener('error', (e) => {
