@@ -1,13 +1,9 @@
 // === КОНФИГУРАЦИЯ ===
-const RAW_BASE = 'https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main';
+const GITHUB_USER = 'egorka44252';
+const GITHUB_REPO = 'Xysxa-sites';
+const MUSIC_FOLDER = 'music';
+const RAW_BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main`;
 const COVER_URL = RAW_BASE + '/img/logo.jpg';
-
-// Список треков
-const tracks = [
-  { title: 'чипсики доритос xD', file: 'пипсики_доритос_xD.mp3' },
-  { title: 'Бэквуд', file: 'Бэквуд.mp3' },
-  { title: 'Дисклеймер', file: 'Дисклеймер.mp3' }
-];
 
 // === ЭЛЕМЕНТЫ DOM ===
 let audioPlayer, playBtn, prevBtn, nextBtn, progressBar, volumeSlider, muteBtn;
@@ -15,21 +11,106 @@ let playlistTracks, trackName, trackTime, currentTimeEl, totalTimeEl, coverImg;
 let volumeValue, playIcon, pauseIcon, volumeIcon, muteIcon, musicPlayer;
 
 // === СОСТОЯНИЕ ===
+let tracks = [];
 let currentTrackIndex = 0;
 let isPlaying = false;
 let isMuted = false;
 let previousVolume = 1;
 
 // === ИНИЦИАЛИЗАЦИЯ ===
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   console.log('Инициализация плеера...');
   initializeElements();
   initializeBackgroundVideo();
-  renderPlaylist();
-  loadTrack(0);
+  
+  // Показываем индикатор загрузки
+  showLoadingState();
+  
+  // Загружаем треки с GitHub
+  await loadTracksFromGitHub();
+  
+  if (tracks.length > 0) {
+    renderPlaylist();
+    loadTrack(0);
+  } else {
+    showErrorState();
+  }
+  
   attachEventListeners();
   console.log('Плеер готов к работе');
 });
+
+// Показать состояние загрузки
+function showLoadingState() {
+  if (playlistTracks) {
+    playlistTracks.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #fffbe6;">
+        <div style="font-size: 2rem; margin-bottom: 15px;">🎵</div>
+        <div style="font-size: 1.2rem;">Загрузка треков...</div>
+      </div>
+    `;
+  }
+  if (trackName) {
+    trackName.textContent = 'Загрузка...';
+  }
+}
+
+// Показать ошибку
+function showErrorState() {
+  if (playlistTracks) {
+    playlistTracks.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: #ff6ec4;">
+        <div style="font-size: 2rem; margin-bottom: 15px;">⚠️</div>
+        <div style="font-size: 1.1rem;">Не удалось загрузить треки</div>
+        <div style="font-size: 0.9rem; margin-top: 10px; opacity: 0.7;">Проверьте подключение к интернету</div>
+      </div>
+    `;
+  }
+  if (trackName) {
+    trackName.textContent = 'Треки не найдены';
+  }
+}
+
+// Загрузка треков с GitHub API
+async function loadTracksFromGitHub() {
+  try {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${MUSIC_FOLDER}`;
+    console.log('Загрузка треков из:', apiUrl);
+    
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const files = await response.json();
+    
+    // Фильтруем только mp3 файлы
+    const musicFiles = files.filter(file => 
+      file.type === 'file' && 
+      (file.name.toLowerCase().endsWith('.mp3') || 
+       file.name.toLowerCase().endsWith('.wav') ||
+       file.name.toLowerCase().endsWith('.ogg'))
+    );
+    
+    // Преобразуем в формат треков
+    tracks = musicFiles.map(file => ({
+      title: decodeURIComponent(file.name).replace(/\.(mp3|wav|ogg)$/i, ''),
+      file: file.name,
+      download_url: file.download_url
+    }));
+    
+    console.log(`Загружено треков: ${tracks.length}`);
+    
+    if (tracks.length === 0) {
+      console.warn('В папке music не найдено аудиофайлов');
+    }
+    
+  } catch (error) {
+    console.error('Ошибка загрузки треков:', error);
+    tracks = [];
+  }
+}
 
 // Инициализация элементов
 function initializeElements() {
@@ -85,7 +166,7 @@ function initializeBackgroundVideo() {
 
 // === РЕНДЕР ПЛЕЙЛИСТА ===
 function renderPlaylist() {
-  if (!playlistTracks) return;
+  if (!playlistTracks || tracks.length === 0) return;
   
   playlistTracks.innerHTML = '';
   
@@ -97,6 +178,9 @@ function renderPlaylist() {
     if (index === currentTrackIndex) {
       trackItem.classList.add('active');
     }
+    
+    // Создаем красивую анимацию появления
+    trackItem.style.animation = `trackFadeIn 0.4s ease ${index * 0.05}s backwards`;
     
     trackItem.innerHTML = `
       <div class="track-item-left">
@@ -116,11 +200,32 @@ function renderPlaylist() {
     playlistTracks.appendChild(trackItem);
   });
   
+  // Добавляем CSS анимацию если её нет
+  if (!document.getElementById('track-animations')) {
+    const style = document.createElement('style');
+    style.id = 'track-animations';
+    style.textContent = `
+      @keyframes trackFadeIn {
+        from {
+          opacity: 0;
+          transform: translateX(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
   console.log(`Плейлист отрендерен: ${tracks.length} треков`);
 }
 
 // === ОБНОВЛЕНИЕ АКТИВНОГО ТРЕКА В ПЛЕЙЛИСТЕ ===
 function updatePlaylistUI() {
+  if (!playlistTracks) return;
+  
   const allItems = playlistTracks.querySelectorAll('.track-item');
   
   allItems.forEach((item, index) => {
