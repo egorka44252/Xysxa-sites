@@ -3,177 +3,705 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>XYSXA - Музыкальный портал</title>
-  <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/img/logo.jpg">
-  <link rel="stylesheet" href="styles.css">
+  <title>Xysxa Casino - Рулетка</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a0033 0%, #2d1b4e 50%, #1a0033 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 50%, rgba(162, 89, 255, 0.3), transparent 50%),
+                  radial-gradient(circle at 80% 50%, rgba(255, 110, 196, 0.3), transparent 50%);
+      animation: bgPulse 8s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes bgPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      padding: 30px 0;
+      animation: fadeInDown 1s ease;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      font-size: 3rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #ff6ec4, #a259ff, #ffd166);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(255, 110, 196, 0.5);
+      margin-bottom: 10px;
+    }
+
+    .balance-display {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 30px 0;
+      flex-wrap: wrap;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 20px 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      animation: cardFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .balance-label {
+      font-size: 0.9rem;
+      color: #ffd166;
+      margin-bottom: 5px;
+    }
+
+    .balance-amount {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+
+    .game-area {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin: 30px 0;
+    }
+
+    @media (max-width: 968px) {
+      .game-area {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .roulette-section, .betting-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffd166;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 0 0 20px rgba(255, 209, 102, 0.5);
+    }
+
+    .roulette-wheel {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto 30px;
+      position: relative;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2d1b4e, #1a0033);
+      box-shadow: 0 0 50px rgba(162, 89, 255, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.5);
+      border: 5px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .wheel-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      font-weight: 900;
+      color: #ffd166;
+      text-shadow: 0 0 30px rgba(255, 209, 102, 0.8);
+      transition: transform 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    .wheel-inner.spinning {
+      animation: spin 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(1800deg); }
+    }
+
+    .bet-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .bet-button {
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(255, 110, 196, 0.3), rgba(162, 89, 255, 0.3));
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .bet-button:hover {
+      transform: translateY(-3px);
+      background: linear-gradient(135deg, rgba(255, 110, 196, 0.5), rgba(162, 89, 255, 0.5));
+      box-shadow: 0 10px 25px rgba(255, 110, 196, 0.4);
+    }
+
+    .bet-button.selected {
+      background: linear-gradient(135deg, #ff6ec4, #a259ff);
+      border-color: #ffd166;
+      box-shadow: 0 0 30px rgba(255, 209, 102, 0.6);
+    }
+
+    .bet-amount-section {
+      margin: 20px 0;
+    }
+
+    .bet-input {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .quick-bet-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .quick-bet {
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #ffd166;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .quick-bet:hover {
+      background: rgba(255, 209, 102, 0.2);
+      border-color: #ffd166;
+    }
+
+    .spin-button {
+      width: 100%;
+      padding: 20px;
+      background: linear-gradient(135deg, #ff6ec4, #a259ff);
+      border: none;
+      border-radius: 15px;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(255, 110, 196, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .spin-button:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 15px 40px rgba(255, 110, 196, 0.7);
+    }
+
+    .spin-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .bonus-section {
+      margin: 30px 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .code-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .code-input {
+      flex: 1;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .code-button {
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #ffd166, #ff6ec4);
+      border: none;
+      border-radius: 10px;
+      color: #1a0033;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .code-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(255, 209, 102, 0.5);
+    }
+
+    .bonus-list {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 15px;
+    }
+
+    .bonus-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin: 8px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border-left: 4px solid #ff6ec4;
+    }
+
+    .bonus-code {
+      font-weight: 900;
+      color: #ffd166;
+      font-size: 1.1rem;
+    }
+
+    .bonus-reward {
+      color: #a259ff;
+      font-weight: 700;
+    }
+
+    .history-section {
+      margin: 30px 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .history-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin: 8px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+
+    .history-item.win {
+      border-left: 4px solid #4ade80;
+    }
+
+    .history-item.loss {
+      border-left: 4px solid #f87171;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 20px 30px;
+      background: linear-gradient(135deg, #ff6ec4, #a259ff);
+      border-radius: 15px;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: slideIn 0.5s ease, slideOut 0.5s ease 2.5s;
+      z-index: 1000;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+
+    .reset-button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: rgba(248, 113, 113, 0.3);
+      border: 2px solid rgba(248, 113, 113, 0.5);
+      border-radius: 10px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .reset-button:hover {
+      background: rgba(248, 113, 113, 0.5);
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-  <!-- Фоновое видео -->
-  <div class="bg-layer">
-    <video id="bg-video" autoplay loop muted playsinline preload="auto">
-      <source src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/video/bg.mp4" type="video/mp4">
-    </video>
-    <div class="bg-overlay"></div>
-  </div>
-
-  <!-- Кнопка смены фона -->
-  <button id="theme-btn" class="theme-toggle-btn" title="Сменить фон (B)">
-    <div class="theme-btn-inner">
-      <svg class="theme-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-      </svg>
-      <span class="theme-text">Сменить фон</span>
+  <div class="bg-animation"></div>
+  
+  <div class="container">
+    <div class="header">
+      <h1 class="logo">🎰 XYSXA CASINO 🎰</h1>
+      <p style="color: #ffd166; font-size: 1.2rem;">Испытай удачу в рулетке!</p>
     </div>
-  </button>
 
-  <!-- Анимированные частицы -->
-  <div class="particles">
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-  </div>
-
-  <!-- Шапка сайта -->
-  <header class="site-header">
-    <h1 class="logo-title">
-      <span class="logo-text">Xysxa</span>
-      <span class="logo-emoji">X_X</span>
-    </h1>
-    
-    <!-- Социальные ссылки -->
-    <div class="header-social">
-      <a href="https://www.youtube.com/@kotvsmetane44252/videos" target="_blank" class="header-social-btn header-youtube" title="YouTube">
-        <span class="social-icon">📺</span>
-        <span>YouTube</span>
-      </a>
-      <a href="https://www.tiktok.com/@egorka4425" target="_blank" class="header-social-btn header-tiktok" title="TikTok">
-        <span class="social-icon">🎵</span>
-        <span>TikTok</span>
-      </a>
-      <a href="https://t.me/ZAZAHAPATSoft_sign" target="_blank" class="header-social-btn header-telegram" title="Telegram">
-        <span class="social-icon">✈️</span>
-        <span>Telegram</span>
-      </a>
-      <a href="https://steamcommunity.com/profiles/76561199558161465/" target="_blank" class="header-social-btn header-steam" title="Steam">
-        <span class="social-icon">🎮</span>
-        <span>Steam</span>
-      </a>
-      <div class="header-social-btn header-discord" title="Discord: xysxax_x (клик чтобы скопировать)">
-        <span class="social-icon">💬</span>
-        <span>xysxax_x</span>
+    <div class="balance-display">
+      <div class="balance-card">
+        <div class="balance-label">💰 Баланс</div>
+        <div class="balance-amount" id="balance">1000</div>
+      </div>
+      <div class="balance-card">
+        <div class="balance-label">🎲 Всего игр</div>
+        <div class="balance-amount" id="totalGames">0</div>
+      </div>
+      <div class="balance-card">
+        <div class="balance-label">🏆 Выигрышей</div>
+        <div class="balance-amount" id="wins">0</div>
       </div>
     </div>
-  </header>
 
-  <!-- Основной контент -->
-  <main class="container">
-    <!-- Музыкальный плеер -->
-    <section class="music-player">
-      <div class="player-wrapper">
-        <!-- Обложка -->
-        <div class="album-cover-wrapper">
-          <div class="album-cover">
-            <img id="cover-img" src="https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/img/logo.jpg" alt="Album Cover">
-            <div class="vinyl-effect"></div>
-          </div>
-          <div class="glow-effect"></div>
+    <div class="game-area">
+      <div class="roulette-section">
+        <h2 class="section-title">🎡 Рулетка</h2>
+        <div class="roulette-wheel">
+          <div class="wheel-inner" id="wheelNumber">?</div>
         </div>
-
-        <!-- Информация о треке -->
-        <div class="track-info">
-          <h2 id="track-name" class="track-name">Загрузка...</h2>
-          <p id="track-time" class="track-duration">00:00 / 00:00</p>
+        <div style="text-align: center; color: #ffd166; font-size: 1.2rem; font-weight: 700;">
+          <div id="resultText">Сделай ставку!</div>
         </div>
-
-        <!-- Управление -->
-        <div class="player-controls">
-          <button id="prev-btn" class="control-btn" title="Предыдущий трек">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z"/>
-            </svg>
-          </button>
-          
-          <button id="play-btn" class="control-btn play-btn" title="Воспроизвести">
-            <svg id="play-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg id="pause-icon" width="32" height="32" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
-              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-          </button>
-          
-          <button id="next-btn" class="control-btn" title="Следующий трек">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-            </svg>
-          </button>
-
-          <button id="repeat-btn" class="control-btn" title="Повтор: Все треки">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Прогресс бар -->
-        <div class="progress-container">
-          <input type="range" id="progress-bar" class="progress-bar" min="0" max="100" value="0" step="0.1">
-          <div class="time-display">
-            <span id="current-time">00:00</span>
-            <span id="total-time">00:00</span>
-          </div>
-        </div>
-
-        <!-- Громкость -->
-        <div class="bottom-controls">
-          <div class="volume-control">
-            <button id="mute-btn" class="volume-btn" title="Звук">
-              <svg id="volume-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
-              </svg>
-              <svg id="mute-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display:none;">
-                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-              </svg>
-            </button>
-            <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100" step="1">
-            <span id="volume-value" class="volume-value">100%</span>
-          </div>
-        </div>
-
-        <!-- Красивый список треков -->
-        <div class="playlist-section">
-          <h3 class="playlist-title">
-            <span class="playlist-icon">🎶</span>
-            Плейлист
-          </h3>
-          <div id="playlist-tracks" class="playlist-tracks"></div>
-        </div>
-
-        <!-- Скрытый аудио элемент -->
-        <audio id="audio-player" preload="metadata"></audio>
       </div>
-    </section>
 
-    <!-- Информационная карточка -->
-    <section class="info-card">
-      <div class="info-icon">🎧</div>
-      <h2 class="info-title">О проекте</h2>
-      <p class="info-text">Добро пожаловать на музыкальный портал Xysxa!</p>
-      <p class="info-text">Наслаждайтесь лучшими треками</p>
-      <p class="contact-info">📞 Контакт: +380 93 417 3944</p>
-    </section>
-  </main>
+      <div class="betting-section">
+        <h2 class="section-title">💸 Ставки</h2>
+        
+        <div class="bet-options">
+          <button class="bet-button" data-bet="red">🔴 Красное (x2)</button>
+          <button class="bet-button" data-bet="black">⚫ Черное (x2)</button>
+          <button class="bet-button" data-bet="even">⚪ Четное (x2)</button>
+          <button class="bet-button" data-bet="odd">🔵 Нечетное (x2)</button>
+        </div>
 
-  <!-- Футер -->
-  <footer class="site-footer">
-    <p>&copy; 2025 Xysxa. Все права защищены.</p>
-  </footer>
+        <div class="bet-amount-section">
+          <input type="number" id="betAmount" class="bet-input" placeholder="Сумма ставки" min="10" value="50">
+          <div class="quick-bet-buttons">
+            <button class="quick-bet" data-amount="50">50</button>
+            <button class="quick-bet" data-amount="100">100</button>
+            <button class="quick-bet" data-amount="250">250</button>
+            <button class="quick-bet" data-amount="500">500</button>
+          </div>
+        </div>
 
-  <script src="script.js"></script>
+        <button class="spin-button" id="spinButton">🎰 Крутить!</button>
+      </div>
+    </div>
+
+    <div class="bonus-section">
+      <h2 class="section-title">🎁 Бонусные коды</h2>
+      <p style="text-align: center; color: #fff; margin-bottom: 15px;">
+        Введи промокод и получи бонусы!
+      </p>
+      
+      <div class="code-input-group">
+        <input type="text" id="promoCode" class="code-input" placeholder="ВВЕДИ КОД">
+        <button class="code-button" id="redeemButton">Активировать</button>
+      </div>
+
+      <div class="bonus-list">
+        <h3 style="color: #ffd166; margin-bottom: 15px;">📋 Доступные коды:</h3>
+        <div class="bonus-item">
+          <span class="bonus-code">WEXSIDE</span>
+          <span class="bonus-reward">+500 💰</span>
+        </div>
+        <div class="bonus-item">
+          <span class="bonus-code">FAKECRIME</span>
+          <span class="bonus-reward">+1000 💰</span>
+        </div>
+        <div class="bonus-item">
+          <span class="bonus-code">XYSXA2025</span>
+          <span class="bonus-reward">+2000 💰</span>
+        </div>
+        <div class="bonus-item">
+          <span class="bonus-code">LUCKY777</span>
+          <span class="bonus-reward">+777 💰</span>
+        </div>
+        <div class="bonus-item">
+          <span class="bonus-code">DEVELOPER</span>
+          <span class="bonus-reward">+5000 💰</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <h2 class="section-title">📜 История игр</h2>
+      <div class="history-list" id="historyList">
+        <p style="text-align: center; color: #999;">История пуста. Начни играть!</p>
+      </div>
+      <button class="reset-button" id="resetButton">🔄 Сбросить прогресс</button>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      balance: 1000,
+      totalGames: 0,
+      wins: 0,
+      selectedBet: null,
+      isSpinning: false,
+      history: [],
+      usedCodes: []
+    };
+
+    const bonusCodes = {
+      'WEXSIDE': 500,
+      'FAKECRIME': 1000,
+      'XYSXA2025': 2000,
+      'LUCKY777': 777,
+      'DEVELOPER': 5000
+    };
+
+    const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+    const blackNumbers = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+
+    function loadState() {
+      const saved = window.localStorage.getItem('casinoState');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.assign(state, parsed);
+        updateUI();
+      }
+    }
+
+    function saveState() {
+      window.localStorage.setItem('casinoState', JSON.stringify(state));
+    }
+
+    function updateUI() {
+      document.getElementById('balance').textContent = state.balance;
+      document.getElementById('totalGames').textContent = state.totalGames;
+      document.getElementById('wins').textContent = state.wins;
+    }
+
+    function showNotification(message, isWin = false) {
+      const notif = document.createElement('div');
+      notif.className = 'notification';
+      notif.style.background = isWin 
+        ? 'linear-gradient(135deg, #4ade80, #22c55e)' 
+        : 'linear-gradient(135deg, #ff6ec4, #a259ff)';
+      notif.textContent = message;
+      document.body.appendChild(notif);
+      
+      setTimeout(() => notif.remove(), 3000);
+    }
+
+    function addToHistory(bet, amount, result, win) {
+      const item = { bet, amount, result, win, time: new Date().toLocaleTimeString() };
+      state.history.unshift(item);
+      if (state.history.length > 20) state.history.pop();
+      
+      updateHistory();
+    }
+
+    function updateHistory() {
+      const list = document.getElementById('historyList');
+      if (state.history.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: #999;">История пуста. Начни играть!</p>';
+        return;
+      }
+      
+      list.innerHTML = state.history.map(item => `
+        <div class="history-item ${item.win ? 'win' : 'loss'}">
+          <span>${item.time} - ${item.bet.toUpperCase()}</span>
+          <span>Ставка: ${item.amount} → ${item.win ? '+' : ''}${item.win ? item.amount : -item.amount}</span>
+        </div>
+      `).join('');
+    }
+
+    function spinWheel() {
+      if (state.isSpinning || !state.selectedBet) {
+        showNotification('Выбери тип ставки!');
+        return;
+      }
+
+      const betAmount = parseInt(document.getElementById('betAmount').value);
+      if (betAmount < 10 || betAmount > state.balance) {
+        showNotification('Неверная сумма ставки!');
+        return;
+      }
+
+      state.isSpinning = true;
+      state.balance -= betAmount;
+      updateUI();
+
+      const wheelNumber = document.getElementById('wheelNumber');
+      const resultText = document.getElementById('resultText');
+      wheelNumber.classList.add('spinning');
+      resultText.textContent = 'Крутим...';
+
+      setTimeout(() => {
+        const result = Math.floor(Math.random() * 37);
+        wheelNumber.textContent = result;
+        wheelNumber.classList.remove('spinning');
+
+        const isRed = redNumbers.includes(result);
+        const isBlack = blackNumbers.includes(result);
+        const isEven = result !== 0 && result % 2 === 0;
+        const isOdd = result !== 0 && result % 2 === 1;
+
+        let win = false;
+        if (state.selectedBet === 'red' && isRed) win = true;
+        if (state.selectedBet === 'black' && isBlack) win = true;
+        if (state.selectedBet === 'even' && isEven) win = true;
+        if (state.selectedBet === 'odd' && isOdd) win = true;
+
+        state.totalGames++;
+
+        if (win) {
+          state.wins++;
+          state.balance += betAmount * 2;
+          resultText.textContent = `🎉 ВЫИГРЫШ! +${betAmount} 💰`;
+          showNotification(`Победа! Выпало ${result}`, true);
+        } else {
+          resultText.textContent = `😢 Проигрыш. Выпало ${result}`;
+          showNotification(`Проигрыш. Выпало ${result}`);
+        }
+
+        addToHistory(state.selectedBet, betAmount, result, win);
+        updateUI();
+        saveState();
+
+        state.isSpinning = false;
+      }, 3000);
+    }
+
+    document.querySelectorAll('.bet-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.bet-button').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        state.selectedBet = btn.dataset.bet;
+      });
+    });
+
+    document.querySelectorAll('.quick-bet').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.getElementById('betAmount').value = btn.dataset.amount;
+      });
+    });
+
+    document.getElementById('spinButton').addEventListener('click', spinWheel);
+
+    document.getElementById('redeemButton').addEventListener('click', () => {
+      const code = document.getElementById('promoCode').value.toUpperCase().trim();
+      
+      if (!code) {
+        showNotification('Введи промокод!');
+        return;
+      }
+
+      if (state.usedCodes.includes(code)) {
+        showNotification('Этот код уже использован!');
+        return;
+      }
+
+      if (bonusCodes[code]) {
+        state.balance += bonusCodes[code];
+        state.usedCodes.push(code);
+        showNotification(`🎁 Код активирован! +${bonusCodes[code]} 💰`, true);
+        document.getElementById('promoCode').value = '';
+        updateUI();
+        saveState();
+      } else {
+        showNotification('❌ Неверный промокод!');
+      }
+    });
+
+    document.getElementById('resetButton').addEventListener('click', () => {
+      if (confirm('Ты уверен? Весь прогресс будет сброшен!')) {
+        window.localStorage.removeItem('casinoState');
+        location.reload();
+      }
+    });
+
+    loadState();
+    updateHistory();
+  </script>
 </body>
 </html>
