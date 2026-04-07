@@ -3,92 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Дія Мобіль</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Дія</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f4f8;
+            color: #1c1c1e;
+            max-width: 480px;
+            margin: 0 auto;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* Екран PIN */
+        #pin-screen {
+            background: linear-gradient(180deg, #a0d8ff, #c0f0ff);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+        }
+        .pin-title { font-size: 22px; font-weight: 600; margin-bottom: 30px; }
+        .dots {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        .dot {
+            width: 14px; height: 14px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .dot.filled { background: #0052cc; transform: scale(1.3); }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 280px;
+        }
+        .key {
+            width: 70px; height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        .key:active { background: #e0e0e0; transform: scale(0.95); }
+
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            width: 280px;
+            margin-top: 20px;
+        }
+        .fingerprint { font-size: 42px; color: #333; }
+
+        /* Головний екран */
+        #main-screen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(to bottom, #e0f0ff, #f8f9ff);
+        }
+        .header {
+            padding: 20px;
+            background: rgba(255,255,255,0.9);
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .greeting { padding: 15px 20px; font-size: 26px; font-weight: 700; }
+
+        .card {
+            background: white;
+            margin: 15px 20px;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .services {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .service {
+            text-align: center;
+            font-size: 12px;
+        }
+        .service i { font-size: 28px; display: block; margin-bottom: 6px; }
+
+        /* Екран документа */
+        #doc-screen {
+            display: none;
+            height: 100vh;
+            background: linear-gradient(135deg, #a8d0ff, #f0c0ff);
+            padding-top: 50px;
+        }
+        .doc-card {
+            background: white;
+            margin: 20px;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+        .doc-header {
+            background: #0052cc;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .doc-content {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        .doc-photo {
+            width: 120px;
+            height: 160px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .doc-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Навігація */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 15px;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        }
+        .nav-item { text-align: center; color: #666; font-size: 11px; }
+        .nav-item.active { color: #0052cc; }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 3px; }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Дія</span>
-                </div>
-                <div class="user">
-                    <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                    <span>Привіт, Іване!</span>
-                </div>
-            </div>
-        </header>
 
-        <!-- Main Content -->
-        <main>
-            <div class="welcome">
-                <h1>Добрий день!</h1>
-                <p>Що хочете зробити сьогодні?</p>
-            </div>
+    <!-- Екран введення PIN -->
+    <div id="pin-screen">
+        <div class="pin-title">Код для входу</div>
+        <div class="dots" id="dots">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
 
-            <!-- Services Grid -->
-            <div class="services">
-                <div class="service-card" onclick="alert('Відкрито: Документи')">
-                    <i class="fas fa-id-card"></i>
-                    <span>Документи</span>
-                </div>
-                <div class="service-card" onclick="alert('Відкрито: Посвідчення')">
-                    <i class="fas fa-car"></i>
-                    <span>Посвідчення</span>
-                </div>
-                <div class="service-card" onclick="alert('Відкрито: COVID-сертифікат')">
-                    <i class="fas fa-virus-covid"></i>
-                    <span>Сертифікат</span>
-                </div>
-                <div class="service-card" onclick="alert('Відкрито: Платежі')">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>Платежі</span>
-                </div>
-            </div>
+        <div class="keypad" id="keypad">
+            <div class="key" data-key="1">1</div>
+            <div class="key" data-key="2">2</div>
+            <div class="key" data-key="3">3</div>
+            <div class="key" data-key="4">4</div>
+            <div class="key" data-key="5">5</div>
+            <div class="key" data-key="6">6</div>
+            <div class="key" data-key="7">7</div>
+            <div class="key" data-key="8">8</div>
+            <div class="key" data-key="9">9</div>
+        </div>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <h2>Швидкі дії</h2>
-                <button class="action-btn" onclick="showModal()">
-                    <i class="fas fa-plus"></i> Отримати послугу
-                </button>
-            </div>
-        </main>
+        <div class="bottom-row">
+            <div class="key fingerprint" id="fingerprint">👆</div>
+            <div class="key" data-key="0">0</div>
+            <div class="key" id="backspace">⌫</div>
+        </div>
 
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
-                <i class="fas fa-home"></i>
-                <span>Головна</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-search"></i>
-                <span>Послуги</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-bell"></i>
-                <span>Сповіщення</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-user"></i>
-                <span>Профіль</span>
-            </a>
-        </nav>
+        <p style="margin-top: 50px; color: #555; font-size: 15px;">
+            Не пам'ятаю код для входу
+        </p>
     </div>
 
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h3>Оберіть послугу</h3>
-            <p>Тут може бути форма або список послуг</p>
-            <button onclick="hideModal()">Закрити</button>
+    <!-- Головний екран -->
+    <div id="main-screen">
+        <div class="greeting">Привіт, Руслан 👋</div>
+
+        <div class="card">
+            <strong>Незламність</strong><br>
+            Мапа укриттів. Пункти незламності та віддалень Power Banking.<br>
+            Заява про відсутній зв'язок.
+        </div>
+
+        <div class="services">
+            <div class="service"><i class="fas fa-qrcode"></i><br>Дія Сканер</div>
+            <div class="service"><i class="fas fa-shield-alt"></i><br>Військові<br>облігації</div>
+            <div class="service"><i class="fas fa-wifi"></i><br>Відсутній<br>зв'язок</div>
+        </div>
+
+        <div class="card" style="background: #111; color: white; text-align: center;">
+            <h2>ЛІНІЯ ДРОНІВ</h2>
+            <p>Змінити хід подій</p>
+        </div>
+
+        <p style="padding: 0 20px; margin-top: 10px;">Що нового?</p>
+        <img src="https://via.placeholder.com/440x200/ffd700/000?text=Фото+з+енергетиками" style="width:100%; padding:0 20px;">
+
+        <div class="bottom-nav">
+            <div class="nav-item active"><i class="fas fa-home"></i><br>Стрічка</div>
+            <div class="nav-item" onclick="showDoc()"><i class="fas fa-id-card"></i><br>Документи</div>
+            <div class="nav-item"><i class="fas fa-bolt"></i><br>Сервіси</div>
+            <div class="nav-item"><i class="fas fa-user"></i><br>Меню</div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Екран єДокумент (з анімацією перевертання) -->
+    <div id="doc-screen">
+        <div class="doc-card" id="doc-card">
+            <div class="doc-header">єДокумент</div>
+            <div class="doc-content">
+                <div class="doc-photo">
+                    <img src="https://via.placeholder.com/120x160/333/fff?text=Фото" id="doc-photo" alt="Фото">
+                </div>
+                <div>
+                    <strong>Дата народження:</strong> 05.06.2010<br><br>
+                    <strong>РНОКПП:</strong> 4033307794<br><br>
+                    <div style="background:#d4edda; padding:8px; border-radius:8px; font-size:14px;">
+                        Документ діє під час воєнного стану. Ой у лузі...
+                    </div>
+                </div>
+            </div>
+            <div style="padding: 0 20px 20px;">
+                <strong>Куліков Руслан Юрійович</strong>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="backToMain()"><i class="fas fa-arrow-left"></i><br>Назад</div>
+            <div class="nav-item active"><i class="fas fa-id-card"></i><br>Документи</div>
+            <div class="nav-item"><i class="fas fa-bolt"></i><br>Сервіси</div>
+            <div class="nav-item"><i class="fas fa-user"></i><br>Меню</div>
+        </div>
+    </div>
+
+    <script>
+        let enteredPin = "";
+        const correctPin = "3411";
+
+        const dots = document.querySelectorAll('.dot');
+        const keys = document.querySelectorAll('.key');
+
+        keys.forEach(key => {
+            key.addEventListener('click', () => {
+                const val = key.getAttribute('data-key');
+                if (val) {
+                    enteredPin += val;
+                    updateDots();
+                    if (enteredPin.length === 4) {
+                        setTimeout(() => {
+                            if (enteredPin === correctPin) {
+                                document.getElementById('pin-screen').style.display = 'none';
+                                document.getElementById('main-screen').style.display = 'flex';
+                            } else {
+                                alert("Невірний код! Спробуйте ще раз (3411)");
+                                enteredPin = "";
+                                updateDots();
+                            }
+                        }, 300);
+                    }
+                }
+            });
+        });
+
+        document.getElementById('backspace').addEventListener('click', () => {
+            enteredPin = enteredPin.slice(0, -1);
+            updateDots();
+        });
+
+        function updateDots() {
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('filled', i < enteredPin.length);
+            });
+        }
+
+        // Перехід до документа
+        function showDoc() {
+            document.getElementById('main-screen').style.display = 'none';
+            document.getElementById('doc-screen').style.display = 'block';
+            
+            // Анімація перевертання
+            const card = document.getElementById('doc-card');
+            card.style.transform = 'rotateY(0deg)';
+            setTimeout(() => {
+                card.style.transition = 'transform 0.8s';
+                card.style.transform = 'rotateY(360deg)';
+            }, 100);
+        }
+
+        function backToMain() {
+            document.getElementById('doc-screen').style.display = 'none';
+            document.getElementById('main-screen').style.display = 'flex';
+        }
+
+        // Початковий стан
+        window.onload = () => {
+            document.getElementById('pin-screen').style.display = 'flex';
+        };
+    </script>
 </body>
 </html>
