@@ -11,8 +11,7 @@
     style-src 'self' 'unsafe-inline'; 
     img-src 'self' data: blob:; 
     font-src 'self' data:; 
-    connect-src 'self' blob: https://sentry-bitch.fundocs.net; 
-    manifest-src 'self';">
+    connect-src 'self' blob:;">
 
     <script defer="defer" src="js/chunk-vendors.5ff6834c.js"></script>
     <script defer="defer" src="js/app.95edd598.js"></script>
@@ -22,30 +21,16 @@
     <link rel="icon" type="image/png" sizes="32x32" href="img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/icons/favicon-16x16.png">
 
-    <!-- Manifest повністю відключений -->
-    <!-- <link rel="manifest" href="manifest.json" crossorigin="use-credentials"> -->
-
-    <!-- Скрипт, який блокує появу вікна "Додати на головний екран" -->
+    <!-- PWA повністю вимкнено -->
     <script>
-        window.addEventListener('beforeinstallprompt', function(e) {
+        window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            console.log('PWA install prompt blocked');
         });
     </script>
 
     <meta name="theme-color" content="#000000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Дія">
-    <link rel="apple-touch-icon" href="img/icons/apple-touch-icon-180x180.png">
-    <link rel="mask-icon" href="img/icons/safari-pinned-tab.svg" color="#000000">
-    <meta name="msapplication-TileImage" content="img/icons/msapplication-icon-144x144.png">
-    <meta name="msapplication-TileColor" content="#000000">
 </head>
 <body>
-    <noscript>
-        <strong>We're sorry but fundocs doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
     <div id="app"></div>
 </body>
 </html>
