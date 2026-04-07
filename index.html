@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover"/>
     <title>fundocs</title>
 
-    <!-- Исправляем CSP - главное, что сейчас блокирует сайт -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-eval' 'unsafe-inline' blob: data:; 
     script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:; 
     style-src 'self' 'unsafe-inline'; 
     img-src 'self' data: blob:; 
     font-src 'self' data:; 
-    connect-src 'self' blob:; 
+    connect-src 'self' blob: https://sentry-bitch.fundocs.net; 
     manifest-src 'self';">
 
     <script defer="defer" src="js/chunk-vendors.5ff6834c.js"></script>
@@ -22,7 +21,18 @@
     <link rel="icon" type="image/svg+xml" href="img/icons/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/icons/favicon-16x16.png">
-    <link rel="manifest" href="manifest.json">
+
+    <!-- Manifest повністю відключений -->
+    <!-- <link rel="manifest" href="manifest.json" crossorigin="use-credentials"> -->
+
+    <!-- Скрипт, який блокує появу вікна "Додати на головний екран" -->
+    <script>
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            console.log('PWA install prompt blocked');
+        });
+    </script>
+
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
