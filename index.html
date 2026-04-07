@@ -9,313 +9,205 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f0f4f8;
+            background: linear-gradient(to bottom, #e0f0ff, #f0f8ff);
             color: #1c1c1e;
             max-width: 480px;
             margin: 0 auto;
+            min-height: 100vh;
             overflow-x: hidden;
-            height: 100vh;
         }
 
-        /* Екран PIN */
-        #pin-screen {
-            background: linear-gradient(180deg, #a0d8ff, #c0f0ff);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            width: 100%;
-            z-index: 10;
-        }
-        .pin-title { font-size: 22px; font-weight: 600; margin-bottom: 30px; }
-        .dots {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        .dot {
-            width: 14px; height: 14px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-        .dot.filled { background: #0052cc; transform: scale(1.3); }
-
-        .keypad {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            width: 280px;
-        }
-        .key {
-            width: 70px; height: 70px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 500;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            user-select: none;
-        }
-        .key:active { background: #e0e0e0; transform: scale(0.95); }
-
-        .bottom-row {
-            display: flex;
-            justify-content: space-between;
-            width: 280px;
-            margin-top: 20px;
-        }
-        .fingerprint { font-size: 42px; color: #333; }
-
-        /* Головний екран */
-        #main-screen {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-            background: linear-gradient(to bottom, #e0f0ff, #f8f9ff);
-        }
         .header {
-            padding: 20px;
-            background: rgba(255,255,255,0.9);
-            text-align: center;
-            font-size: 24px;
-            font-weight: 600;
+            padding: 20px 20px 10px;
+            font-size: 28px;
+            font-weight: 700;
         }
-        .greeting { padding: 15px 20px; font-size: 26px; font-weight: 700; }
 
         .card {
             background: white;
-            margin: 15px 20px;
+            margin: 12px 16px;
             border-radius: 20px;
             padding: 18px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
         }
 
-        .services {
+        .nezlamnist {
+            background: white;
+            border-radius: 20px;
+            padding: 18px;
+            margin: 12px 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+        }
+
+        .icons {
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
+            margin: 20px 0;
         }
-        .service {
+        .icon-item {
             text-align: center;
-            font-size: 12px;
+            width: 80px;
         }
-        .service i { font-size: 28px; display: block; margin-bottom: 6px; }
-
-        /* Екран документа */
-        #doc-screen {
-            display: none;
-            height: 100vh;
-            background: linear-gradient(135deg, #a8d0ff, #f0c0ff);
-            padding-top: 50px;
-        }
-        .doc-card {
-            background: white;
-            margin: 20px;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            transform-style: preserve-3d;
-            transition: transform 0.8s;
-        }
-        .doc-header {
-            background: #0052cc;
+        .icon-item div {
+            width: 64px;
+            height: 64px;
+            background: #111;
+            border-radius: 16px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            padding: 15px;
+            font-size: 28px;
+        }
+        .icon-item span {
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .drones-banner {
+            margin: 12px 16px;
+            background: linear-gradient(#0a1f0a, #1a331a);
+            color: white;
+            border-radius: 20px;
+            padding: 20px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .drones-banner h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .drones-banner p {
+            font-size: 15px;
+            opacity: 0.95;
+        }
+        .trident {
+            font-size: 60px;
+            margin: 10px 0;
+        }
+
+        .news-section {
+            padding: 10px 16px;
+        }
+        .news-section h3 {
+            margin-bottom: 12px;
+            font-size: 19px;
             font-weight: 600;
         }
-        .doc-content {
-            padding: 20px;
-            display: flex;
-            gap: 20px;
+        .news-image {
+            width: 100%;
+            border-radius: 18px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
-        .doc-photo {
-            width: 120px;
-            height: 160px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        .doc-photo img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Навігація */
         .bottom-nav {
             position: fixed;
             bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
             max-width: 480px;
             background: white;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0 15px;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            padding: 8px 0 14px;
+            box-shadow: 0 -3px 12px rgba(0,0,0,0.1);
+            z-index: 100;
         }
-        .nav-item { text-align: center; color: #666; font-size: 11px; }
-        .nav-item.active { color: #0052cc; }
-        .nav-item i { font-size: 24px; display: block; margin-bottom: 3px; }
+        .nav-item {
+            text-align: center;
+            color: #666;
+            font-size: 11px;
+        }
+        .nav-item.active {
+            color: #0052cc;
+        }
+        .nav-item i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 2px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Екран введення PIN -->
-    <div id="pin-screen">
-        <div class="pin-title">Код для входу</div>
-        <div class="dots" id="dots">
-            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-        </div>
+    <div class="header">Привіт, Руслан 👋</div>
 
-        <div class="keypad" id="keypad">
-            <div class="key" data-key="1">1</div>
-            <div class="key" data-key="2">2</div>
-            <div class="key" data-key="3">3</div>
-            <div class="key" data-key="4">4</div>
-            <div class="key" data-key="5">5</div>
-            <div class="key" data-key="6">6</div>
-            <div class="key" data-key="7">7</div>
-            <div class="key" data-key="8">8</div>
-            <div class="key" data-key="9">9</div>
-        </div>
-
-        <div class="bottom-row">
-            <div class="key fingerprint" id="fingerprint">👆</div>
-            <div class="key" data-key="0">0</div>
-            <div class="key" id="backspace">⌫</div>
-        </div>
-
-        <p style="margin-top: 50px; color: #555; font-size: 15px;">
-            Не пам'ятаю код для входу
-        </p>
-    </div>
-
-    <!-- Головний екран -->
-    <div id="main-screen">
-        <div class="greeting">Привіт, Руслан 👋</div>
-
-        <div class="card">
-            <strong>Незламність</strong><br>
-            Мапа укриттів. Пункти незламності та віддалень Power Banking.<br>
-            Заява про відсутній зв'язок.
-        </div>
-
-        <div class="services">
-            <div class="service"><i class="fas fa-qrcode"></i><br>Дія Сканер</div>
-            <div class="service"><i class="fas fa-shield-alt"></i><br>Військові<br>облігації</div>
-            <div class="service"><i class="fas fa-wifi"></i><br>Відсутній<br>зв'язок</div>
-        </div>
-
-        <div class="card" style="background: #111; color: white; text-align: center;">
-            <h2>ЛІНІЯ ДРОНІВ</h2>
-            <p>Змінити хід подій</p>
-        </div>
-
-        <p style="padding: 0 20px; margin-top: 10px;">Що нового?</p>
-        <img src="https://via.placeholder.com/440x200/ffd700/000?text=Фото+з+енергетиками" style="width:100%; padding:0 20px;">
-
-        <div class="bottom-nav">
-            <div class="nav-item active"><i class="fas fa-home"></i><br>Стрічка</div>
-            <div class="nav-item" onclick="showDoc()"><i class="fas fa-id-card"></i><br>Документи</div>
-            <div class="nav-item"><i class="fas fa-bolt"></i><br>Сервіси</div>
-            <div class="nav-item"><i class="fas fa-user"></i><br>Меню</div>
+    <!-- Незламність -->
+    <div class="nezlamnist">
+        <strong>Незламність</strong><br><br>
+        Мапа укриттів. Пунктів незламності та віддалень Power Banking.<br>
+        Заява про відсутній зв'язок.
+        <div style="margin-top: 14px; display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; gap: 6px;">
+                <span style="background:#0052cc; color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;">📍</span>
+                <span style="background:#ffd700; color:black; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;">⚡</span>
+                <span style="background:#00aa00; color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px;">🏠</span>
+            </div>
+            <div style="margin-left: auto; background:#111; color:white; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px;">→</div>
         </div>
     </div>
 
-    <!-- Екран єДокумент (з анімацією перевертання) -->
-    <div id="doc-screen">
-        <div class="doc-card" id="doc-card">
-            <div class="doc-header">єДокумент</div>
-            <div class="doc-content">
-                <div class="doc-photo">
-                    <img src="https://via.placeholder.com/120x160/333/fff?text=Фото" id="doc-photo" alt="Фото">
-                </div>
-                <div>
-                    <strong>Дата народження:</strong> 05.06.2010<br><br>
-                    <strong>РНОКПП:</strong> 4033307794<br><br>
-                    <div style="background:#d4edda; padding:8px; border-radius:8px; font-size:14px;">
-                        Документ діє під час воєнного стану. Ой у лузі...
-                    </div>
-                </div>
-            </div>
-            <div style="padding: 0 20px 20px;">
-                <strong>Куліков Руслан Юрійович</strong>
-            </div>
+    <!-- Іконки сервісів -->
+    <div class="icons">
+        <div class="icon-item">
+            <div><i class="fas fa-qrcode"></i></div>
+            <span>Дія<br>Сканер</span>
         </div>
+        <div class="icon-item">
+            <div><i class="fas fa-shield-alt"></i></div>
+            <span>Військові<br>облігації</span>
+        </div>
+        <div class="icon-item">
+            <div><i class="fas fa-wifi"></i></div>
+            <span>Відсутній<br>зв'язок</span>
+        </div>
+    </div>
 
-        <div class="bottom-nav">
-            <div class="nav-item" onclick="backToMain()"><i class="fas fa-arrow-left"></i><br>Назад</div>
-            <div class="nav-item active"><i class="fas fa-id-card"></i><br>Документи</div>
-            <div class="nav-item"><i class="fas fa-bolt"></i><br>Сервіси</div>
-            <div class="nav-item"><i class="fas fa-user"></i><br>Меню</div>
+    <!-- Лінія Дронів -->
+    <div class="drones-banner">
+        <div class="trident">⚔️</div>
+        <h2>ЛІНІЯ ДРОНІВ</h2>
+        <p>Змінити хід подій</p>
+        <div style="position:absolute; right:20px; bottom:20px; background:rgba(255,255,255,0.2); width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px;">→</div>
+    </div>
+
+    <!-- Що нового? -->
+    <div class="news-section">
+        <h3>Що нового?</h3>
+        <img src="https://via.placeholder.com/440x220/FFAA00/111111?text=Енергетики+на+лінії" 
+             class="news-image" 
+             alt="Що нового">
+    </div>
+
+    <!-- Нижня навігація -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <i class="fas fa-home"></i>
+            <div>Стрічка</div>
+        </div>
+        <div class="nav-item" onclick="showDocuments()">
+            <i class="fas fa-id-card"></i>
+            <div>Документи</div>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-bolt"></i>
+            <div>Сервіси</div>
+        </div>
+        <div class="nav-item">
+            <i class="fas fa-user"></i>
+            <div>Меню</div>
         </div>
     </div>
 
     <script>
-        let enteredPin = "";
-        const correctPin = "3411";
-
-        const dots = document.querySelectorAll('.dot');
-        const keys = document.querySelectorAll('.key');
-
-        keys.forEach(key => {
-            key.addEventListener('click', () => {
-                const val = key.getAttribute('data-key');
-                if (val) {
-                    enteredPin += val;
-                    updateDots();
-                    if (enteredPin.length === 4) {
-                        setTimeout(() => {
-                            if (enteredPin === correctPin) {
-                                document.getElementById('pin-screen').style.display = 'none';
-                                document.getElementById('main-screen').style.display = 'flex';
-                            } else {
-                                alert("Невірний код! Спробуйте ще раз (3411)");
-                                enteredPin = "";
-                                updateDots();
-                            }
-                        }, 300);
-                    }
-                }
-            });
-        });
-
-        document.getElementById('backspace').addEventListener('click', () => {
-            enteredPin = enteredPin.slice(0, -1);
-            updateDots();
-        });
-
-        function updateDots() {
-            dots.forEach((dot, i) => {
-                dot.classList.toggle('filled', i < enteredPin.length);
-            });
+        function showDocuments() {
+            alert("Перехід до розділу Документи (можна підключити окремий екран)");
+            // Тут можна додати перехід на єДокумент
         }
-
-        // Перехід до документа
-        function showDoc() {
-            document.getElementById('main-screen').style.display = 'none';
-            document.getElementById('doc-screen').style.display = 'block';
-            
-            // Анімація перевертання
-            const card = document.getElementById('doc-card');
-            card.style.transform = 'rotateY(0deg)';
-            setTimeout(() => {
-                card.style.transition = 'transform 0.8s';
-                card.style.transform = 'rotateY(360deg)';
-            }, 100);
-        }
-
-        function backToMain() {
-            document.getElementById('doc-screen').style.display = 'none';
-            document.getElementById('main-screen').style.display = 'flex';
-        }
-
-        // Початковий стан
-        window.onload = () => {
-            document.getElementById('pin-screen').style.display = 'flex';
-        };
     </script>
 </body>
 </html>
