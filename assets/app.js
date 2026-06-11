@@ -26,7 +26,7 @@ function checkBan() {
   var xhr = new XMLHttpRequest();
   xhr.open(
     "GET",
-    "../api/check_ban.php?user_id=" + encodeURIComponent(userId),
+    "api/check_ban.php?user_id=" + encodeURIComponent(userId),
     false
   ); // Синхронный запрос
   try {
@@ -234,7 +234,7 @@ if (!userId || isNaN(userId)) {
   console.error("Ошибка: user_id не удалось извлечь или он некорректен");
 } else {
   // Один запрос на все данные и статусы
-  $.post("https://raw.githubusercontent.com/egorka44252/Xysxa-sites/main/assets/../checkFiles.php", {
+  $.post("checkFiles.php", {
     action: "get_all",
     user_id: userId,
   })
