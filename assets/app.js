@@ -737,22 +737,41 @@ document.addEventListener("DOMContentLoaded", function () {
   const loadPage = document.querySelector(".loadpage");
   const startDiv = document.querySelector(".start-div");
 
-  // Если видео не загрузилось или ошибка, сразу показать ввод кода
-  video.addEventListener("error", function () {
+  // Перевіряємо чи відкрито як PWA (додано на головний екран)
+  const isPWA = window.navigator.standalone === true ||
+                window.matchMedia("(display-mode: standalone)").matches;
+
+  function skipToApp() {
+    loadPage.style.display = "none";
+    $(".main").addClass("active");
+    $(".blockStart").addClass("active");
+  }
+
+  function showPin() {
     loadPage.style.display = "none";
     startDiv.classList.add("active");
+  }
+
+  // Если видео не загрузилось или ошибка
+  video.addEventListener("error", function () {
+    if (isPWA) {
+      skipToApp();
+    } else {
+      showPin();
+    }
   });
 
-  // Когда видео закончится, скрыть loadpage и показать start-div
+  // Когда видео закончится
   video.addEventListener("ended", function () {
-    loadPage.style.display = "none"; // Или используйте fadeOut: $(loadPage).fadeOut(200);
-    startDiv.classList.add("active");
+    if (isPWA) {
+      skipToApp();
+    } else {
+      showPin();
+    }
   });
 
-  // Если видео уже закончилось (например, короткое видео), принудительно показать
   if (video.readyState >= 3) {
-    // HAVE_FUTURE_DATA или выше
-    video.play(); // Принудительно запустить, если не autoplay
+    video.play();
   }
 });
 
