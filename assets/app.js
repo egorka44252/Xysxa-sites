@@ -3,31 +3,22 @@ const nocache = Date.now();
 document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ app.js завантажено");
 
-    function goToMainScreen() {
-        console.log("🚀 Запуск головного екрану...");
+    function goToMain() {
+        console.log("🚀 Перехід на головний екран");
 
-        // Прибираємо стартовий екран
         $(".start-div").fadeOut(300, function() {
             $(this).remove();
         });
 
-        // Показуємо головний контент
-        $(".main").addClass("active").css("display", "block");
+        $(".main").addClass("active").css({"display":"block", "opacity":"1"});
         $(".block1").addClass("active").css("display", "block");
         $(".blockStart").addClass("active");
 
-        // Примусово показуємо перший блок
-        document.querySelectorAll(".block").forEach(b => {
-            b.style.display = "none";
-        });
-        
+        document.querySelectorAll(".block").forEach(b => b.style.display = "none");
         const mainBlock = document.querySelector(".block1");
-        if (mainBlock) {
-            mainBlock.style.display = "block";
-            mainBlock.classList.add("active");
-        }
+        if (mainBlock) mainBlock.style.display = "block";
 
-        console.log("✅ Головний екран примусово показаний");
+        console.log("✅ Головний екран показаний");
     }
 
     // Вхід кодом
@@ -38,17 +29,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 $(".start-vhod > div").eq(count).addClass("active");
             }
             if (count + 1 === 4) {
-                goToMainScreen();
+                setTimeout(goToMain, 200);
             }
         } else {
             $(".start-vhod > div.active").last().removeClass("active");
         }
     }
 
-    // Кнопки коду
     document.querySelectorAll(".start-block button").forEach(btn => {
         btn.addEventListener("click", () => {
-            if (btn.dataset.type === "delete") {
+            if (btn.getAttribute("data-type") === "delete") {
                 vhod("minus");
             } else {
                 vhod("plus");
@@ -56,16 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Біометрія
-    document.querySelector(".biometry-btn").addEventListener("click", goToMainScreen);
+    document.querySelector(".biometry-btn").addEventListener("click", goToMain);
 
-    // Якщо через 2 секунди все ще на старті — примусово перейти
+    // Автоматичний перехід, якщо застряг
     setTimeout(() => {
-        if ($(".start-div").length > 0) {
-            console.log("⚠️ Автоматичний перехід через таймер");
-            goToMainScreen();
+        if ($(".start-div").is(":visible")) {
+            goToMain();
         }
-    }, 2500);
-
-    console.log("✅ Скрипт готовий");
+    }, 3000);
 });
