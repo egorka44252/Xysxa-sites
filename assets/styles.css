@@ -279,22 +279,28 @@ body {
     overflow: hidden;
 }
 
+@property --c1 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #c9b8e8;
+}
+@property --c2 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #b2d2e9;
+}
+@property --c3 {
+    syntax: '<color>';
+    inherits: false;
+    initial-value: #dbefd6;
+}
+
 .bg-start {
     height: 100vh;
     width: 100%;
     overflow: hidden;
-    background: linear-gradient(
-        135deg,
-        #c9b8e8,
-        #b2d2e9,
-        #dbefd6,
-        #f1f0b8,
-        #dbefd6,
-        #b8d4f1,
-        #c9b8e8
-    );
-    background-size: 400% 400%;
-    animation: gradientAnimation 10s ease infinite;
+    background: linear-gradient(160deg, var(--c1) 0%, var(--c2) 50%, var(--c3) 100%);
+    animation: gradientAnimation 8s ease-in-out infinite;
 
     display: flex;
     align-items: center;
@@ -303,11 +309,11 @@ body {
 }
 
 @keyframes gradientAnimation {
-    0%   { background-position: 0% 0%; }
-    25%  { background-position: 100% 0%; }
-    50%  { background-position: 100% 100%; }
-    75%  { background-position: 0% 100%; }
-    100% { background-position: 0% 0%; }
+    0%   { --c1: #c9b8e8; --c2: #b2d2e9; --c3: #dbefd6; }
+    25%  { --c1: #b2d2e9; --c2: #dbefd6; --c3: #f1f0c0; }
+    50%  { --c1: #dbefd6; --c2: #b8d4f1; --c3: #c9b8e8; }
+    75%  { --c1: #b8d4f1; --c2: #c9b8e8; --c3: #dbefd6; }
+    100% { --c1: #c9b8e8; --c2: #b2d2e9; --c3: #dbefd6; }
 }
 
 
