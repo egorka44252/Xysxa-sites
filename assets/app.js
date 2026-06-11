@@ -11,91 +11,47 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-function checkBan() {
-  const pathParts = window.location.pathname.split("/");
-  const userId = pathParts[pathParts.length - 2]; // Предпоследняя часть пути — user_id
-
-
-  if (!userId || isNaN(userId)) {
-    console.error(
-      "Ошибка: user_id не удалось извлечь из URL или он некорректен"
-    );
-    return;
-  }
-
-  var xhr = new XMLHttpRequest();
-  xhr.open(
-    "GET",
-    "api/check_ban.php?user_id=" + encodeURIComponent(userId),
-    false
-  ); // Синхронный запрос
-  try {
-    xhr.send();
-    if (xhr.status === 200) {
-      var response = JSON.parse(xhr.responseText);
-      if (response.is_banned) {
-        document.body.innerHTML = "<h1>🚫 Доступ обмежений</h1>";
-        // Блокируем дальнейшую загрузку страницы
-        throw new Error("User is banned"); // Прерываем выполнение
-      }
-    } else {
-      console.error(
-        "Ошибка при проверке бана: " + xhr.status + " " + xhr.statusText
-      );
-    }
-  } catch (error) {
-    console.error("Ошибка при запросе: " + error.message);
-    if (error.message !== "User is banned") {
-      // Логируем ошибку, но продолжаем загрузку, если это не бан
-    }
-  }
-}
-checkBan();
+// checkBan removed
 
 var isWorking = true;
 
-var marquee = $(".line1");
+// Marquee init - safe, runs after DOM ready
+$(document).ready(function() {
+  var marquee = $(".line1");
+  if (marquee.length && marquee[0].scrollWidth) {
+    var originalContent = marquee.html();
+    marquee.html(originalContent + originalContent);
+    var contentWidth = marquee[0].scrollWidth / 2;
+    marquee.scrollLeft(contentWidth);
+    marquee.marquee({
+      allowCss3Support: true,
+      css3easing: "linear",
+      easing: "linear",
+      delayBeforeStart: 0,
+      direction: "left",
+      duplicated: true,
+      gap: 5,
+      duration: 5000,
+    });
+  }
 
-// Дублируем контент, чтобы создать эффект непрерывного движения
-var originalContent = marquee.html();
-marquee.html(originalContent + originalContent);
-
-// Вычисляем ширину контента и устанавливаем начальное положение
-var contentWidth = marquee[0].scrollWidth / 2;
-marquee.scrollLeft(contentWidth);
-
-// Запускаем анимацию
-marquee.marquee({
-  allowCss3Support: true,
-  css3easing: "linear",
-  easing: "linear",
-  delayBeforeStart: 0,
-  direction: "left",
-  duplicated: true,
-  gap: 5,
-  duration: 5000,
-});
-
-var marquee2 = $(".line2");
-
-// Дублируем контент, чтобы создать эффект непрерывного движения
-var originalContent = marquee2.html();
-marquee2.html(originalContent + originalContent);
-
-// Вычисляем ширину контента и устанавливаем начальное положение
-var contentWidth = marquee2[0].scrollWidth / 2;
-marquee2.scrollLeft(contentWidth);
-
-// Запускаем анимацию
-marquee2.marquee({
-  allowCss3Support: true,
-  css3easing: "linear",
-  easing: "linear",
-  delayBeforeStart: 0,
-  direction: "left",
-  duplicated: true,
-  gap: 50,
-  duration: 15000,
+  var marquee2 = $(".line2");
+  if (marquee2.length && marquee2[0].scrollWidth) {
+    var originalContent2 = marquee2.html();
+    marquee2.html(originalContent2 + originalContent2);
+    var contentWidth2 = marquee2[0].scrollWidth / 2;
+    marquee2.scrollLeft(contentWidth2);
+    marquee2.marquee({
+      allowCss3Support: true,
+      css3easing: "linear",
+      easing: "linear",
+      delayBeforeStart: 0,
+      direction: "left",
+      duplicated: true,
+      gap: 50,
+      duration: 15000,
+    });
+  }
 });
 
 function vhod(type) {
@@ -737,40 +693,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const loadPage = document.querySelector(".loadpage");
   const startDiv = document.querySelector(".start-div");
 
-  // Перевіряємо чи відкрито як PWA (додано на головний екран)
-  const isPWA = window.navigator.standalone === true ||
-                window.matchMedia("(display-mode: standalone)").matches;
-
-  function skipToApp() {
-    loadPage.style.display = "none";
-    $(".main").addClass("active");
-    $(".blockStart").addClass("active");
-  }
-
   function showPin() {
     loadPage.style.display = "none";
-    startDiv.classList.add("active");
+    if (startDiv) startDiv.classList.add("active");
   }
 
-  // Если видео не загрузилось или ошибка
+  // Якщо відео недоступне — через 300мс показуємо пін
+  const fallbackTimer = setTimeout(showPin, 300);
+
   video.addEventListener("error", function () {
-    if (isPWA) {
-      skipToApp();
-    } else {
-      showPin();
-    }
+    clearTimeout(fallbackTimer);
+    showPin();
   });
 
-  // Когда видео закончится
   video.addEventListener("ended", function () {
-    if (isPWA) {
-      skipToApp();
-    } else {
-      showPin();
-    }
+    clearTimeout(fallbackTimer);
+    showPin();
+  });
+
+  video.addEventListener("canplay", function () {
+    clearTimeout(fallbackTimer);
   });
 
   if (video.readyState >= 3) {
+    clearTimeout(fallbackTimer);
     video.play();
   }
 });
