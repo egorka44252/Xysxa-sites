@@ -15,7 +15,7 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="icon" type="image/png" href="assets/favicon.png" />
     <link rel="apple-touch-icon-precomposed" href="assets/favicon.png" />
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/Xysxa-sites/manifest.json" />
     <title>Дія</title>
     <link type="image/png" href="assets/favicon.png" rel="shortcut icon" />
     <script src="assets/anime.js"></script>
@@ -26,6 +26,16 @@
     <script>const nocache1 = Math.random();</script>
     <link rel="stylesheet" href="assets/styles.css" />
 
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/Xysxa-sites/sw.js', {scope: '/Xysxa-sites/'})
+            .then(function(reg) { console.log('SW registered'); })
+            .catch(function(err) { console.log('SW error:', err); });
+        });
+      }
+    </script>
 </head>
 
 <body data-scroll-lock-saved-overflow-y-property="hidden" data-scroll-lock-saved-inline-overflow-property=""
