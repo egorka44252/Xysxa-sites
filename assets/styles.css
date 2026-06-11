@@ -1423,8 +1423,7 @@ body {
 }
 
 .footer-ai-tab svg {
-    color: white;
-    fill: white;
+    display: block;
 }
 
 .footer-ai-tab span {
