@@ -284,23 +284,13 @@ body {
     width: 100%;
     overflow: hidden;
     background: linear-gradient(145deg, #b2d2e9 40%, #dbefd6 70%);
-    /*background: linear-gradient(145deg, #b2d2e9, #dbefd6, #b2d2e9, #dbefd6);*/
+    background-size: 300% 300%;
+    animation: gradientAnimation 12s ease infinite;
 
     display: flex;
     align-items: center;
     position: relative;
     justify-content: center;
-
-
-    /*background-size: 400% 400%;*/
-    /*animation: 15s linear 0s infinite alternate none running gradientAnimation*/
-    /*         background: linear-gradient(217deg, rgba(217, 51, 51, 0.8), rgba(255, 0, 0, 0) 50.71%), linear-gradient(127deg, rgba(57, 202, 57, 0.8), rgba(0, 255, 0, 0) 70.71%), linear-gradient(336deg, rgba(65, 65, 202, 0.8), rgba(0, 0, 255, 0) 70.71%);*/
-    /*         background-size: 150vw 150vh;*/
-    /*animation: 15s linear 0s infinite alternate none running granimate*/
-
-
-
-
 }
 
 @supports (-webkit-touch-callout: none) {}
@@ -324,59 +314,23 @@ body {
 
 @keyframes gradientAnimation {
     0% {
-        background: linear-gradient(145deg, #b2d2e9, #f1e3b2);
-        /* бирюзово-желтый */
-
+        background: linear-gradient(160deg, #c9b8e8 0%, #b2d2e9 50%, #dbefd6 100%);
     }
-
-    12.5% {
-        background: linear-gradient(145deg, #dbefd6, #d3b2f1);
-        /* зеленовато-желтый и фиолетово-желтый */
-
+    20% {
+        background: linear-gradient(160deg, #b2d2e9 0%, #dbefd6 50%, #f1f0b8 100%);
     }
-
-    25% {
-        background: linear-gradient(145deg, #b2d2e9, #d3b2f1);
-        /* бирюзово-фиолетовый */
-
+    40% {
+        background: linear-gradient(160deg, #dbefd6 0%, #b8e0f1 50%, #c9b8e8 100%);
     }
-
-    37.5% {
-        background: linear-gradient(145deg, #f1e3b2, #dbefd6);
-        /* желтовато-зеленый */
-
+    60% {
+        background: linear-gradient(160deg, #b8d4f1 0%, #c9b8e8 50%, #dbefd6 100%);
     }
-
-    50% {
-        background: linear-gradient(145deg, #b2d2e9, #f1e3b2);
-        /* бирюзово-желтый */
-
+    80% {
+        background: linear-gradient(160deg, #f0e8c8 0%, #dbefd6 50%, #b2d2e9 100%);
     }
-
-    62.5% {
-        background: linear-gradient(145deg, #dbefd6, #d3b2f1);
-        /* зеленовато-желтый и фиолетово-желтый */
-
-    }
-
-    75% {
-        background: linear-gradient(145deg, #b2d2e9, #d3b2f1);
-        /* бирюзово-фиолетовый */
-
-    }
-
-    87.5% {
-        background: linear-gradient(145deg, #f1e3b2, #dbefd6);
-        /* желтовато-зеленый */
-
-    }
-
     100% {
-        background: linear-gradient(145deg, #b2d2e9, #f1e3b2);
-        /* бирюзово-желтый */
-
+        background: linear-gradient(160deg, #c9b8e8 0%, #b2d2e9 50%, #dbefd6 100%);
     }
-
 }
 
 
