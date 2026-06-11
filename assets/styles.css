@@ -279,42 +279,79 @@ body {
     overflow: hidden;
 }
 
-@property --c1 {
+@property --blob1 {
     syntax: '<color>';
     inherits: false;
-    initial-value: #c9b8e8;
+    initial-value: #c9b3e8;
 }
-@property --c2 {
+@property --blob2 {
     syntax: '<color>';
     inherits: false;
-    initial-value: #b2d2e9;
-}
-@property --c3 {
-    syntax: '<color>';
-    inherits: false;
-    initial-value: #dbefd6;
+    initial-value: #f0e8a0;
 }
 
 .bg-start {
     height: 100vh;
     width: 100%;
     overflow: hidden;
-    background: linear-gradient(160deg, var(--c1) 0%, var(--c2) 50%, var(--c3) 100%);
-    animation: gradientAnimation 8s ease-in-out infinite;
-
+    background: #f5f5f8;
     display: flex;
     align-items: center;
     position: relative;
     justify-content: center;
 }
 
-@keyframes gradientAnimation {
-    0%   { --c1: #c9b8e8; --c2: #b2d2e9; --c3: #dbefd6; }
-    25%  { --c1: #b2d2e9; --c2: #dbefd6; --c3: #f1f0c0; }
-    50%  { --c1: #dbefd6; --c2: #b8d4f1; --c3: #c9b8e8; }
-    75%  { --c1: #b8d4f1; --c2: #c9b8e8; --c3: #dbefd6; }
-    100% { --c1: #c9b8e8; --c2: #b2d2e9; --c3: #dbefd6; }
+.bg-start::before,
+.bg-start::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
 }
+
+/* Верхнее пятно — фиолетовый/розовый/голубой */
+.bg-start::before {
+    width: 75vw;
+    height: 75vw;
+    top: -20vw;
+    left: -15vw;
+    background: var(--blob1);
+    animation: blob1anim 10s ease-in-out infinite;
+}
+
+/* Нижнее пятно — жёлтый/зелёный/розовый */
+.bg-start::after {
+    width: 75vw;
+    height: 75vw;
+    bottom: -20vw;
+    right: -15vw;
+    background: var(--blob2);
+    animation: blob2anim 10s ease-in-out infinite;
+}
+
+.bg-start > * {
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes blob1anim {
+    0%   { --blob1: #c9b3e8; top: -20vw; left: -15vw; }
+    25%  { --blob1: #b3c8f0; top: -10vw; left: -5vw;  }
+    50%  { --blob1: #f0b3d8; top: -25vw; left: -10vw; }
+    75%  { --blob1: #b3d8f0; top: -15vw; left: -20vw; }
+    100% { --blob1: #c9b3e8; top: -20vw; left: -15vw; }
+}
+
+@keyframes blob2anim {
+    0%   { --blob2: #f0e8a0; bottom: -20vw; right: -15vw; }
+    25%  { --blob2: #b8f0c8; bottom: -10vw; right: -5vw;  }
+    50%  { --blob2: #f0c8b8; bottom: -25vw; right: -20vw; }
+    75%  { --blob2: #e8f0a0; bottom: -15vw; right: -10vw; }
+    100% { --blob2: #f0e8a0; bottom: -20vw; right: -15vw; }
+}
+
 
 
 
