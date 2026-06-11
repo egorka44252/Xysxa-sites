@@ -60,20 +60,41 @@
     </div>
 
     <div class="main">
-        <!-- Весь твій основний контент (залишається як є) -->
-        <!-- Просто переконайся, що в app.js і styles.css всі шляхи правильні -->
+        <div class="block block1 blockStart">
+            <!-- Тут весь твій контент першого блоку (Привіт, новини тощо) -->
+            <h1 class="textVizit">
+                <span>Привіт, </span>
+                <span id="textName"></span>🎄
+            </h1>
+            <!-- ... (весь твій оригінальний контент блоку 1) ... -->
+        </div>
+
+        <div class="block block2">
+            <!-- Документи -->
+        </div>
+
+        <!-- Інші блоки -->
     </div>
 
-    <!-- Попапи помилок -->
-    <div id="error-popup" class="error-popup">...</div>
-    <div id="no-internet-popup" class="no-internet-modal">...</div>
+    <!-- Попапи -->
+    <div id="error-popup" class="error-popup"></div>
+    <div id="no-internet-popup" class="no-internet-modal"></div>
 
     <script src="assets/app.js"></script>
 
     <script>
-        document.addEventListener('touchstart', function (e) {
-            if (e.touches.length > 1) e.preventDefault();
-        }, { passive: false });
+        // Додатковий фікс переходу
+        document.addEventListener("DOMContentLoaded", () => {
+            $(".biometry-btn").on("click", function() {
+                $(".start-div").removeClass("active").addClass("hiding");
+                setTimeout(() => {
+                    $(".start-div").remove();
+                    $(".main").addClass("active");
+                    $(".block1").addClass("active");
+                    $(".blockStart").addClass("active");
+                }, 400);
+            });
+        });
     </script>
 </body>
 </html>
