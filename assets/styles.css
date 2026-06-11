@@ -216,7 +216,7 @@ body {
     font-family: 'e-UkraineHead';
     font-weight: 500;
     font-style: normal;
-    src: url('assets/e-Ukraine-Regular.woff') format('woff');
+    src: url('../assets/e-Ukraine-Regular.woff') format('woff');
 
 }
 
@@ -247,7 +247,7 @@ body {
 }
 
 .zublogo {
-    background-image: url(assets/uasign.svg);
+    background-image: url(../assets/uasign.svg);
     width: 75px;
     height: 75px;
     z-index: 234231;
@@ -257,7 +257,7 @@ body {
 }
 
 .diyalogo {
-    background-image: url(assets/diya.svg);
+    background-image: url(../assets/diya.svg);
     width: 75px;
     height: 75px;
     z-index: 234234;
@@ -894,7 +894,7 @@ body {
 }
 
 .qrcode {
-    background-image: url(assets/qr-dd.png);
+    background-image: url(../assets/qr-dd.png);
     background-size: contain;
     background-position: center;
     width: 252px;
@@ -903,7 +903,7 @@ body {
 }
 
 .shcode {
-    background-image: url(assets/qr-dd.png);
+    background-image: url(../assets/qr-dd.png);
     background-size: contain;
     background-position: center;
     width: 252px;
