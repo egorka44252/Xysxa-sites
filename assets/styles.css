@@ -283,9 +283,18 @@ body {
     height: 100vh;
     width: 100%;
     overflow: hidden;
-    background: linear-gradient(145deg, #b2d2e9 40%, #dbefd6 70%);
-    background-size: 300% 300%;
-    animation: gradientAnimation 12s ease infinite;
+    background: linear-gradient(
+        135deg,
+        #c9b8e8,
+        #b2d2e9,
+        #dbefd6,
+        #f1f0b8,
+        #dbefd6,
+        #b8d4f1,
+        #c9b8e8
+    );
+    background-size: 400% 400%;
+    animation: gradientAnimation 10s ease infinite;
 
     display: flex;
     align-items: center;
@@ -293,44 +302,12 @@ body {
     justify-content: center;
 }
 
-@supports (-webkit-touch-callout: none) {}
-
-@keyframes granimate {
-
-    0%,
-    100% {
-        background-position: 0 25%
-    }
-
-    25%,
-    75% {
-        background-position: 50% 50%
-    }
-
-    50% {
-        background-position: 100% 100%
-    }
-}
-
 @keyframes gradientAnimation {
-    0% {
-        background: linear-gradient(160deg, #c9b8e8 0%, #b2d2e9 50%, #dbefd6 100%);
-    }
-    20% {
-        background: linear-gradient(160deg, #b2d2e9 0%, #dbefd6 50%, #f1f0b8 100%);
-    }
-    40% {
-        background: linear-gradient(160deg, #dbefd6 0%, #b8e0f1 50%, #c9b8e8 100%);
-    }
-    60% {
-        background: linear-gradient(160deg, #b8d4f1 0%, #c9b8e8 50%, #dbefd6 100%);
-    }
-    80% {
-        background: linear-gradient(160deg, #f0e8c8 0%, #dbefd6 50%, #b2d2e9 100%);
-    }
-    100% {
-        background: linear-gradient(160deg, #c9b8e8 0%, #b2d2e9 50%, #dbefd6 100%);
-    }
+    0%   { background-position: 0% 0%; }
+    25%  { background-position: 100% 0%; }
+    50%  { background-position: 100% 100%; }
+    75%  { background-position: 0% 100%; }
+    100% { background-position: 0% 0%; }
 }
 
 
