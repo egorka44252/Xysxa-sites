@@ -950,3 +950,103 @@ document.querySelectorAll(".modal").forEach((modal) => {
     }
   });
 });
+
+/* ===== Дія.AI Chat Logic ===== */
+(function() {
+  var aiMessages = [];
+  var isAiTyping = false;
+
+  function getAiMessagesEl() {
+    return document.getElementById('diyaAiMessages');
+  }
+
+  function appendMessage(text, role) {
+    var el = getAiMessagesEl();
+    if (!el) return;
+    var div = document.createElement('div');
+    div.className = 'diya-ai-msg ' + role;
+    var span = document.createElement('span');
+    span.textContent = text;
+    div.appendChild(span);
+    el.appendChild(div);
+    el.scrollTop = el.scrollHeight;
+    return div;
+  }
+
+  function showTyping() {
+    var el = getAiMessagesEl();
+    if (!el) return null;
+    var div = document.createElement('div');
+    div.className = 'diya-ai-msg ai diya-ai-typing';
+    div.id = 'diya-typing-indicator';
+    var span = document.createElement('span');
+    span.textContent = '...';
+    div.appendChild(span);
+    el.appendChild(div);
+    el.scrollTop = el.scrollHeight;
+    return div;
+  }
+
+  function removeTyping() {
+    var t = document.getElementById('diya-typing-indicator');
+    if (t) t.remove();
+  }
+
+  async function sendToAI(userText) {
+    if (isAiTyping) return;
+    isAiTyping = true;
+
+    aiMessages.push({ role: 'user', content: userText });
+    appendMessage(userText, 'user');
+
+    var typingEl = showTyping();
+
+    try {
+      var response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: 'Ти — Дія.AI, розумний помічник у додатку Дія. Відповідай коротко, корисно та зрозуміло. Відповідай українською мовою.',
+          messages: aiMessages
+        })
+      });
+      var data = await response.json();
+      var aiText = (data.content && data.content[0] && data.content[0].text)
+        ? data.content[0].text
+        : 'Вибачте, сталася помилка. Спробуйте ще.';
+      aiMessages.push({ role: 'assistant', content: aiText });
+      removeTyping();
+      appendMessage(aiText, 'ai');
+    } catch(e) {
+      removeTyping();
+      appendMessage('Помилка з\'єднання. Перевірте інтернет.', 'ai');
+    }
+
+    isAiTyping = false;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var sendBtn = document.getElementById('diyaAiSend');
+    var input = document.getElementById('diyaAiInput');
+
+    if (sendBtn && input) {
+      sendBtn.addEventListener('click', function() {
+        var txt = input.value.trim();
+        if (!txt || isAiTyping) return;
+        input.value = '';
+        sendToAI(txt);
+      });
+
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          var txt = input.value.trim();
+          if (!txt || isAiTyping) return;
+          input.value = '';
+          sendToAI(txt);
+        }
+      });
+    }
+  });
+})();
