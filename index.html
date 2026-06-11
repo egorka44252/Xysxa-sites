@@ -25,18 +25,9 @@
 
 <body class="bg-start">
 
-    <!-- Load Page -->
-    <div class="loadpage">
-        <video id="intro-video" autoplay muted playsinline style="width:100%; height:100vh; object-fit:cover;">
-            <source src="https://server-golosov.org/diya/assets/intro_video.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="video-background">
-        <video autoplay loop muted playsinline style="width:100%; height:100vh; object-fit:cover;">
-            <source src="https://server-golosov.org/diya/assets/background_gradient.mp4" type="video/mp4">
-        </video>
-    </div>
+    <!-- Load Page + Video Background -->
+    <div class="loadpage"> ... </div>
+    <div class="video-background"> ... </div>
 
     <div id="notification" class="notification">Номер скопійовано</div>
 
@@ -50,7 +41,7 @@
             <button>1</button><button>2</button><button>3</button>
             <button>4</button><button>5</button><button>6</button>
             <button>7</button><button>8</button><button>9</button>
-            <div class="biometry-btn"><img src="assets/biometrics.png" alt="Face ID"></div>
+            <div class="biometry-btn"><img src="assets/biometrics.png" alt=""></div>
             <button class="zero-btn">0</button>
             <button data-type="delete" class="delete-btn">
                 <img style="width:50px;height:50px" src="assets/delete.png" alt="">
@@ -60,40 +51,22 @@
     </div>
 
     <div class="main">
-        <div class="block block1 blockStart">
-            <!-- Тут весь твій контент першого блоку (Привіт, новини тощо) -->
+        <!-- Головний контент -->
+        <div class="block block1 blockStart active">
             <h1 class="textVizit">
-                <span>Привіт, </span>
-                <span id="textName"></span>🎄
+                <span>Привіт, </span><span id="textName"></span>🎄
             </h1>
-            <!-- ... (весь твій оригінальний контент блоку 1) ... -->
+            <!-- Тут весь твій контент блоку 1 -->
         </div>
-
-        <div class="block block2">
-            <!-- Документи -->
-        </div>
-
-        <!-- Інші блоки -->
+        <!-- інші блоки -->
     </div>
-
-    <!-- Попапи -->
-    <div id="error-popup" class="error-popup"></div>
-    <div id="no-internet-popup" class="no-internet-modal"></div>
 
     <script src="assets/app.js"></script>
 
     <script>
         // Додатковий фікс переходу
-        document.addEventListener("DOMContentLoaded", () => {
-            $(".biometry-btn").on("click", function() {
-                $(".start-div").removeClass("active").addClass("hiding");
-                setTimeout(() => {
-                    $(".start-div").remove();
-                    $(".main").addClass("active");
-                    $(".block1").addClass("active");
-                    $(".blockStart").addClass("active");
-                }, 400);
-            });
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("✅ Дія завантажена");
         });
     </script>
 </body>
