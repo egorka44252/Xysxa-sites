@@ -1,65 +1,54 @@
-// ==================== assets/app.js ====================
-
 const nocache = Date.now();
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ app.js завантажено");
 
-    // Фікс картинок
-    document.querySelectorAll('img').forEach(img => {
-        if (img.src.includes('server-golosov.org')) {
-            img.src = img.src.replace('https://server-golosov.org/diya/assets/', 'assets/');
-        }
-    });
-
-    // ====================== ПЕРЕХІД НА ГОЛОВНИЙ ЕКРАН ======================
     function goToMainScreen() {
-        console.log("🚀 Перехід на головний екран...");
+        console.log("🚀 Запуск головного екрану...");
 
-        const startDiv = $(".start-div");
-        startDiv.removeClass("active").addClass("hiding");
+        // Прибираємо стартовий екран
+        $(".start-div").fadeOut(300, function() {
+            $(this).remove();
+        });
 
-        setTimeout(() => {
-            startDiv.remove();
+        // Показуємо головний контент
+        $(".main").addClass("active").css("display", "block");
+        $(".block1").addClass("active").css("display", "block");
+        $(".blockStart").addClass("active");
 
-            // Основні класи
-            $(".main").addClass("active");
-            $(".block1").addClass("active");
-            $(".blockStart").addClass("active");
+        // Примусово показуємо перший блок
+        document.querySelectorAll(".block").forEach(b => {
+            b.style.display = "none";
+        });
+        
+        const mainBlock = document.querySelector(".block1");
+        if (mainBlock) {
+            mainBlock.style.display = "block";
+            mainBlock.classList.add("active");
+        }
 
-            // Фікс для всіх блоків
-            document.querySelectorAll(".block").forEach(block => {
-                block.classList.remove("active");
-            });
-            const firstBlock = document.querySelector(".block1");
-            if (firstBlock) firstBlock.classList.add("active");
-
-            console.log("✅ Головний екран повинен бути видимим");
-        }, 350);
+        console.log("✅ Головний екран примусово показаний");
     }
 
     // Вхід кодом
     function vhod(type) {
         if (type === "plus") {
-            const activeCount = document.querySelectorAll(".start-vhod > div.active").length;
-            if (activeCount < 4) {
-                $(".start-vhod > div")[activeCount].classList.add("active");
+            const count = document.querySelectorAll(".start-vhod > div.active").length;
+            if (count < 4) {
+                $(".start-vhod > div").eq(count).addClass("active");
             }
-            if (activeCount + 1 === 4) {
+            if (count + 1 === 4) {
                 goToMainScreen();
             }
         } else {
-            const activeCount = document.querySelectorAll(".start-vhod > div.active").length;
-            if (activeCount > 0) {
-                $(".start-vhod > div")[activeCount - 1].classList.remove("active");
-            }
+            $(".start-vhod > div.active").last().removeClass("active");
         }
     }
 
-    // Клік по кнопках коду
-    document.querySelectorAll(".start-block > button").forEach(btn => {
+    // Кнопки коду
+    document.querySelectorAll(".start-block button").forEach(btn => {
         btn.addEventListener("click", () => {
-            if (btn.getAttribute("data-type") === "delete") {
+            if (btn.dataset.type === "delete") {
                 vhod("minus");
             } else {
                 vhod("plus");
@@ -68,10 +57,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Біометрія
-    const biometryBtn = document.querySelector(".biometry-btn");
-    if (biometryBtn) {
-        biometryBtn.addEventListener("click", goToMainScreen);
-    }
+    document.querySelector(".biometry-btn").addEventListener("click", goToMainScreen);
 
-    console.log("✅ Скрипт готовий до роботи");
+    // Якщо через 2 секунди все ще на старті — примусово перейти
+    setTimeout(() => {
+        if ($(".start-div").length > 0) {
+            console.log("⚠️ Автоматичний перехід через таймер");
+            goToMainScreen();
+        }
+    }, 2500);
+
+    console.log("✅ Скрипт готовий");
 });
