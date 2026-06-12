@@ -2204,41 +2204,72 @@
                     </div>
 
                     <div class="swiper-slide">
-                        <div class="slider" style="
-                                display: flex;
-                                flex-direction: column;
-                                gap: 10px;
-                            ">
-                            <div style="
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    gap: 15px;
-                                    height: 100%;
-                                    flex-direction: column;
-                                    background: rgba(255, 255, 255, 0.4);
-                                    border-radius: 24px;
-                                ">
-                                <img style="height: 35px;"
-                                    src="assets/addDocument.png" />
+                        <div class="slider osvita">
+                            <div class="content front">
+                                <h1>Свідоцтво про базову середню освіту</h1>
+                                <div class="dataBlock">
+                                    <div class="dataInfo" style="gap: 10px;">
+                                        <div style="width: 100%">
+                                            <span class="dataInfoFirst" style="width: 100%; font-size: 15px;" id="school_name">Загальноосвітня школа</span>
+                                        </div>
+                                        <div style="font-size: 12px;">
+                                            <span class="dataInfoFirst">Серія та номер:</span>
+                                            <span id="osvita_number">БСО № 123456</span>
+                                        </div>
+                                        <div style="font-size: 12px;">
+                                            <span class="dataInfoFirst">Рік видачі:</span>
+                                            <span id="osvita_year">2025</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="line1 marquee" style="background: linear-gradient(90deg,#b6eb9f,#9ccfcf);margin: auto -15px 5px -15px;position: relative;overflow: hidden;font-weight: 300;font-size: 13px;padding: 7px 0;">
+                                    • Документ оновлено о <span id="getCurrentDateTime"></span>
+                                </div>
+                                <div class="fioBlock" style="margin-right: 0">
+                                    <h2 id="name">Тут твоє ім'я</h2>
+                                    <div class="arrowSvg moreInfo" data-index="osvita" style="background-color: transparent; bottom: 0; right: 0;">
+                                        <img style="filter: brightness(1) invert(0); width: 34px; height: 34px; transform: rotate(0);" src="assets/dots.png" alt="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content back">
+                                <div class="qrcodeBlock">
+                                    <span>Код діятиме ще <span data-time="2:59">2:59</span> хв</span>
+                                    <div class="qrshBlock">
+                                        <div class="qrcode changeCode"></div>
+                                        <div class="shText" style="display: none">
+                                            <span>1977</span><span>3411</span><span>48475</span>
+                                        </div>
+                                    </div>
+                                    <div class="qrChange">
+                                        <div data-index="1">
+                                            <div style="background: black">
+                                                <img src="assets/qr-code.png" style="filter: brightness(0) invert(1);" alt="" />
+                                            </div>
+                                            <span>QR-код</span>
+                                        </div>
+                                        <div data-index="2">
+                                            <div>
+                                                <img src="assets/free-icon-barcode-7797192.png" alt="" />
+                                            </div>
+                                            <span>Штрихкод</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="swiper-slide">
+                        <div class="slider" style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; height: 100%; flex-direction: column; background: rgba(255, 255, 255, 0.4); border-radius: 24px;">
+                                <img style="height: 35px;" src="assets/addDocument.png" />
                                 <span style="font-size: 18px;">Додати документ</span>
                             </div>
-                            <div style="
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    gap: 15px;
-                                    height: 100%;
-                                    flex-direction: column;
-                                    background: rgba(255, 255, 255, 0.4);
-                                    border-radius: 24px;
-                                    text-align: center;
-                                ">
-                                <img style="height: 35px;"
-                                    src="assets/swapDocument.png" />
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 15px; height: 100%; flex-direction: column; background: rgba(255, 255, 255, 0.4); border-radius: 24px; text-align: center;">
+                                <img style="height: 35px;" src="assets/swapDocument.png" />
                                 <span style="font-size: 18px;">Змінити порядок <br />документів</span>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -2416,28 +2447,19 @@
         </div>
         <div class="block block1" style="padding: 0 20px">
             <h1 style="margin-bottom: 5px" class="textVizit">Меню</h1>
-            <span style="
-                        font-size: 13px;
-                        color: rgb(92, 92, 92);
-                        margin-bottom: 15px;
-                        width: 100%;
-                    ">Версія Дії: 4.7.0.1645</span>
-
-
+            <span style="font-size: 13px; color: rgb(92, 92, 92); margin-bottom: 15px; width: 100%;">Версія Дії: 4.7.0.1645</span>
 
             <div class="pre">
                 <div class="columnMenu">
                     <div>
                         <div style="padding: 10px 15px">
-                            <img style="width: 24px; height: 24px"
-                                src="assets/email.png" alt="" />
+                            <img style="width: 24px; height: 24px" src="assets/email.png" alt="" />
                             <span>Повідомлення</span>
                         </div>
                     </div>
                     <div>
                         <div class="border">
-                            <img style="width: 16px; height: 16px" src="assets/key.png"
-                                alt="" />
+                            <img style="width: 16px; height: 16px" src="assets/key.png" alt="" />
                             <span>Дія.Підпис</span>
                         </div>
                         <div>
@@ -2447,18 +2469,16 @@
                     </div>
 
                     <div>
-                        <div class="border">
+                        <div class="border" id="openSettingsBtn" style="cursor:pointer;">
                             <img src="assets/settings.png" alt="" />
                             <span>Налаштування</span>
                         </div>
                         <div class="border">
-                            <img style="transform: rotate(180deg)"
-                                src="assets/refresh.png" alt="" />
+                            <img style="transform: rotate(180deg)" src="assets/refresh.png" alt="" />
                             <span>Оновити застосунок</span>
                         </div>
                         <div>
-                            <img style="width: 24px; height: 24px"
-                                src="assets/smartphone.png" alt="" />
+                            <img style="width: 24px; height: 24px" src="assets/smartphone.png" alt="" />
                             <span>Підключені пристрої</span>
                         </div>
                     </div>
@@ -2466,8 +2486,7 @@
                     <div>
                         <div class="border">
                             <img src="assets/chat.png" alt="" />
-                            <span>Служба підтримки </span>
-
+                            <span>Служба підтримки</span>
                         </div>
                         <div class="border">
                             <img src="assets/copy.png" alt="" />
@@ -2480,8 +2499,87 @@
                     </div>
 
                     <button>Вийти</button>
-
                     <span>Повідомлення про обробку персональних данних</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="settings-modal hidden">
+            <div class="settings-sheet">
+                <div class="settings-header">
+                    <button class="settings-back" id="closeSettingsBtn">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <h2>Налаштування</h2>
+                    <button class="settings-save" id="saveSettingsBtn">Зберегти</button>
+                </div>
+
+                <div class="settings-body">
+                    <div class="settings-section-title">Особисті дані</div>
+
+                    <div class="settings-group">
+                        <div class="settings-field">
+                            <label>Прізвище</label>
+                            <input type="text" id="set_last_name" placeholder="КУЛІКОВ" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Ім'я</label>
+                            <input type="text" id="set_first_name" placeholder="РУСЛАН" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>По батькові</label>
+                            <input type="text" id="set_middle_name" placeholder="ЮРІЙОВИЧ" />
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <div class="settings-field">
+                            <label>Ім'я (англ.)</label>
+                            <input type="text" id="set_name_en" placeholder="RUSLAN KULIKOV" />
+                        </div>
+                    </div>
+
+                    <div class="settings-section-title">Документи</div>
+
+                    <div class="settings-group">
+                        <div class="settings-field">
+                            <label>Дата народження</label>
+                            <input type="text" id="set_birthdate" placeholder="05.06.2010" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>РНОКПП</label>
+                            <input type="text" id="set_rnokpp" placeholder="4033307794" inputmode="numeric" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Номер паспорту</label>
+                            <input type="text" id="set_passport_num" placeholder="010934294" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Номер закордонного паспорту</label>
+                            <input type="text" id="set_zagran_num" placeholder="GE135791" />
+                        </div>
+                    </div>
+
+                    <div class="settings-section-title">Підпис</div>
+
+                    <div class="settings-group">
+                        <div class="settings-field settings-field-sign">
+                            <label>Підпис</label>
+                            <div class="sign-canvas-wrap">
+                                <canvas id="signatureCanvas" width="260" height="80"></canvas>
+                                <button id="clearSignBtn" class="clear-sign-btn">Очистити</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section-title">Місце народження</div>
+                    <div class="settings-group">
+                        <div class="settings-field">
+                            <label>Місто</label>
+                            <input type="text" id="set_place_birth" placeholder="Дніпро" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
