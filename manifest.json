@@ -1,6 +1,6 @@
 {
-    "name": "Дія.AI",
-    "short_name": "Дія.AI",
+    "name": "Дія",
+    "short_name": "Дія",
     "theme_color": "#000000",
     "background_color": "#000000",
     "display": "standalone",
@@ -9,23 +9,23 @@
     "scope": "/Xysxa-sites/",
     "icons": [
         {
-            "src": "assets/favicon.png?v=3",
+            "src": "assets/favicon.png?v=4",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "assets/favicon.png?v=3",
+            "src": "assets/favicon.png?v=4",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
-            "src": "assets/favicon.png?v=3",
+            "src": "assets/favicon.png?v=4",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable"
         },
         {
-            "src": "assets/favicon.png?v=3",
+            "src": "assets/favicon.png?v=4",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
