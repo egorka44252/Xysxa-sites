@@ -599,29 +599,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const startDiv = document.querySelector(".start-div");
 
   function showPin() {
-    // Animate loadpage out: scale up + fade out
-    loadPage.style.transition = "opacity 0.55s cubic-bezier(0.4,0,0.2,1), transform 0.55s cubic-bezier(0.4,0,0.2,1)";
-    loadPage.style.opacity = "0";
-    loadPage.style.transform = "scale(1.08)";
-
-    setTimeout(function () {
-      loadPage.style.display = "none";
-      loadPage.style.transform = "";
-      if (startDiv) {
-        startDiv.classList.add("active");
-        // Animate pin screen in from below
-        startDiv.style.transform = "translateY(30px)";
-        startDiv.style.opacity = "0";
-        startDiv.style.transition = "none";
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            startDiv.style.transition = "opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1)";
-            startDiv.style.transform = "translateY(0)";
-            startDiv.style.opacity = "1";
-          });
-        });
-      }
-    }, 560);
+    loadPage.style.display = "none";
+    if (startDiv) startDiv.classList.add("active");
   }
 
   // Якщо відео недоступне — через 300мс показуємо пін
@@ -1244,3 +1223,13 @@ document.querySelectorAll(".modal").forEach((modal) => {
     });
   });
 })();
+
+// Fix: move popups to document.body to avoid fixed-position clipping from parent overflow:hidden
+document.addEventListener("DOMContentLoaded", function () {
+  ["error-popup", "no-internet-popup"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el && el.parentNode !== document.body) {
+      document.body.appendChild(el);
+    }
+  });
+});
