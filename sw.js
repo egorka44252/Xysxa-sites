@@ -1,4 +1,4 @@
-const CACHE = 'diya-v1';
+const CACHE = 'diya-v3';
 const ASSETS = [
   '/Xysxa-sites/',
   '/Xysxa-sites/index.html',
