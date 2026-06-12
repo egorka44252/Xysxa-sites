@@ -159,167 +159,61 @@ document.querySelectorAll(".close_block").forEach((el) => {
   });
 });
 
-// Извлечение userId из URL (оставьте только этот блок)
-const pathParts = window.location.pathname.split("/");
-const userId = pathParts[pathParts.length - 2];
+// Ініціалізація даних з localStorage (Settings) + Swiper
+(function initFromLocalStorage() {
+  var STORAGE_KEY = 'diya_settings';
+  var s = {};
+  try { s = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) {}
 
-if (!userId || isNaN(userId)) {
-  console.error("Ошибка: user_id не удалось извлечь или он некорректен");
-} else {
-  // Один запрос на все данные и статусы
-  $.post("checkFiles.php", {
-    action: "get_all",
-    user_id: userId,
-  })
-    .then((response) => {
+  function set(sel, val) {
+    if (!val) return;
+    document.querySelectorAll(sel).forEach(function(el){ el.textContent = val; });
+  }
 
-      const data = response; // jQuery уже парсит в объект
-      if (data.error) {
-        console.error("Ошибка:", data.error);
-        return;
-      }
+  // Full name UA (last + first + middle)
+  var fio = [s.last_name, s.first_name, s.middle_name].filter(Boolean).join(' ');
+  set('#name', fio);
+  set('#nameEn', s.name_en);
+  set('#birthDate', s.birthdate);
+  set('#rnokpp', s.rnokpp);
+  set('#nomerPasport', s.passport_num);
+  set('#zagran_number', s.zagran_num);
+  set('#zagranNumber', s.zagran_num);
+  set('#placeBirth', s.place_birth);
+  set('#textName', fio ? fio.split(' ')[1] || '' : '');
 
-      // Заполнение всех полей из data
-      document
-        .querySelectorAll("#name")
-        .forEach((el) => (el.textContent = data.fio || ""));
-      document
-        .querySelectorAll("#nameEn")
-        .forEach((el) => (el.textContent = data.fio_en || ""));
-      document
-        .querySelectorAll("#birthDate")
-        .forEach((el) => (el.textContent = data.birth || ""));
-      document
-        .querySelectorAll("#rnokpp")
-        .forEach((el) => (el.textContent = data.rnokpp || ""));
-      document
-        .querySelectorAll("#pravaNnumber")
-        .forEach((el) => (el.textContent = data.prava_number || ""));
-      document
-        .querySelectorAll("#university")
-        .forEach((el) => (el.textContent = data.university || ""));
-      document
-        .querySelectorAll("#fakultat")
-        .forEach((el) => (el.textContent = data.fakultet || ""));
-      document
-        .querySelectorAll("#stepen_dip")
-        .forEach((el) => (el.textContent = `Диплом ${data.stepen_dip || ""}`));
-      document
-        .querySelectorAll("#univer_dip")
-        .forEach((el) => (el.textContent = data.univer_dip || ""));
-      document
-        .querySelectorAll("#dayout_dip")
-        .forEach((el) => (el.textContent = data.dayout_dip || ""));
-      document
-        .querySelectorAll("#special_dip")
-        .forEach((el) => (el.textContent = data.special_dip || ""));
-      document
-        .querySelectorAll("#number_dip")
-        .forEach((el) => (el.textContent = data.number_dip || ""));
-      document
-        .querySelectorAll("#placeBirth")
-        .forEach((el) => (el.textContent = data.live || ""));
-      document
-        .querySelectorAll("#srokPrav")
-        .forEach((el) => (el.textContent = data.prava_date_out || ""));
-      document
-        .querySelectorAll("#adress")
-        .forEach((el) => (el.textContent = data.bank_adress || ""));
-      document
-        .querySelectorAll("#sex")
-        .forEach((el) => (el.textContent = data.sex || ""));
-      document
-        .querySelectorAll("#sexEn")
-        .forEach((el) => (el.textContent = data.sex_en || ""));
-      document
-        .querySelectorAll("#textName")
-        .forEach(
-          (el) => (el.textContent = (data.fio || "").split(" ")[1] || "")
-        );
-      document
-        .querySelectorAll("#zagran_number")
-        .forEach((el) => (el.textContent = data.zagran_number || ""));
-      document
-        .querySelectorAll("#nomerStudy")
-        .forEach((el) => (el.textContent = data.student_number || ""));
-      document
-        .querySelectorAll("#vidanoStudy")
-        .forEach((el) => (el.textContent = data.student_date_give || ""));
-      document
-        .querySelectorAll("#diusnuyDoStudy")
-        .forEach((el) => (el.textContent = data.student_date_out || ""));
-      document
-        .querySelectorAll("#formaStudy")
-        .forEach((el) => (el.textContent = data.form || ""));
-      document
-        .querySelectorAll("#rightsCategories")
-        .forEach((el) => (el.textContent = data.rights_categories || ""));
-      document
-        .querySelectorAll("#dateGive")
-        .forEach((el) => (el.textContent = data.date_give || ""));
-      document
-        .querySelectorAll("#dateGivePrava")
-        .forEach((el) => (el.textContent = data.prava_date_give || ""));
-      document
-        .querySelectorAll("#dateOut")
-        .forEach((el) => (el.textContent = data.date_out || ""));
-      document
-        .querySelectorAll("#nomerPasport")
-        .forEach((el) => (el.textContent = data.pass_number || ""));
-      document
-        .querySelectorAll("#organ")
-        .forEach((el) => (el.textContent = data.organ || ""));
-      document
-        .querySelectorAll("#uznr")
-        .forEach((el) => (el.textContent = data.uznr || ""));
-      document
-        .querySelectorAll("#legalAdress")
-        .forEach((el) => (el.textContent = data.legalAdress || ""));
-      document
-        .querySelectorAll("#registeredOn")
-        .forEach((el) => (el.textContent = data.registeredOn || ""));
-      document
-        .querySelectorAll("#pravaOrgan")
-        .forEach((el) => (el.textContent = data.pravaOrgan || ""));
-
-      // Скрытие документов на основе статусов из data
-      if (data.prava_status === "False") {
-        $(".prava").parent("div").remove();
-      }
-      if (data.study_status === "False") {
-        $(".study").parent("div").remove();
-      }
-      if (data.zagran_status === "False") {
-        $(".zagran").parent("div").remove();
-      }
-      if (data.status_dip === "False") {
-        $(".dip").parent("div").remove();
-      }
-
-      // Инициализация Swiper после загрузки данных
-      new Swiper(".documentSlider", {
-        pagination: {
-          el: ".swiper-pagination",
-          clickable: true,
-        },
-        slidesPerView: 1.12,
-        centeredSlides: true,
-        spaceBetween: 16,
-        grabCursor: true,
-        touchRatio: 1,
-        threshold: 8,
-        touchStartPreventDefault: false,
-        simulateTouch: true,
-        allowTouchMove: true,
-        touchEventsTarget: 'container',
-        resistanceRatio: 0.6,
-        cssMode: false,
-      });
-    })
-    .catch((error) => {
-      console.error("Ошибка загрузки данных:", error);
+  // Signature
+  if (s.signature) {
+    document.querySelectorAll('img[src="sign.png"]').forEach(function(img){
+      img.src = s.signature;
+      img.style.maxHeight = '40px';
+      img.style.maxWidth = '100px';
+      img.style.objectFit = 'contain';
     });
-}
+  }
+
+  // Ініціалізація Swiper одразу після DOM
+  document.addEventListener('DOMContentLoaded', function() {
+    new Swiper(".documentSlider", {
+      pagination: {
+        el: ".swiper-pagination",
+        clickable: true,
+      },
+      slidesPerView: 1.12,
+      centeredSlides: true,
+      spaceBetween: 16,
+      grabCursor: true,
+      touchRatio: 1,
+      threshold: 8,
+      touchStartPreventDefault: false,
+      simulateTouch: true,
+      allowTouchMove: true,
+      touchEventsTarget: 'container',
+      resistanceRatio: 0.6,
+      cssMode: false,
+    });
+  });
+})();
 
 document.querySelectorAll("#dataNow").forEach(function (el) {
   const today = new Date();
