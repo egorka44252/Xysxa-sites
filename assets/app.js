@@ -54,31 +54,82 @@ $(document).ready(function() {
   }
 });
 
+// Ban logic
+var wrongAttempts = 0;
+var MAX_ATTEMPTS = 5;
+var BAN_SECONDS = 30;
+var banInterval = null;
+
+function showBan() {
+  var banScreen = document.getElementById('ban-screen');
+  var timerEl = document.getElementById('ban-timer');
+  if (!banScreen) return;
+  banScreen.classList.add('active');
+  var secs = BAN_SECONDS;
+  timerEl.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
+  if (banInterval) clearInterval(banInterval);
+  banInterval = setInterval(function() {
+    secs--;
+    timerEl.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
+    if (secs <= 0) {
+      clearInterval(banInterval);
+      banInterval = null;
+      wrongAttempts = 0;
+      banScreen.classList.remove('active');
+      // reset dots
+      document.querySelectorAll('.start-vhod > div').forEach(function(d){ d.classList.remove('active'); });
+    }
+  }, 1000);
+}
+
+function shakeVhod() {
+  var vhodEl = document.querySelector('.start-vhod');
+  if (!vhodEl) return;
+  vhodEl.style.transition = 'transform 0.05s';
+  var moves = [10, -10, 8, -8, 5, -5, 0];
+  var i = 0;
+  var shakeInterval = setInterval(function() {
+    vhodEl.style.transform = 'translateX(' + moves[i] + 'px)';
+    i++;
+    if (i >= moves.length) {
+      clearInterval(shakeInterval);
+      vhodEl.style.transform = '';
+      // reset dots after wrong
+      document.querySelectorAll('.start-vhod > div').forEach(function(d){ d.classList.remove('active'); });
+    }
+  }, 50);
+}
+
 function vhod(type) {
+  if (banInterval) return; // blocked
   if ($(".start-vhod > div.active")[0]) {
     if (type === "plus") {
-      $(".start-vhod > div")[
-        document.querySelectorAll(".start-vhod > div.active").length
-      ].classList.add("active");
+      var activeDots = document.querySelectorAll(".start-vhod > div.active").length;
+      if (activeDots < 4) {
+        $(".start-vhod > div")[activeDots].classList.add("active");
+      }
       if (document.querySelectorAll(".start-vhod > div.active").length == 4) {
+        wrongAttempts = 0;
         const startDiv = $(".start-div");
-
-        // Плавно ховаємо
         startDiv.removeClass("active").addClass("hiding");
-
-        // Через 400мс повністю видаляємо з DOM
         setTimeout(() => {
           startDiv.remove();
         }, 400);
-
-        // Показуємо основний контент
         $(".main").addClass("active");
         $(".blockStart").addClass("active");
       }
     } else {
-      $(".start-vhod > div")[
-        document.querySelectorAll(".start-vhod > div.active").length - 1
-      ].classList.remove("active");
+      var activeDots = document.querySelectorAll(".start-vhod > div.active").length;
+      if (activeDots === 4) {
+        // Delete on full = wrong attempt
+        wrongAttempts++;
+        shakeVhod();
+        if (wrongAttempts >= MAX_ATTEMPTS) {
+          showBan();
+        }
+      } else {
+        $(".start-vhod > div")[activeDots - 1].classList.remove("active");
+      }
     }
   } else {
     $(".start-vhod > div")[0].classList.add("active");
