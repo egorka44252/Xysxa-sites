@@ -1115,3 +1115,158 @@ document.querySelectorAll(".modal").forEach((modal) => {
     }
   });
 })();
+
+/* ===== Settings Logic ===== */
+(function() {
+  var STORAGE_KEY = 'diya_settings';
+
+  function loadSettings() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
+  }
+  function saveSettings(s) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch(e) {}
+  }
+
+  function applySettings(s) {
+    // Full name UA
+    var fullName = [s.last_name, s.first_name, s.middle_name].filter(Boolean).join('\n');
+    document.querySelectorAll('#name').forEach(function(el) {
+      if (fullName) el.textContent = fullName;
+    });
+    // Full name EN
+    if (s.name_en) document.querySelectorAll('#nameEn').forEach(function(el){ el.textContent = s.name_en; });
+    // Birth date
+    if (s.birthdate) document.querySelectorAll('#birthDate').forEach(function(el){ el.textContent = s.birthdate; });
+    // RNOKPP
+    if (s.rnokpp) document.querySelectorAll('#rnokpp').forEach(function(el){ el.textContent = s.rnokpp; });
+    // Passport number
+    if (s.passport_num) document.querySelectorAll('#nomerPasport').forEach(function(el){ el.textContent = s.passport_num; });
+    // Zagran number
+    if (s.zagran_num) document.querySelectorAll('#zagran_number').forEach(function(el){ el.textContent = s.zagran_num; });
+    // Place of birth
+    if (s.place_birth) document.querySelectorAll('#placeBirth').forEach(function(el){ el.textContent = s.place_birth; });
+    // Signature
+    if (s.signature) {
+      document.querySelectorAll('img[src="sign.png"]').forEach(function(img) {
+        img.src = s.signature;
+        img.style.maxHeight = '40px';
+        img.style.maxWidth = '100px';
+        img.style.objectFit = 'contain';
+      });
+    }
+  }
+
+  function fillForm(s) {
+    var f = function(id, val) { var el = document.getElementById(id); if (el && val) el.value = val; };
+    f('set_last_name',    s.last_name);
+    f('set_first_name',   s.first_name);
+    f('set_middle_name',  s.middle_name);
+    f('set_name_en',      s.name_en);
+    f('set_birthdate',    s.birthdate);
+    f('set_rnokpp',       s.rnokpp);
+    f('set_passport_num', s.passport_num);
+    f('set_zagran_num',   s.zagran_num);
+    f('set_place_birth',  s.place_birth);
+    // Restore signature on canvas
+    if (s.signature) {
+      var canvas = document.getElementById('signatureCanvas');
+      if (canvas) {
+        var img = new Image();
+        img.onload = function(){ canvas.getContext('2d').drawImage(img, 0, 0); };
+        img.src = s.signature;
+      }
+    }
+  }
+
+  function readForm() {
+    var g = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    var canvas = document.getElementById('signatureCanvas');
+    var sig = canvas ? canvas.toDataURL() : '';
+    // Check if canvas is blank
+    var blank = document.createElement('canvas');
+    blank.width = canvas ? canvas.width : 0;
+    blank.height = canvas ? canvas.height : 0;
+    if (canvas && canvas.toDataURL() === blank.toDataURL()) sig = '';
+    return {
+      last_name:    g('set_last_name'),
+      first_name:   g('set_first_name'),
+      middle_name:  g('set_middle_name'),
+      name_en:      g('set_name_en'),
+      birthdate:    g('set_birthdate'),
+      rnokpp:       g('set_rnokpp'),
+      passport_num: g('set_passport_num'),
+      zagran_num:   g('set_zagran_num'),
+      place_birth:  g('set_place_birth'),
+      signature:    sig,
+    };
+  }
+
+  // Signature drawing
+  function initSignatureCanvas() {
+    var canvas = document.getElementById('signatureCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    var drawing = false;
+    var lastX = 0, lastY = 0;
+
+    function getPos(e) {
+      var r = canvas.getBoundingClientRect();
+      var scaleX = canvas.width / r.width;
+      var scaleY = canvas.height / r.height;
+      if (e.touches) {
+        return { x: (e.touches[0].clientX - r.left) * scaleX, y: (e.touches[0].clientY - r.top) * scaleY };
+      }
+      return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+    }
+
+    function start(e) { e.preventDefault(); drawing = true; var p = getPos(e); lastX = p.x; lastY = p.y; ctx.beginPath(); ctx.moveTo(lastX, lastY); }
+    function move(e) { e.preventDefault(); if (!drawing) return; var p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }
+    function end(e) { drawing = false; }
+
+    canvas.addEventListener('mousedown', start);
+    canvas.addEventListener('mousemove', move);
+    canvas.addEventListener('mouseup', end);
+    canvas.addEventListener('mouseleave', end);
+    canvas.addEventListener('touchstart', start, { passive: false });
+    canvas.addEventListener('touchmove', move, { passive: false });
+    canvas.addEventListener('touchend', end);
+
+    document.getElementById('clearSignBtn').addEventListener('click', function() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var modal = document.getElementById('settingsModal');
+    var openBtn = document.getElementById('openSettingsBtn');
+    var closeBtn = document.getElementById('closeSettingsBtn');
+    var saveBtn = document.getElementById('saveSettingsBtn');
+
+    if (!modal) return;
+
+    // Load and apply on start
+    var s = loadSettings();
+    applySettings(s);
+
+    openBtn && openBtn.addEventListener('click', function() {
+      fillForm(loadSettings());
+      modal.classList.remove('hidden');
+      initSignatureCanvas();
+    });
+
+    closeBtn && closeBtn.addEventListener('click', function() {
+      modal.classList.add('hidden');
+    });
+
+    saveBtn && saveBtn.addEventListener('click', function() {
+      var s = readForm();
+      saveSettings(s);
+      applySettings(s);
+      modal.classList.add('hidden');
+    });
+  });
+})();
