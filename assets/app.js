@@ -54,82 +54,31 @@ $(document).ready(function() {
   }
 });
 
-// Ban logic
-var wrongAttempts = 0;
-var MAX_ATTEMPTS = 5;
-var BAN_SECONDS = 30;
-var banInterval = null;
-
-function showBan() {
-  var banScreen = document.getElementById('ban-screen');
-  var timerEl = document.getElementById('ban-timer');
-  if (!banScreen) return;
-  banScreen.classList.add('active');
-  var secs = BAN_SECONDS;
-  timerEl.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
-  if (banInterval) clearInterval(banInterval);
-  banInterval = setInterval(function() {
-    secs--;
-    timerEl.textContent = '0:' + (secs < 10 ? '0' : '') + secs;
-    if (secs <= 0) {
-      clearInterval(banInterval);
-      banInterval = null;
-      wrongAttempts = 0;
-      banScreen.classList.remove('active');
-      // reset dots
-      document.querySelectorAll('.start-vhod > div').forEach(function(d){ d.classList.remove('active'); });
-    }
-  }, 1000);
-}
-
-function shakeVhod() {
-  var vhodEl = document.querySelector('.start-vhod');
-  if (!vhodEl) return;
-  vhodEl.style.transition = 'transform 0.05s';
-  var moves = [10, -10, 8, -8, 5, -5, 0];
-  var i = 0;
-  var shakeInterval = setInterval(function() {
-    vhodEl.style.transform = 'translateX(' + moves[i] + 'px)';
-    i++;
-    if (i >= moves.length) {
-      clearInterval(shakeInterval);
-      vhodEl.style.transform = '';
-      // reset dots after wrong
-      document.querySelectorAll('.start-vhod > div').forEach(function(d){ d.classList.remove('active'); });
-    }
-  }, 50);
-}
-
 function vhod(type) {
-  if (banInterval) return; // blocked
   if ($(".start-vhod > div.active")[0]) {
     if (type === "plus") {
-      var activeDots = document.querySelectorAll(".start-vhod > div.active").length;
-      if (activeDots < 4) {
-        $(".start-vhod > div")[activeDots].classList.add("active");
-      }
+      $(".start-vhod > div")[
+        document.querySelectorAll(".start-vhod > div.active").length
+      ].classList.add("active");
       if (document.querySelectorAll(".start-vhod > div.active").length == 4) {
-        wrongAttempts = 0;
         const startDiv = $(".start-div");
+
+        // Плавно ховаємо
         startDiv.removeClass("active").addClass("hiding");
+
+        // Через 400мс повністю видаляємо з DOM
         setTimeout(() => {
           startDiv.remove();
         }, 400);
+
+        // Показуємо основний контент
         $(".main").addClass("active");
         $(".blockStart").addClass("active");
       }
     } else {
-      var activeDots = document.querySelectorAll(".start-vhod > div.active").length;
-      if (activeDots === 4) {
-        // Delete on full = wrong attempt
-        wrongAttempts++;
-        shakeVhod();
-        if (wrongAttempts >= MAX_ATTEMPTS) {
-          showBan();
-        }
-      } else {
-        $(".start-vhod > div")[activeDots - 1].classList.remove("active");
-      }
+      $(".start-vhod > div")[
+        document.querySelectorAll(".start-vhod > div.active").length - 1
+      ].classList.remove("active");
     }
   } else {
     $(".start-vhod > div")[0].classList.add("active");
@@ -928,6 +877,16 @@ document.querySelectorAll(".modal").forEach((modal) => {
     chip.textContent = d.getDate() + ' ' + months[d.getMonth()];
   }
 
+  function initGreetingName() {
+    var el = document.getElementById('daiGreetingName');
+    if (!el) return;
+    try {
+      var s = JSON.parse(localStorage.getItem('diya_settings')) || {};
+      var name = s.first_name || s.last_name || '';
+      if (name) el.textContent = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    } catch(e) {}
+  }
+
   // Append AI message block with sparkle icon + actions
   function appendAiBlock(text) {
     var el = getMsgsEl();
@@ -1039,6 +998,7 @@ document.querySelectorAll(".modal").forEach((modal) => {
 
   document.addEventListener('DOMContentLoaded', function() {
     initDateChip();
+    initGreetingName();
 
     var sendBtn = document.getElementById('diyaAiSend');
     var input = document.getElementById('diyaAiInput');
@@ -1094,6 +1054,12 @@ document.querySelectorAll(".modal").forEach((modal) => {
     }
     if (s.place_birth) document.querySelectorAll('#placeBirth').forEach(function(el){ el.textContent = s.place_birth; });
     if (fullName) document.querySelectorAll('#textName').forEach(function(el){ el.textContent = fullName.split(' ')[1] || ''; });
+    // Update Дія.AI greeting
+    var greetEl = document.getElementById('daiGreetingName');
+    if (greetEl) {
+      var firstName = s.first_name || s.last_name || '';
+      if (firstName) greetEl.textContent = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+    }
     if (s.signature) {
       document.querySelectorAll('img[src="sign.png"], img[src*="sign.png"]').forEach(function(img) {
         img.src = s.signature;
