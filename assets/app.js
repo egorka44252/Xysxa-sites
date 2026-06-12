@@ -170,7 +170,6 @@ document.querySelectorAll(".close_block").forEach((el) => {
     document.querySelectorAll(sel).forEach(function(el){ el.textContent = val; });
   }
 
-  // Full name UA (last + first + middle)
   var fio = [s.last_name, s.first_name, s.middle_name].filter(Boolean).join(' ');
   set('#name', fio);
   set('#nameEn', s.name_en);
@@ -180,11 +179,10 @@ document.querySelectorAll(".close_block").forEach((el) => {
   set('#zagran_number', s.zagran_num);
   set('#zagranNumber', s.zagran_num);
   set('#placeBirth', s.place_birth);
-  set('#textName', fio ? fio.split(' ')[1] || '' : '');
+  if (fio) set('#textName', fio.split(' ')[1] || '');
 
-  // Signature
   if (s.signature) {
-    document.querySelectorAll('img[src="sign.png"]').forEach(function(img){
+    document.querySelectorAll('img[src="sign.png"], img[src*="sign.png"]').forEach(function(img){
       img.src = s.signature;
       img.style.maxHeight = '40px';
       img.style.maxWidth = '100px';
@@ -192,13 +190,16 @@ document.querySelectorAll(".close_block").forEach((el) => {
     });
   }
 
-  // Ініціалізація Swiper одразу після DOM
+  if (s.photo) {
+    document.querySelectorAll('img[src="photo.jpg"], img[src*="photo.jpg"]').forEach(function(img){
+      img.src = s.photo;
+      img.style.objectFit = 'cover';
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function() {
     new Swiper(".documentSlider", {
-      pagination: {
-        el: ".swiper-pagination",
-        clickable: true,
-      },
+      pagination: { el: ".swiper-pagination", clickable: true },
       slidesPerView: 1.12,
       centeredSlides: true,
       spaceBetween: 16,
@@ -1013,7 +1014,7 @@ document.querySelectorAll(".modal").forEach((modal) => {
 /* ===== Settings Logic ===== */
 (function() {
   var STORAGE_KEY = 'diya_settings';
-
+  
   function loadSettings() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
   }
@@ -1022,26 +1023,28 @@ document.querySelectorAll(".modal").forEach((modal) => {
   }
 
   function applySettings(s) {
-    // Full name UA
-    var fullName = [s.last_name, s.first_name, s.middle_name].filter(Boolean).join('\n');
-    document.querySelectorAll('#name').forEach(function(el) {
-      if (fullName) el.textContent = fullName;
-    });
-    // Full name EN
+    if (s.photo) {
+      document.querySelectorAll('img[src="photo.jpg"], img[src*="photo.jpg"]').forEach(function(img) {
+        if (img.id !== 'photoPreview') {
+          img.src = s.photo;
+          img.style.objectFit = 'cover';
+        }
+      });
+    }
+    var fullName = [s.last_name, s.first_name, s.middle_name].filter(Boolean).join(' ');
+    if (fullName) document.querySelectorAll('#name').forEach(function(el){ el.textContent = fullName; });
     if (s.name_en) document.querySelectorAll('#nameEn').forEach(function(el){ el.textContent = s.name_en; });
-    // Birth date
     if (s.birthdate) document.querySelectorAll('#birthDate').forEach(function(el){ el.textContent = s.birthdate; });
-    // RNOKPP
     if (s.rnokpp) document.querySelectorAll('#rnokpp').forEach(function(el){ el.textContent = s.rnokpp; });
-    // Passport number
     if (s.passport_num) document.querySelectorAll('#nomerPasport').forEach(function(el){ el.textContent = s.passport_num; });
-    // Zagran number
-    if (s.zagran_num) document.querySelectorAll('#zagran_number').forEach(function(el){ el.textContent = s.zagran_num; });
-    // Place of birth
+    if (s.zagran_num) {
+      document.querySelectorAll('#zagran_number').forEach(function(el){ el.textContent = s.zagran_num; });
+      document.querySelectorAll('#zagranNumber').forEach(function(el){ el.textContent = s.zagran_num; });
+    }
     if (s.place_birth) document.querySelectorAll('#placeBirth').forEach(function(el){ el.textContent = s.place_birth; });
-    // Signature
+    if (fullName) document.querySelectorAll('#textName').forEach(function(el){ el.textContent = fullName.split(' ')[1] || ''; });
     if (s.signature) {
-      document.querySelectorAll('img[src="sign.png"]').forEach(function(img) {
+      document.querySelectorAll('img[src="sign.png"], img[src*="sign.png"]').forEach(function(img) {
         img.src = s.signature;
         img.style.maxHeight = '40px';
         img.style.maxWidth = '100px';
@@ -1051,7 +1054,7 @@ document.querySelectorAll(".modal").forEach((modal) => {
   }
 
   function fillForm(s) {
-    var f = function(id, val) { var el = document.getElementById(id); if (el && val) el.value = val; };
+    var f = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
     f('set_last_name',    s.last_name);
     f('set_first_name',   s.first_name);
     f('set_middle_name',  s.middle_name);
@@ -1061,27 +1064,33 @@ document.querySelectorAll(".modal").forEach((modal) => {
     f('set_passport_num', s.passport_num);
     f('set_zagran_num',   s.zagran_num);
     f('set_place_birth',  s.place_birth);
-    // Restore signature on canvas
-    if (s.signature) {
-      var canvas = document.getElementById('signatureCanvas');
-      if (canvas) {
+    var preview = document.getElementById('photoPreview');
+    if (preview && s.photo) preview.src = s.photo;
+    var canvas = document.getElementById('signatureCanvas');
+    if (canvas) {
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (s.signature) {
         var img = new Image();
-        img.onload = function(){ canvas.getContext('2d').drawImage(img, 0, 0); };
+        img.onload = function(){ ctx.drawImage(img, 0, 0, canvas.width, canvas.height); };
         img.src = s.signature;
       }
     }
   }
 
+  function isCanvasBlank(canvas) {
+    var blank = document.createElement('canvas');
+    blank.width = canvas.width; blank.height = canvas.height;
+    return canvas.toDataURL() === blank.toDataURL();
+  }
+
   function readForm() {
     var g = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
     var canvas = document.getElementById('signatureCanvas');
-    var sig = canvas ? canvas.toDataURL() : '';
-    // Check if canvas is blank
-    var blank = document.createElement('canvas');
-    blank.width = canvas ? canvas.width : 0;
-    blank.height = canvas ? canvas.height : 0;
-    if (canvas && canvas.toDataURL() === blank.toDataURL()) sig = '';
+    var current = loadSettings();
+    var sig = (canvas && !isCanvasBlank(canvas)) ? canvas.toDataURL() : (current.signature || '');
     return {
+      photo:        current.photo || '',
       last_name:    g('set_last_name'),
       first_name:   g('set_first_name'),
       middle_name:  g('set_middle_name'),
@@ -1095,61 +1104,65 @@ document.querySelectorAll(".modal").forEach((modal) => {
     };
   }
 
-  // Signature drawing
   function initSignatureCanvas() {
     var canvas = document.getElementById('signatureCanvas');
     if (!canvas) return;
+    var newCanvas = canvas.cloneNode(true);
+    canvas.parentNode.replaceChild(newCanvas, canvas);
+    canvas = newCanvas;
     var ctx = canvas.getContext('2d');
     ctx.strokeStyle = '#111';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    var s = loadSettings();
+    if (s.signature) {
+      var img = new Image();
+      img.onload = function(){ ctx.drawImage(img, 0, 0, canvas.width, canvas.height); };
+      img.src = s.signature;
+    }
     var drawing = false;
-    var lastX = 0, lastY = 0;
-
     function getPos(e) {
       var r = canvas.getBoundingClientRect();
-      var scaleX = canvas.width / r.width;
-      var scaleY = canvas.height / r.height;
-      if (e.touches) {
-        return { x: (e.touches[0].clientX - r.left) * scaleX, y: (e.touches[0].clientY - r.top) * scaleY };
-      }
-      return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+      var sx = canvas.width / r.width, sy = canvas.height / r.height;
+      var src = e.touches ? e.touches[0] : e;
+      return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
     }
-
-    function start(e) { e.preventDefault(); drawing = true; var p = getPos(e); lastX = p.x; lastY = p.y; ctx.beginPath(); ctx.moveTo(lastX, lastY); }
-    function move(e) { e.preventDefault(); if (!drawing) return; var p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; }
-    function end(e) { drawing = false; }
-
-    canvas.addEventListener('mousedown', start);
-    canvas.addEventListener('mousemove', move);
-    canvas.addEventListener('mouseup', end);
-    canvas.addEventListener('mouseleave', end);
-    canvas.addEventListener('touchstart', start, { passive: false });
-    canvas.addEventListener('touchmove', move, { passive: false });
-    canvas.addEventListener('touchend', end);
-
-    document.getElementById('clearSignBtn').addEventListener('click', function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    });
+    canvas.addEventListener('mousedown',  function(e){ drawing=true; var p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+    canvas.addEventListener('mousemove',  function(e){ if(!drawing) return; var p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); });
+    canvas.addEventListener('mouseup',    function(){ drawing=false; });
+    canvas.addEventListener('mouseleave', function(){ drawing=false; });
+    canvas.addEventListener('touchstart', function(e){ e.preventDefault(); drawing=true; var p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); }, {passive:false});
+    canvas.addEventListener('touchmove',  function(e){ e.preventDefault(); if(!drawing) return; var p=getPos(e); ctx.lineTo(p.x,p.y); ctx.stroke(); }, {passive:false});
+    canvas.addEventListener('touchend',   function(){ drawing=false; });
+    var clearBtn = document.getElementById('clearSignBtn');
+    if (clearBtn) {
+      var nb = clearBtn.cloneNode(true);
+      clearBtn.parentNode.replaceChild(nb, clearBtn);
+      nb.addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var s = loadSettings(); s.signature = ''; saveSettings(s);
+        document.querySelectorAll('img[src*="sign"]').forEach(function(img){ img.src = 'sign.png'; });
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    var modal = document.getElementById('settingsModal');
-    var openBtn = document.getElementById('openSettingsBtn');
-    var closeBtn = document.getElementById('closeSettingsBtn');
-    var saveBtn = document.getElementById('saveSettingsBtn');
+    var modal        = document.getElementById('settingsModal');
+    var openBtn      = document.getElementById('openSettingsBtn');
+    var closeBtn     = document.getElementById('closeSettingsBtn');
+    var saveBtn      = document.getElementById('saveSettingsBtn');
+    var fileInput    = document.getElementById('photoFileInput');
+    var clearPhotoBtn= document.getElementById('clearPhotoBtn');
 
     if (!modal) return;
 
-    // Load and apply on start
-    var s = loadSettings();
-    applySettings(s);
+    applySettings(loadSettings());
 
     openBtn && openBtn.addEventListener('click', function() {
       fillForm(loadSettings());
       modal.classList.remove('hidden');
-      initSignatureCanvas();
+      setTimeout(initSignatureCanvas, 50);
     });
 
     closeBtn && closeBtn.addEventListener('click', function() {
@@ -1161,6 +1174,35 @@ document.querySelectorAll(".modal").forEach((modal) => {
       saveSettings(s);
       applySettings(s);
       modal.classList.add('hidden');
+      var n = document.getElementById('notification');
+      if (n) {
+        var orig = n.textContent;
+        n.textContent = '✓ Збережено';
+        n.classList.add('show');
+        setTimeout(function(){ n.classList.remove('show'); setTimeout(function(){ n.textContent = orig; }, 300); }, 2000);
+      }
+    });
+
+    fileInput && fileInput.addEventListener('change', function() {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var dataUrl = e.target.result;
+        var preview = document.getElementById('photoPreview');
+        if (preview) preview.src = dataUrl;
+        var s = loadSettings(); s.photo = dataUrl; saveSettings(s);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    clearPhotoBtn && clearPhotoBtn.addEventListener('click', function() {
+      var s = loadSettings(); s.photo = ''; saveSettings(s);
+      var preview = document.getElementById('photoPreview');
+      if (preview) preview.src = 'photo.jpg';
+      document.querySelectorAll('img[src*="data:image"]').forEach(function(img){
+        if (img.id !== 'photoPreview' && !img.src.includes('sign')) img.src = 'photo.jpg';
+      });
     });
   });
 })();
