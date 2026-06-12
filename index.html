@@ -2516,70 +2516,85 @@
                 </div>
 
                 <div class="settings-body">
-                    <div class="settings-section-title">Особисті дані</div>
 
+                    <!-- ФОТО -->
+                    <div class="settings-section-title">Фото</div>
                     <div class="settings-group">
-                        <div class="settings-field">
-                            <label>Прізвище</label>
-                            <input type="text" id="set_last_name" placeholder="КУЛІКОВ" />
-                        </div>
-                        <div class="settings-field border-top">
-                            <label>Ім'я</label>
-                            <input type="text" id="set_first_name" placeholder="РУСЛАН" />
-                        </div>
-                        <div class="settings-field border-top">
-                            <label>По батькові</label>
-                            <input type="text" id="set_middle_name" placeholder="ЮРІЙОВИЧ" />
-                        </div>
-                    </div>
-
-                    <div class="settings-group">
-                        <div class="settings-field">
-                            <label>Ім'я (англ.)</label>
-                            <input type="text" id="set_name_en" placeholder="RUSLAN KULIKOV" />
-                        </div>
-                    </div>
-
-                    <div class="settings-section-title">Документи</div>
-
-                    <div class="settings-group">
-                        <div class="settings-field">
-                            <label>Дата народження</label>
-                            <input type="text" id="set_birthdate" placeholder="05.06.2010" />
-                        </div>
-                        <div class="settings-field border-top">
-                            <label>РНОКПП</label>
-                            <input type="text" id="set_rnokpp" placeholder="4033307794" inputmode="numeric" />
-                        </div>
-                        <div class="settings-field border-top">
-                            <label>Номер паспорту</label>
-                            <input type="text" id="set_passport_num" placeholder="010934294" />
-                        </div>
-                        <div class="settings-field border-top">
-                            <label>Номер закордонного паспорту</label>
-                            <input type="text" id="set_zagran_num" placeholder="GE135791" />
-                        </div>
-                    </div>
-
-                    <div class="settings-section-title">Підпис</div>
-
-                    <div class="settings-group">
-                        <div class="settings-field settings-field-sign">
-                            <label>Підпис</label>
-                            <div class="sign-canvas-wrap">
-                                <canvas id="signatureCanvas" width="260" height="80"></canvas>
-                                <button id="clearSignBtn" class="clear-sign-btn">Очистити</button>
+                        <div class="settings-field settings-field-photo">
+                            <div class="photo-upload-wrap">
+                                <div class="photo-preview-wrap">
+                                    <img id="photoPreview" src="photo.jpg" alt="фото" />
+                                </div>
+                                <div class="photo-upload-actions">
+                                    <label class="photo-upload-btn" for="photoFileInput">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        Завантажити фото
+                                    </label>
+                                    <input type="file" id="photoFileInput" accept="image/*" style="display:none" />
+                                    <button id="clearPhotoBtn" class="photo-clear-btn">Видалити</button>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="settings-section-title">Місце народження</div>
+                    <!-- ОСОБИСТІ ДАНІ -->
+                    <div class="settings-section-title">Особисті дані</div>
                     <div class="settings-group">
                         <div class="settings-field">
-                            <label>Місто</label>
-                            <input type="text" id="set_place_birth" placeholder="Дніпро" />
+                            <label>Прізвище</label>
+                            <input type="text" id="set_last_name" placeholder="КУЛІКОВ" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Ім'я</label>
+                            <input type="text" id="set_first_name" placeholder="РУСЛАН" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>По батькові</label>
+                            <input type="text" id="set_middle_name" placeholder="ЮРІЙОВИЧ" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Ім'я латиницею</label>
+                            <input type="text" id="set_name_en" placeholder="RUSLAN KULIKOV" autocomplete="off" />
                         </div>
                     </div>
+
+                    <!-- ДОКУМЕНТИ -->
+                    <div class="settings-section-title">Документи</div>
+                    <div class="settings-group">
+                        <div class="settings-field">
+                            <label>Дата народження</label>
+                            <input type="text" id="set_birthdate" placeholder="05.06.2010" inputmode="numeric" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>РНОКПП (ІПН)</label>
+                            <input type="text" id="set_rnokpp" placeholder="4033307794" inputmode="numeric" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Номер паспорту</label>
+                            <input type="text" id="set_passport_num" placeholder="010934294" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Номер закордонного паспорту</label>
+                            <input type="text" id="set_zagran_num" placeholder="GE135791" autocomplete="off" />
+                        </div>
+                        <div class="settings-field border-top">
+                            <label>Місце народження</label>
+                            <input type="text" id="set_place_birth" placeholder="Дніпро" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <!-- ПІДПИС -->
+                    <div class="settings-section-title">Підпис</div>
+                    <div class="settings-group">
+                        <div class="settings-field settings-field-sign">
+                            <label>Намалюйте підпис пальцем</label>
+                            <div class="sign-canvas-wrap">
+                                <canvas id="signatureCanvas" width="320" height="100"></canvas>
+                                <button id="clearSignBtn" class="clear-sign-btn">✕ Очистити</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
