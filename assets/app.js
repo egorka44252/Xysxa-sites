@@ -956,57 +956,112 @@ document.querySelectorAll(".modal").forEach((modal) => {
   var aiMessages = [];
   var isAiTyping = false;
 
-  function getAiMessagesEl() {
-    return document.getElementById('diyaAiMessages');
+  function getMsgsEl() { return document.getElementById('diyaAiMessages'); }
+
+  function scrollDown() {
+    var el = getMsgsEl();
+    if (el) el.scrollTop = el.scrollHeight;
   }
 
-  function appendMessage(text, role) {
-    var el = getAiMessagesEl();
+  // Set today's date chip
+  function initDateChip() {
+    var chip = document.getElementById('daiDateChip');
+    if (!chip) return;
+    var d = new Date();
+    var months = ['січ.','лют.','бер.','квіт.','трав.','черв.','лип.','серп.','вер.','жовт.','лист.','груд.'];
+    chip.textContent = d.getDate() + ' ' + months[d.getMonth()];
+  }
+
+  // Append AI message block with sparkle icon + actions
+  function appendAiBlock(text) {
+    var el = getMsgsEl();
+    if (!el) return;
+    var block = document.createElement('div');
+    block.className = 'dai-msg-block';
+
+    var row = document.createElement('div');
+    row.className = 'dai-msg-row';
+
+    var icon = document.createElement('div');
+    icon.className = 'dai-sparkle-icon';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2l1.8 6.2L18 10l-6.2 1.8L10 18l-1.8-6.2L2 10l6.2-1.8L10 2Z" fill="currentColor"/><path d="M16 2l.9 2.6L19.5 5.5l-2.6.9L16 9l-.9-2.6L12.5 5.5l2.6-.9L16 2Z" fill="currentColor" opacity="0.5"/></svg>';
+
+    var textDiv = document.createElement('div');
+    textDiv.className = 'dai-msg-text';
+    // Split by newlines into paragraphs
+    text.split('\n').filter(function(l){ return l.trim(); }).forEach(function(line) {
+      var p = document.createElement('p');
+      p.textContent = line;
+      textDiv.appendChild(p);
+    });
+
+    row.appendChild(icon);
+    row.appendChild(textDiv);
+
+    var actions = document.createElement('div');
+    actions.className = 'dai-actions';
+    actions.innerHTML = [
+      '<button class="dai-action-btn" title="Подобається"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M7 22V11M2 13v7a2 2 0 002 2h11.26a2 2 0 001.96-1.6l1.54-7A2 2 0 0016.8 11H13V5a2 2 0 00-2-2h-.01a2 2 0 00-2 2v3L7 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>',
+      '<button class="dai-action-btn" title="Не подобається"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17 2v11m5-9v7a2 2 0 01-2 2H8.74a2 2 0 01-1.96 1.6L5.24 21A2 2 0 007.2 23H11v-3a2 2 0 012 2h.01a2 2 0 002-2v-3l2-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>',
+      '<button class="dai-action-btn" title="Копіювати"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>'
+    ].join('');
+
+    block.appendChild(row);
+    block.appendChild(actions);
+    el.appendChild(block);
+    scrollDown();
+  }
+
+  // Append user bubble
+  function appendUserBubble(text) {
+    var el = getMsgsEl();
     if (!el) return;
     var div = document.createElement('div');
-    div.className = 'diya-ai-msg ' + role;
-    var span = document.createElement('span');
-    span.textContent = text;
-    div.appendChild(span);
+    div.className = 'dai-user-bubble';
+    div.textContent = text;
     el.appendChild(div);
-    el.scrollTop = el.scrollHeight;
-    return div;
+    scrollDown();
   }
 
+  // Typing indicator
   function showTyping() {
-    var el = getAiMessagesEl();
-    if (!el) return null;
-    var div = document.createElement('div');
-    div.className = 'diya-ai-msg ai diya-ai-typing';
-    div.id = 'diya-typing-indicator';
-    var span = document.createElement('span');
-    span.textContent = '...';
-    div.appendChild(span);
-    el.appendChild(div);
-    el.scrollTop = el.scrollHeight;
-    return div;
+    var el = getMsgsEl();
+    if (!el) return;
+    var block = document.createElement('div');
+    block.className = 'dai-msg-block';
+    block.id = 'dai-typing';
+    var row = document.createElement('div');
+    row.className = 'dai-msg-row';
+    var icon = document.createElement('div');
+    icon.className = 'dai-sparkle-icon';
+    icon.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 2l1.8 6.2L18 10l-6.2 1.8L10 18l-1.8-6.2L2 10l6.2-1.8L10 2Z" fill="currentColor"/></svg>';
+    var dots = document.createElement('div');
+    dots.className = 'dai-typing-dots';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+    row.appendChild(icon);
+    row.appendChild(dots);
+    block.appendChild(row);
+    el.appendChild(block);
+    scrollDown();
   }
 
   function removeTyping() {
-    var t = document.getElementById('diya-typing-indicator');
+    var t = document.getElementById('dai-typing');
     if (t) t.remove();
   }
 
   async function sendToAI(userText) {
     if (isAiTyping) return;
     isAiTyping = true;
-
     aiMessages.push({ role: 'user', content: userText });
-    appendMessage(userText, 'user');
-
-    var typingEl = showTyping();
-
+    appendUserBubble(userText);
+    showTyping();
     try {
       var response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 1000,
           system: 'Ти — Дія.AI, розумний помічник у додатку Дія. Відповідай коротко, корисно та зрозуміло. Відповідай українською мовою.',
           messages: aiMessages
@@ -1018,16 +1073,17 @@ document.querySelectorAll(".modal").forEach((modal) => {
         : 'Вибачте, сталася помилка. Спробуйте ще.';
       aiMessages.push({ role: 'assistant', content: aiText });
       removeTyping();
-      appendMessage(aiText, 'ai');
+      appendAiBlock(aiText);
     } catch(e) {
       removeTyping();
-      appendMessage('Помилка з\'єднання. Перевірте інтернет.', 'ai');
+      appendAiBlock('Помилка з\'єднання. Перевірте інтернет.');
     }
-
     isAiTyping = false;
   }
 
   document.addEventListener('DOMContentLoaded', function() {
+    initDateChip();
+
     var sendBtn = document.getElementById('diyaAiSend');
     var input = document.getElementById('diyaAiInput');
 
@@ -1038,7 +1094,6 @@ document.querySelectorAll(".modal").forEach((modal) => {
         input.value = '';
         sendToAI(txt);
       });
-
       input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
           var txt = input.value.trim();
