@@ -302,8 +302,14 @@ if (!userId || isNaN(userId)) {
           el: ".swiper-pagination",
           clickable: true,
         },
-        slidesPerView: 1.15,
+        slidesPerView: 1.12,
         centeredSlides: true,
+        spaceBetween: 14,
+        grabCursor: true,
+        touchRatio: 1,
+        threshold: 5,
+        resistance: true,
+        resistanceRatio: 0.65,
       });
     })
     .catch((error) => {
