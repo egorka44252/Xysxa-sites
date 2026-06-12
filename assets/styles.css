@@ -68,16 +68,18 @@ body {
 
 .error-popup {
     position: fixed;
+    inset: 0;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100vw;
     height: 100vh;
-    min-height: 100%;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999999;
+    z-index: 2147483647;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -172,16 +174,18 @@ body {
 
 .no-internet-modal {
     position: fixed;
+    inset: 0;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100vw;
     height: 100vh;
-    min-height: 100%;
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 999999;
+    z-index: 2147483647;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
