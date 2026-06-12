@@ -304,12 +304,16 @@ if (!userId || isNaN(userId)) {
         },
         slidesPerView: 1.12,
         centeredSlides: true,
-        spaceBetween: 14,
+        spaceBetween: 16,
         grabCursor: true,
         touchRatio: 1,
-        threshold: 5,
-        resistance: true,
-        resistanceRatio: 0.65,
+        threshold: 8,
+        touchStartPreventDefault: false,
+        simulateTouch: true,
+        allowTouchMove: true,
+        touchEventsTarget: 'container',
+        resistanceRatio: 0.6,
+        cssMode: false,
       });
     })
     .catch((error) => {
