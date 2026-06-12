@@ -299,7 +299,6 @@ body {
 .bg-start {
     height: 100vh;
     width: 100%;
-    overflow: hidden;
     background: #f5f5f8;
     display: flex;
     align-items: center;
@@ -337,9 +336,24 @@ body {
     animation: blob2anim 10s ease-in-out infinite;
 }
 
-.bg-start > * {
+.bg-start > *:not(#error-popup):not(#no-internet-popup) {
     position: relative;
     z-index: 1;
+}
+
+/* Popups must escape ALL stacking contexts */
+#error-popup,
+#no-internet-popup {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 2147483647 !important;
+    transform: none !important;
 }
 
 @keyframes blob1anim {
