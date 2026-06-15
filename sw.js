@@ -1,4 +1,4 @@
-const CACHE = 'diya-v3';
+const CACHE = 'diya-v4';
 const ASSETS = [
   '/Xysxa-sites/',
   '/Xysxa-sites/index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   '/Xysxa-sites/assets/styles.css',
   '/Xysxa-sites/assets/app.js',
   '/Xysxa-sites/assets/anime.js',
+  '/Xysxa-sites/assets/jquery.marquee.min.js',
   '/Xysxa-sites/assets/favicon.png',
 ];
 
