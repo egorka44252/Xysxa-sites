@@ -1,4 +1,4 @@
-const CACHE = 'diya-v3';
+const CACHE = 'diya-v5';
 const ASSETS = [
   '/Xysxa-sites/',
   '/Xysxa-sites/index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   '/Xysxa-sites/assets/app.js',
   '/Xysxa-sites/assets/anime.js',
   '/Xysxa-sites/assets/favicon.png',
+  '/Xysxa-sites/assets/diyaai.png',
 ];
 
 self.addEventListener('install', e => {
