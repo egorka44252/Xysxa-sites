@@ -10,10 +10,8 @@
 
 html,
 body {
-    overflow-x: hidden;
-    overflow-y: hidden;
     overscroll-behavior: none;
-    overflow: hidden
+    touch-action: manipulation;
 }
 
 * :not(input) {
@@ -341,7 +339,7 @@ body {
     z-index: 1;
 }
 
-/* Popups must escape ALL stacking contexts */
+/* Popups: must always cover full viewport */
 #error-popup,
 #no-internet-popup {
     position: fixed !important;
@@ -351,9 +349,13 @@ body {
     right: 0 !important;
     bottom: 0 !important;
     width: 100vw !important;
-    height: 100vh !important;
+    height: 100svh !important;
+    min-height: 100vh !important;
     z-index: 2147483647 !important;
-    transform: none !important;
+    transform: translateZ(0) !important;
+    will-change: opacity !important;
+    contain: none !important;
+    isolation: auto !important;
 }
 
 @keyframes blob1anim {
