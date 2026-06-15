@@ -9,6 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
       img.src = img.getAttribute("src").split("?")[0] + "?nocache=" + nocache;
     }
   });
+
+  // Set default active footer tab (Документи = index 2)
+  var defaultTab = document.querySelector('.footer > div[data-index="2"]');
+  if (defaultTab) defaultTab.classList.add("footer-active");
 });
 
 // checkBan removed
@@ -97,6 +101,10 @@ document.querySelectorAll(".start-block > button").forEach(function (el) {
 
 document.querySelectorAll(".footer > div").forEach((div) => {
   div.addEventListener("click", function () {
+    // Highlight active tab
+    document.querySelectorAll(".footer > div").forEach(function(d){ d.classList.remove("footer-active"); });
+    this.classList.add("footer-active");
+
     $(".block.active").removeClass("active");
     const index = Number($(this).attr("data-index")) - 1;
 
